@@ -4,3 +4,14 @@
 *.jar
 *.war
 *.ear
+
+# Maven
+/target
+
+# Eclipse
+.settings
+.project 
+.classpath
+
+# Netbeans
+nbactions.xml
