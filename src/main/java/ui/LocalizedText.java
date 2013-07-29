@@ -36,6 +36,7 @@ public class LocalizedText {
 	public static Object reload						= "Actualiser";
 	public static Object help						= "Aide";
 	public static Object save_the_file				= "Enregistre le fichier";
+	public static String playlist					= "Liste de lécture";
 	
 	public static void loadLanguage(String langFile) {
 		try {

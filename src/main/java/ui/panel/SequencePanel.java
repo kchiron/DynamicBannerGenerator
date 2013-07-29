@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
@@ -25,8 +26,10 @@ public class SequencePanel extends TabContentPanel {
 	private static final long serialVersionUID = 1L;
 
 	public SequencePanel() {
-		super(new MigLayout("ins 0, gap 0px 2px", "[grow][]", "[grow][]"), LocalizedText.sequence_settings);
+		super(new MigLayout("ins 0, gap 0px 2px", "[][][grow][][]", "[][grow][]"), LocalizedText.sequence_settings);
 		setMinimumSize(new Dimension(170, (int)getMinimumSize().getHeight()));
+		
+		add(new JLabel(LocalizedText.playlist), "cell 0 0 4 1, grow");
 		
 		final Border fancy = new CompoundBorder(
 			// Outside border 1px bottom light color
@@ -43,8 +46,6 @@ public class SequencePanel extends TabContentPanel {
 		elements.add(new Sequence("Météo région", "Aquitaine, France", Sequence.Type.weather));
 		
 		ListView listView = new ListView(elements);
-		listView.setDragEnabled(true);
-		
 		
 		JScrollPane scrollPane = new JScrollPane(listView);
 		scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
@@ -53,10 +54,30 @@ public class SequencePanel extends TabContentPanel {
 		scrollPane.getViewport().setBackground(Color.white);
 		scrollPane.setBorder(fancy);
 		
-		add(scrollPane, "cell 0 0 2 1,grow");
+		add(scrollPane, "cell 0 1 4 1,grow");
+		
+
+		final Dimension butSize = new Dimension(40, 40);
+		{ // Up, Down button
+			JButton up = new JButton("^");
+			up.setMaximumSize(butSize);
+			up.setHorizontalTextPosition(SwingConstants.CENTER);
+			up.setVerticalAlignment(SwingConstants.CENTER);
+			up.setEnabled(false);
+			up.putClientProperty("JComponent.sizeVariant", "small");
+			
+			JButton down = new JButton("v");
+			down.setMaximumSize(butSize);
+			down.setHorizontalTextPosition(SwingConstants.CENTER);
+			down.setVerticalAlignment(SwingConstants.CENTER);
+			down.setEnabled(false);
+			down.putClientProperty("JComponent.sizeVariant", "small");
+			
+			add(up, "cell 0 2, alignx right");
+			add(down, "cell 1 2, alignx right");
+		}
 		
 		{ // Plus, minus button
-			final Dimension butSize = new Dimension(40, 40);
 			
 			JButton plus = new JButton("+");
 			plus.setMaximumSize(butSize);
@@ -71,8 +92,8 @@ public class SequencePanel extends TabContentPanel {
 			minus.setEnabled(false);
 			minus.putClientProperty("JComponent.sizeVariant", "small");
 			
-			add(plus, "cell 0 2, alignx right");
-			add(minus, "cell 1 2, alignx right");
+			add(plus, "cell 2 2, alignx right");
+			add(minus, "cell 3 2, alignx right");
 		}
 	}
 }
