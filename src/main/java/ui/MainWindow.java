@@ -3,12 +3,15 @@ package ui;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
+import exception.UnknownOperatingSystem;
+import ffmpeg.FFmpeg;
 import net.miginfocom.swing.MigLayout;
 import ui.custom.TabPanel;
 import ui.panel.HoroscopePanel;
@@ -27,6 +30,9 @@ public class MainWindow extends JFrame {
 	
 	private TabPanel tabPanel;
 	
+	/**
+	 * Constructs the main window of the application
+	 */
 	public MainWindow() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 673, 469);
@@ -46,6 +52,9 @@ public class MainWindow extends JFrame {
 		setVisible(true);
 	}
 	
+	/**
+	 * Initializes the top part of the window with the sequence panel at the left and the tabbed panel at the right
+	 */
 	private void initTopPanel() {
 		{ //Left side of the main window
 			sequencePanel  = new SequencePanel();
@@ -61,6 +70,9 @@ public class MainWindow extends JFrame {
 		}
 	}
 	
+	/**
+	 * Initializes the bottom part of the window with the "Cancel" and "OK" buttons
+	 */
 	private JPanel initBottomPanel() {
 		FlowLayout fl_bottomJPanel = new FlowLayout(FlowLayout.RIGHT);
 		JPanel bottomJPanel = new JPanel(fl_bottomJPanel);
@@ -78,7 +90,7 @@ public class MainWindow extends JFrame {
 		return bottomJPanel;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, InterruptedException, UnknownOperatingSystem {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e1) {

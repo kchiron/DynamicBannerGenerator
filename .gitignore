@@ -15,3 +15,8 @@
 
 # Netbeans
 nbactions.xml
+
+#Video Files
+*.mp4
+*.ts
+*.avi
