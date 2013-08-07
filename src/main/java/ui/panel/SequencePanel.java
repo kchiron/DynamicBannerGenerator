@@ -2,10 +2,15 @@ package ui.panel;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -14,16 +19,29 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
+import javax.swing.table.AbstractTableModel;
 
+import exception.ZeroOrNegativeNumberException;
+import media.MediaSequence;
+import media.element.MediaElement;
+import media.element.generated.HoroscopeElement;
+import media.element.generated.WeatherElement;
+import media.element.imported.ImageElement;
+import media.element.imported.VideoElement;
 import net.miginfocom.swing.MigLayout;
 import ui.LocalizedText;
-import ui.custom.TabContentPanel;
-import ui.custom.listview.ListView;
-import ui.custom.listview.Sequence;
+import ui.form.IconButton;
+import ui.listview.ListView;
 
 public class SequencePanel extends TabContentPanel {
 	
 	private static final long serialVersionUID = 1L;
+	
+	private JButton up;
+	private JButton down;
+	private JButton plus;
+	private JButton minus;
+	private final ListView listView;
 
 	public SequencePanel() {
 		super(new MigLayout("ins 0, gap 0px 2px", "[][][grow][][]", "[][grow][]"), LocalizedText.sequence_settings);
@@ -38,14 +56,17 @@ public class SequencePanel extends TabContentPanel {
 			new LineBorder(new Color(154, 154, 154), 1)
 		);
 		
-		List<Sequence> elements = new ArrayList<Sequence>();
-		elements.add(new Sequence("Météo ville", "Périgueux, France", Sequence.Type.weather));
-		elements.add(new Sequence("Horoscope", "poisson, bélier", Sequence.Type.horoscope));
-		elements.add(new Sequence("Publicité", "sous-titre", Sequence.Type.video));
-		elements.add(new Sequence("Horoscope", "tarreau, sagitaire", Sequence.Type.horoscope));
-		elements.add(new Sequence("Météo région", "Aquitaine, France", Sequence.Type.weather));
+		MediaSequence elements = new MediaSequence();
+		elements.add(new WeatherElement("Périgueux, France", WeatherElement.Type.CITY));
+		elements.add(new HoroscopeElement("Horoscope", "poisson, bélier"));
+		elements.add(new VideoElement("Publicité", new File("toto.mp4")));
+		elements.add(new HoroscopeElement("Horoscope", "tarreau, sagitaire"));
+		elements.add(new WeatherElement("Aquitaine, France", WeatherElement.Type.REGIONAL));
+		try {
+			elements.add(new ImageElement("Pub image", new File("tata.jpg"), 5));
+		} catch (ZeroOrNegativeNumberException e) {e.printStackTrace();}
 		
-		ListView listView = new ListView(elements);
+		listView = new ListView(elements, this);
 		
 		JScrollPane scrollPane = new JScrollPane(listView);
 		scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
@@ -54,46 +75,76 @@ public class SequencePanel extends TabContentPanel {
 		scrollPane.getViewport().setBackground(Color.white);
 		scrollPane.setBorder(fancy);
 		
-		add(scrollPane, "cell 0 1 4 1,grow");
+		add(scrollPane, "cell 0 1 4 1, grow");
 		
-
-		final Dimension butSize = new Dimension(40, 40);
+		final Dimension butSize = new Dimension(28, 21);
 		{ // Up, Down button
-			JButton up = new JButton("^");
-			up.setMaximumSize(butSize);
-			up.setHorizontalTextPosition(SwingConstants.CENTER);
-			up.setVerticalAlignment(SwingConstants.CENTER);
+			up = createMiniIconButton("up.png", "^", butSize);
 			up.setEnabled(false);
-			up.putClientProperty("JComponent.sizeVariant", "small");
-			
-			JButton down = new JButton("v");
-			down.setMaximumSize(butSize);
-			down.setHorizontalTextPosition(SwingConstants.CENTER);
-			down.setVerticalAlignment(SwingConstants.CENTER);
+			up.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent paramActionEvent) {
+					listView.swapSelectedRow(ListView.SwapDirection.UP);
+				}
+			});
+
+			down = createMiniIconButton("down.png", "v", butSize);
 			down.setEnabled(false);
-			down.putClientProperty("JComponent.sizeVariant", "small");
+			down.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent paramActionEvent) {
+					listView.swapSelectedRow(ListView.SwapDirection.DOWN);
+				}
+			});
 			
 			add(up, "cell 0 2, alignx right");
 			add(down, "cell 1 2, alignx right");
 		}
 		
 		{ // Plus, minus button
+			plus = createMiniIconButton("plus.png", "+", butSize);
 			
-			JButton plus = new JButton("+");
-			plus.setMaximumSize(butSize);
-			plus.setHorizontalTextPosition(SwingConstants.CENTER);
-			plus.setVerticalAlignment(SwingConstants.CENTER);
-			plus.putClientProperty("JComponent.sizeVariant", "small");
-			
-			JButton minus = new JButton("-");
-			minus.setMaximumSize(butSize);
-			minus.setHorizontalTextPosition(SwingConstants.CENTER);
-			minus.setVerticalAlignment(SwingConstants.CENTER);
+			minus = createMiniIconButton("minus.png", "-", butSize);
 			minus.setEnabled(false);
-			minus.putClientProperty("JComponent.sizeVariant", "small");
+			minus.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent paramActionEvent) {
+					listView.removeSelectedRow();
+				}
+			});
 			
 			add(plus, "cell 2 2, alignx right");
 			add(minus, "cell 3 2, alignx right");
 		}
 	}
+	
+	public MediaSequence getSequence() {
+		return listView.getSequence();
+	}
+	
+	private JButton createMiniIconButton(String pathIcon, String textFallback, Dimension size) {
+		Font f = new Font("Lucida Grande", Font.BOLD, 10);
+		IconButton button = new IconButton(getClass().getResource(pathIcon), textFallback, f);
+		button.setMaximumSize(size);
+		button.setHorizontalTextPosition(SwingConstants.CENTER);
+		button.setVerticalAlignment(SwingConstants.CENTER);
+		button.putClientProperty("JComponent.sizeVariant", "small");
+		return button;
+	}
+	
+	/**
+	 * Updates the up and down buttons according to whether a row is selected and if this row is at the top or at the bottom.
+	 * @param selected if a row is selected
+	 * @param isTop if a row is selected and is at the top
+	 * @param isBottom if a row is selected and is at the bottom
+	 * @param isDeletable if a row is deletable
+	 */
+	public void rowSelected(boolean selected, boolean isTop, boolean isBottom, boolean isDeletable) {
+		if(isBottom) down.setEnabled(false);
+		else down.setEnabled(selected);
+		
+		if(isTop) up.setEnabled(false);
+		else up.setEnabled(selected);
+		
+		if(isDeletable) minus.setEnabled(true);
+		else minus.setEnabled(false);
+	}
+	 
 }

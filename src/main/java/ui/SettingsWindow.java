@@ -10,29 +10,30 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 import net.miginfocom.swing.MigLayout;
-import ui.custom.TabPanel;
 import ui.panel.HoroscopePanel;
 import ui.panel.SequencePanel;
-import ui.panel.VideoPanel;
+import ui.panel.TabPanel;
+import ui.panel.VideoOutputPanel;
 import ui.panel.WeatherPanel;
+import ui.util.UiUtils;
 
-public class MainWindow extends JFrame {
+public class SettingsWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
 	private SequencePanel sequencePanel;
-	private VideoPanel videoPanel;
+	private VideoOutputPanel videoOutputPanel;
 	private WeatherPanel weatherPanel;
 	private HoroscopePanel horoscopePanel;
 	
 	private TabPanel tabPanel;
 	
-	public MainWindow() {
+	public SettingsWindow() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 673, 469);
+		setBounds(100, 100, 673, 425);
 		setLocationRelativeTo(null);
 		
-		getContentPane().setLayout(new MigLayout("ins 10, gap 5px 5px", "[][grow]", "[grow][]"));
+		getContentPane().setLayout(new MigLayout("ins 10, gap 5px 5px", "[30%][grow]", "[grow][]"));
 		
 		//Top part
 		initTopPanel();
@@ -43,21 +44,22 @@ public class MainWindow extends JFrame {
 		JPanel bottomJPanel = initBottomPanel();
 		getContentPane().add(bottomJPanel, "cell 1 1,alignx right");
 		
+		setMinimumSize(new Dimension(640, 400));
+		
 		setVisible(true);
 	}
 	
 	private void initTopPanel() {
 		{ //Left side of the main window
 			sequencePanel  = new SequencePanel();
-			sequencePanel.setPreferredSize(new Dimension());
 		}
 		
 		{ //Right side of the main window
-			videoPanel = new VideoPanel();
+			videoOutputPanel = new VideoOutputPanel();
 			weatherPanel = new WeatherPanel();
 			horoscopePanel = new HoroscopePanel();
 			
-			tabPanel = new TabPanel(weatherPanel, horoscopePanel, videoPanel);
+			tabPanel = new TabPanel(weatherPanel, horoscopePanel, videoOutputPanel);
 		}
 	}
 	
@@ -79,23 +81,20 @@ public class MainWindow extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
+		UiUtils.initUIManager();
 		
 		//Loading English text interface
 		//LocalizedText.loadLanguage("/en.lang");
-		
+
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainWindow frame = new MainWindow();
+					SettingsWindow frame = new SettingsWindow();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
+		
 	}
 }

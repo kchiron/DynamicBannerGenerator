@@ -1,4 +1,4 @@
-package ui.custom;
+package ui.form;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -32,6 +32,12 @@ public class PlaceHolder extends JLabel
 	private Show show;
 	private boolean showPromptOnce;
 	private int focusLost;
+
+	public PlaceHolder(String text, JTextComponent component, float alpha)
+	{
+		this(text, component, Show.ALWAYS);
+		changeAlpha(alpha);
+	}
 
 	public PlaceHolder(String text, JTextComponent component)
 	{

@@ -1,4 +1,4 @@
-package ui.custom;
+package ui.panel;
 
 import javax.swing.JTabbedPane;
 

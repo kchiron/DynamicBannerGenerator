@@ -9,7 +9,7 @@ import javax.swing.Icon;
 
 public class LocalizedText {
 	public static String sequence_settings			= "Réglage séquence";
-	public static String video_settings				= "Réglage vidéo";
+	public static String video_output_settings		= "Réglage sortie vidéo";
 	public static String weather_settings			= "Réglage météo";
 	public static String horoscope_settings			= "Réglage horoscope";
 	public static String type						= "Type";
@@ -36,7 +36,12 @@ public class LocalizedText {
 	public static Object reload						= "Actualiser";
 	public static Object help						= "Aide";
 	public static Object save_the_file				= "Enregistre le fichier";
-	public static String playlist					= "Liste de lécture";
+	public static String playlist					= "Liste de lecture";
+	public static String video_output_folder 		= "Dossier sortie vidéo";
+	public static String choose_a_folder			= "Sélectionner un dossier";
+	public static String no_file_selected			= "Aucun fichier sélectionner";
+	public static String no_folder_selected			= "Aucun dossier sélectionner";
+	public static String file_format				= "Format de fichier";
 	
 	public static void loadLanguage(String langFile) {
 		try {

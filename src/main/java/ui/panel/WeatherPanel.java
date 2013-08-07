@@ -1,21 +1,25 @@
 package ui.panel;
 
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.filechooser.FileSystemView;
 
-import ui.ImageFileChooser;
-import ui.LocalizedText;
-import ui.custom.TabContentPanel;
-import ui.custom.PlaceHolder;
-import ui.custom.UnitJSpinner;
 import net.miginfocom.swing.MigLayout;
+import ui.LocalizedText;
+import ui.filechooser.ImageFileChooser;
+import ui.form.PlaceHolder;
+import ui.form.UnitJSpinner;
 
 public class WeatherPanel extends TabContentPanel {
 	
@@ -27,14 +31,20 @@ public class WeatherPanel extends TabContentPanel {
 	private final JCheckBox cbCity;
 	private final JCheckBox cbCurrentDay;
 	private final JCheckBox cbTheNextDay;
+
+	private JLabel lblNameBackgroundImageFile;
 	
-	private final ImageFileChooser backgroundImageFile;
+	private File backgroundImageFile;
 	
 	public WeatherPanel() {
-		super(new MigLayout("ins 10"), LocalizedText.weather_settings);
+		super(new MigLayout("ins 10", "[150:150:150][]", ""), LocalizedText.weather_settings);
+		
+		Font title = new Font(UIManager.getDefaults().getFont("Panel.font").getFamily(), Font.BOLD, 12);
 		
 		//Location
-		add(new JLabel(LocalizedText.location), "wrap");
+		JLabel lblLocationTitle = new JLabel(LocalizedText.location);
+		lblLocationTitle.setFont(title);
+		add(lblLocationTitle, "wrap");
 		{
 			cbNational = new JCheckBox(LocalizedText.national_weather);
 			add(cbNational);
@@ -47,7 +57,9 @@ public class WeatherPanel extends TabContentPanel {
 		}
 		
 		//Displayed days
-		add(new JLabel(LocalizedText.displayed_days), "wrap");
+		JLabel lblDayDisplayTitle = new JLabel(LocalizedText.displayed_days);
+		lblDayDisplayTitle.setFont(title);
+		add(lblDayDisplayTitle, "wrap");
 		{
 			cbCurrentDay = new JCheckBox(LocalizedText.current_day);
 			add(cbCurrentDay);
@@ -57,30 +69,73 @@ public class WeatherPanel extends TabContentPanel {
 		}
 		
 		//Other
-		add(new JLabel(LocalizedText.other), "wrap");
+		JLabel lblOtherTitle = new JLabel(LocalizedText.other);
+		lblOtherTitle.setFont(title);
+		add(lblOtherTitle, "wrap");
 		{
-			add(new JLabel(LocalizedText.location+" :"), "alignx right,gapx 10px 10px");
-			
+			//Location
+			add(new JLabel(LocalizedText.location+" :"), "alignx right, gapx 0px 10px");
 			txtLocation = new JTextField();
-			PlaceHolder placeHolder = new PlaceHolder(LocalizedText.city_zip_code_state, txtLocation);
-			placeHolder.changeAlpha(0.5f);
+			PlaceHolder placeHolder = new PlaceHolder(LocalizedText.city_zip_code_state, txtLocation, 0.5f);
 			placeHolder.changeStyle(Font.ITALIC);
-			add(txtLocation, "wrap, grow, span 2");
+			add(txtLocation, "wrap, wmin 180px");
 			
-			add(new JLabel(LocalizedText.display_time+" :"), "alignx right,gapx 10px 10px");
-			add(new UnitJSpinner("sec"), "alignx left,aligny center,wrap");
+			//Display duration time
+			add(new JLabel(LocalizedText.display_time+" :"), "alignx right, gapx 0px 10px");
+			add(new UnitJSpinner("sec", 0, null), "alignx left, aligny center, wrap");
 			
-			backgroundImageFile = new ImageFileChooser();
+			//Background image select
 			final JButton btnSelectImage = new JButton(LocalizedText.select_an_image);
 			btnSelectImage.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					System.out.println(backgroundImageFile.showOpenDialog(null));
+					ImageFileChooser fileDialog = new ImageFileChooser(LocalizedText.select_an_image);
+					
+					if(fileDialog.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
+						update(fileDialog.getSelectedFile());						
 				}
-	
 			});
 			
-			add(new JLabel(LocalizedText.background_image+" :"), "alignx right,gapx 10px 10px");
-			add(btnSelectImage, "wrap, span 2");
+			add(new JLabel(LocalizedText.background_image+" :"), "alignx right, gapx 0px 10px");
+			
+			lblNameBackgroundImageFile = new JLabel(LocalizedText.no_file_selected);
+			update(backgroundImageFile);
+			add(lblNameBackgroundImageFile, "wrap, gap 10 10");
+			add((Component)new JLabel());
+			add(btnSelectImage, "wrap");
 		}
+	}
+		
+	public File getBackgroundImageFile() {
+		return backgroundImageFile;
+	}
+
+	public void update(File backgroundImageFile) {
+		this.backgroundImageFile = backgroundImageFile;
+		if(backgroundImageFile != null) {
+			FileSystemView view = FileSystemView.getFileSystemView();
+			lblNameBackgroundImageFile.setText(backgroundImageFile.getName());
+			lblNameBackgroundImageFile.setIcon(view.getSystemIcon(backgroundImageFile)); 
+			lblNameBackgroundImageFile.setToolTipText(backgroundImageFile.getAbsolutePath());
+			repaint();
+		}
+	}
+
+	@Override
+	public Component add(Component comp) {
+		if(comp instanceof JComponent) ((JComponent) comp).setOpaque(false);
+		return super.add(comp);
+	}
+	
+	@Override
+	public void add(Component comp, Object constraints) {
+		if(comp instanceof JComponent) ((JComponent) comp).setOpaque(false);
+		super.add(comp, constraints);
+	}
+	
+	
+	@Override
+	public void add(Component comp, Object constraints, int index) {
+		if(comp instanceof JComponent) ((JComponent) comp).setOpaque(false);
+		super.add(comp, constraints, index);
 	}
 }

@@ -8,12 +8,34 @@ import java.awt.Rectangle;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
+import javax.swing.UIManager;
+
+import ui.LocalizedText;
 
 /**
  * Class regrouping swing UI utilities 
  * @author gcornut
  */
 public class UiUtils {
+	/**
+	 * Initializes the UiManager with some basic settings
+	 */
+	public static void initUIManager() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+
+		UIManager.put("FileChooser.saveButtonText", LocalizedText.save);
+		UIManager.put("FileChooser.openButtonText", LocalizedText.open);
+		UIManager.put("FileChooser.cancelButtonText", LocalizedText.cancel);
+		UIManager.put("FileChooser.updateButtonText", LocalizedText.reload);
+		UIManager.put("FileChooser.helpButtonText", LocalizedText.help);
+		UIManager.put("FileChooser.saveButtonToolTipText", LocalizedText.save_the_file);
+		UIManager.put("FileChooser.filesOfTypeLabelText", LocalizedText.file_format);
+	}
+	
 	/**
 	 * Forces relayout of a component and its child
 	 * @param c a Component
