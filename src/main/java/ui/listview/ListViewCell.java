@@ -22,63 +22,67 @@ public class ListViewCell extends AbstractCellEditor implements TableCellEditor,
 	private static final long serialVersionUID = 1L;
 
 	private JPanel panel;
-	private JLabel icon;
-	private JLabel title;
-	private JLabel subTitle;
+	
+	private JLabel lblIcon;
+	private JLabel lblTitle;
+	private JLabel lblSubTitle;
 	
 	private Color titleColor;
 	private Color subTitleColor;
-	
 	private Color textSelected;
 
 	public ListViewCell() {
 		panel = new JPanel(new MigLayout("ins 2, gap 0px 0px", "[30px][grow]", "[15px][15px]"));
 
-		this.icon = new JLabel();
-		icon.setPreferredSize(new Dimension(30, 30));
-		this.title = new JLabel();
-		this.subTitle = new JLabel();
-
-		this.icon.setMinimumSize(new Dimension(30, 30));
-		//this.icon.setBorder(BorderFactory.createLineBorder(Color.black));
-
-		this.title.setFont(new Font(UIManager.getDefaults().getFont("Panel.font").getFamily(), Font.BOLD, 12));
-
-		this.subTitle.setForeground(Color.gray);
-		this.subTitle.setFont(new Font(UIManager.getDefaults().getFont("Panel.font").getFamily(), Font.BOLD, 9));
-
-		panel.add(icon, "cell 0 0 1 2, gap 2px 4px");
-		panel.add(title, "cell 1 0, growx, aligny bottom");
-		panel.add(subTitle, "cell 1 1, growx, aligny top");
-		//panel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
-		panel.setBorder(BorderFactory.createEmptyBorder());
+		String defaultFontFamily = UIManager.getDefaults().getFont("Panel.font").getFamily();
 		
-		titleColor = Color.BLACK;
-		subTitleColor = new Color(133, 133, 133);
+		{//Cell icon 30x30
+			this.lblIcon = new JLabel();
+			this.lblIcon.setPreferredSize(new Dimension(30, 30));
+			this.lblIcon.setMinimumSize(new Dimension(30, 30));
+
+			panel.add(lblIcon, "cell 0 0 1 2, gap 2px 4px");
+		}
+		
+		{//Cell title
+			this.lblTitle = new JLabel();
+			this.lblTitle.setFont(new Font(defaultFontFamily, Font.BOLD, 12));
+			
+			titleColor = Color.BLACK;
+			panel.add(lblTitle, "cell 1 0, growx, aligny bottom");
+		}
+		
+		{//Cell sub-title
+			this.lblSubTitle = new JLabel();
+			this.lblSubTitle.setFont(new Font(defaultFontFamily, Font.BOLD, 9));
+
+			subTitleColor = new Color(133, 133, 133);
+			panel.add(lblSubTitle, "cell 1 1, growx, aligny top");
+		}
+
+		panel.setBorder(BorderFactory.createEmptyBorder());
 		
 		textSelected = Color.WHITE;
 	}
 
 	private void updateData(MediaElement element, boolean isSelected, JTable table) {
 		try {
-			title.setText(element.getTitle());
-			subTitle.setText(element.getSubTitle());
+			lblTitle.setText(element.getTitle());
+			lblSubTitle.setText(element.getSubTitle());
 
-			if (isSelected)
-				icon.setIcon(element.getSelectedIcon());
-			else 
-				icon.setIcon(element.getIcon());
+			if (isSelected) lblIcon.setIcon(element.getSelectedIcon());
+			else lblIcon.setIcon(element.getIcon());
 		} catch (NullPointerException e) {}
 
 		if (isSelected) {
 			panel.setBackground(table.getSelectionBackground());
-			title.setForeground(textSelected);
-			subTitle.setForeground(textSelected);
+			lblTitle.setForeground(textSelected);
+			lblSubTitle.setForeground(textSelected);
 		}
 		else {
 			panel.setBackground(Color.WHITE);
-			title.setForeground(titleColor);
-			subTitle.setForeground(subTitleColor);
+			lblTitle.setForeground(titleColor);
+			lblSubTitle.setForeground(subTitleColor);
 		}
 	}
 

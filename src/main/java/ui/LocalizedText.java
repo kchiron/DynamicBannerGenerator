@@ -1,13 +1,14 @@
 package ui;
 
+import java.awt.Frame;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 
 import javax.swing.Icon;
 
 public class LocalizedText {
+	public static String settings					= "Réglages";
 	public static String sequence_settings			= "Réglage séquence";
 	public static String video_output_settings		= "Réglage sortie vidéo";
 	public static String weather_settings			= "Réglage météo";
@@ -20,7 +21,7 @@ public class LocalizedText {
 	public static String display_time				= "Temps d'affichage";
 	public static String choose_background_image	= "Choix de l'image de fond";
 	public static String background_image			= "Image de fond";
-	public static String select_an_image			= "Sélectionner une image";
+	public static String choose_an_image			= "Sélectionner une image";
 	public static String national_weather			= "Météo nationale";
 	public static String regional_weather			= "Météo régionale";
 	public static String city_weather				= "Météo ville";
@@ -31,17 +32,23 @@ public class LocalizedText {
 	public static String displayed_days				= "Affichage des jours";
 	public static String other						= "Autre";
 	public static String image						= "Image";
-	public static Object save						= "Enregistrer";
-	public static Object open						= "Ouvrir";
-	public static Object reload						= "Actualiser";
-	public static Object help						= "Aide";
-	public static Object save_the_file				= "Enregistre le fichier";
+	public static String video						= "Vidéo";
+	public static String save						= "Enregistrer";
+	public static String open						= "Ouvrir";
+	public static String reload						= "Actualiser";
+	public static String help						= "Aide";
+	public static String save_the_file				= "Enregistrer le fichier";
 	public static String playlist					= "Liste de lecture";
 	public static String video_output_folder 		= "Dossier sortie vidéo";
+	public static String choose_video_or_image_file	= "Sélectionner un fichier image ou vidéo";
 	public static String choose_a_folder			= "Sélectionner un dossier";
 	public static String no_file_selected			= "Aucun fichier sélectionner";
 	public static String no_folder_selected			= "Aucun dossier sélectionner";
 	public static String file_format				= "Format de fichier";
+	public static String title						= "Titre";
+	public static String video_or_image_file		= "Vidéo ou Image";
+	public static String new_media					= "Nouveau média";
+	public static String modify_media				= "Modifier un média";
 	
 	public static void loadLanguage(String langFile) {
 		try {

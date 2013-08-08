@@ -14,7 +14,7 @@ import javax.swing.filechooser.FileSystemView;
 
 import ui.LocalizedText;
 import ui.filechooser.FolderChooser;
-import ui.filechooser.ImageFileChooser;
+import ui.filechooser.MediaFileChooser;
 import net.miginfocom.swing.MigLayout;
 
 public class VideoOutputPanel extends TabContentPanel {
@@ -28,7 +28,7 @@ public class VideoOutputPanel extends TabContentPanel {
 	private JLabel lblVideoOutputFolderName;
 	
 	public VideoOutputPanel() {
-		super(new MigLayout("ins 10", "[150:150:150][]", ""), LocalizedText.video_output_settings);
+		super(new MigLayout("ins 10", "[150:150:150]10[]", ""), LocalizedText.video_output_settings);
 		
 		String[] videoSizes = {"640×360", "1024×576", "1280×720 (720p)", "1440x900", "1600×900", "1920x1080 (1080p)"};
 
@@ -36,29 +36,30 @@ public class VideoOutputPanel extends TabContentPanel {
 			videoOutputFolder = new File(new File("."+File.separator).getCanonicalPath());
 		} catch (IOException e) {e.printStackTrace();}
 		
-		add(new JLabel(LocalizedText.video_size+" :"), "alignx right,gapx 0px 10px");
+		{//Video size select
+			add(new JLabel(LocalizedText.video_size+" :"), "alignx right");
+			
+			cbVideoSize = new JComboBox<String>(videoSizes);
+			add(cbVideoSize, "wrap");	
+		}
 		
-		cbVideoSize = new JComboBox<String>(videoSizes);
-		add(cbVideoSize, "wrap");
-		
-		
-		add(new JLabel(LocalizedText.video_output_folder+" :"), "align right, gapx 0px 10px");
-		
-		lblVideoOutputFolderName = new JLabel(LocalizedText.no_folder_selected);
-		add(lblVideoOutputFolderName, "wrap, gap 10 10");
-		
-		add(new JLabel());
-		
-		JButton chooseOutputFolder = new JButton(LocalizedText.choose_a_folder);
-		chooseOutputFolder.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent paramActionEvent) {
-				FolderChooser folderDialog = new FolderChooser(LocalizedText.choose_a_folder);
-				
-				if(folderDialog.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
-					update(folderDialog.getSelectedFile());	
-			}
-		});
-		add(chooseOutputFolder);
+		{//Video output folder select
+			add(new JLabel(LocalizedText.video_output_folder+" :"), "align right");
+			
+			lblVideoOutputFolderName = new JLabel(LocalizedText.no_folder_selected);
+			add(lblVideoOutputFolderName, "wrap, gap 10 10");
+					
+			JButton chooseOutputFolder = new JButton(LocalizedText.choose_a_folder);
+			chooseOutputFolder.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent paramActionEvent) {
+					FolderChooser folderDialog = new FolderChooser(LocalizedText.choose_a_folder);
+					
+					if(folderDialog.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
+						update(folderDialog.getSelectedFile());	
+				}
+			});
+			add(chooseOutputFolder, "skip 1");
+		}
 	}
 	
 	public void update(File videoOutputFolder) {

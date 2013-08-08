@@ -1,4 +1,4 @@
-package ui;
+package ui.settings;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 import net.miginfocom.swing.MigLayout;
+import ui.LocalizedText;
 import ui.panel.HoroscopePanel;
 import ui.panel.SequencePanel;
 import ui.panel.TabPanel;
@@ -29,6 +30,8 @@ public class SettingsWindow extends JFrame {
 	private TabPanel tabPanel;
 	
 	public SettingsWindow() {
+		super(LocalizedText.settings);
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 673, 425);
 		setLocationRelativeTo(null);
@@ -51,7 +54,7 @@ public class SettingsWindow extends JFrame {
 	
 	private void initTopPanel() {
 		{ //Left side of the main window
-			sequencePanel  = new SequencePanel();
+			sequencePanel  = new SequencePanel(this);
 		}
 		
 		{ //Right side of the main window

@@ -18,4 +18,7 @@ public abstract class InportedMediaElement extends MediaElement {
 		super(title, inportedFile.getName());
 	}
 
+	public File getInportedFile() {
+		return inportedFile;
+	}
 }

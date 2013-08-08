@@ -2,6 +2,7 @@ package ui.form;
 
 import java.awt.BorderLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -29,19 +30,20 @@ public class UnitJSpinner extends JPanel {
 		flowLayout.setHgap(0);
 		setLayout(flowLayout);
 		setOpaque(false);
+		setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
 		
 		final JSpinner spinNumber = new JSpinner();
 		spinNumber.setPreferredSize(new Dimension(60, 22));
 		JLabel lblUnit = new JLabel(unit);
 		
+		//Restrict value of the spinner
 		if(min != null || max != null) {
 			spinNumber.addChangeListener(new ChangeListener() {
-				@Override
 				public void stateChanged(ChangeEvent e) {
 					if(min != null && (Integer)spinNumber.getValue() < min) spinNumber.setValue(min);
 					else if(max != null && (Integer)spinNumber.getValue() > max) spinNumber.setValue(max);
 				}
-			});//TODO restrict spinner value to be between min and max
+			});
 		}
 		
 		add(spinNumber, BorderLayout.CENTER);

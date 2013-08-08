@@ -12,7 +12,9 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
@@ -32,6 +34,7 @@ import net.miginfocom.swing.MigLayout;
 import ui.LocalizedText;
 import ui.form.IconButton;
 import ui.listview.ListView;
+import ui.settings.AddModifyMediaElementWindow;
 
 public class SequencePanel extends TabContentPanel {
 	
@@ -43,7 +46,7 @@ public class SequencePanel extends TabContentPanel {
 	private JButton minus;
 	private final ListView listView;
 
-	public SequencePanel() {
+	public SequencePanel(final JFrame parent) {
 		super(new MigLayout("ins 0, gap 0px 2px", "[][][grow][][]", "[][grow][]"), LocalizedText.sequence_settings);
 		setMinimumSize(new Dimension(170, (int)getMinimumSize().getHeight()));
 		
@@ -81,19 +84,9 @@ public class SequencePanel extends TabContentPanel {
 		{ // Up, Down button
 			up = createMiniIconButton("up.png", "^", butSize);
 			up.setEnabled(false);
-			up.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent paramActionEvent) {
-					listView.swapSelectedRow(ListView.SwapDirection.UP);
-				}
-			});
 
 			down = createMiniIconButton("down.png", "v", butSize);
 			down.setEnabled(false);
-			down.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent paramActionEvent) {
-					listView.swapSelectedRow(ListView.SwapDirection.DOWN);
-				}
-			});
 			
 			add(up, "cell 0 2, alignx right");
 			add(down, "cell 1 2, alignx right");
@@ -104,15 +97,40 @@ public class SequencePanel extends TabContentPanel {
 			
 			minus = createMiniIconButton("minus.png", "-", butSize);
 			minus.setEnabled(false);
-			minus.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent paramActionEvent) {
-					listView.removeSelectedRow();
-				}
-			});
 			
 			add(plus, "cell 2 2, alignx right");
 			add(minus, "cell 3 2, alignx right");
 		}
+
+		//Minus listener
+		minus.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent paramActionEvent) {
+				listView.removeSelectedRow();
+			}
+		});
+		
+		
+		//Plus listener
+		plus.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent paramActionEvent) {
+				(new AddModifyMediaElementWindow(parent)).setVisible(true);
+			}
+		});
+		
+		//Down listener
+		down.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent paramActionEvent) {
+				listView.swapSelectedRow(ListView.SwapDirection.DOWN);
+			}
+		});
+		
+		//Up listener
+		up.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent paramActionEvent) {
+				listView.swapSelectedRow(ListView.SwapDirection.UP);
+			}
+		});
+
 	}
 	
 	public MediaSequence getSequence() {

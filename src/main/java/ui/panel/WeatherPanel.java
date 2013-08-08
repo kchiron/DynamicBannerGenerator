@@ -17,7 +17,7 @@ import javax.swing.filechooser.FileSystemView;
 
 import net.miginfocom.swing.MigLayout;
 import ui.LocalizedText;
-import ui.filechooser.ImageFileChooser;
+import ui.filechooser.MediaFileChooser;
 import ui.form.PlaceHolder;
 import ui.form.UnitJSpinner;
 
@@ -37,7 +37,7 @@ public class WeatherPanel extends TabContentPanel {
 	private File backgroundImageFile;
 	
 	public WeatherPanel() {
-		super(new MigLayout("ins 10", "[150:150:150][]", ""), LocalizedText.weather_settings);
+		super(new MigLayout("ins 10", "[150:150:150]10[]", ""), LocalizedText.weather_settings);
 		
 		Font title = new Font(UIManager.getDefaults().getFont("Panel.font").getFamily(), Font.BOLD, 12);
 		
@@ -74,34 +74,33 @@ public class WeatherPanel extends TabContentPanel {
 		add(lblOtherTitle, "wrap");
 		{
 			//Location
-			add(new JLabel(LocalizedText.location+" :"), "alignx right, gapx 0px 10px");
+			add(new JLabel(LocalizedText.location+" :"), "alignx right");
 			txtLocation = new JTextField();
 			PlaceHolder placeHolder = new PlaceHolder(LocalizedText.city_zip_code_state, txtLocation, 0.5f);
 			placeHolder.changeStyle(Font.ITALIC);
 			add(txtLocation, "wrap, wmin 180px");
 			
-			//Display duration time
-			add(new JLabel(LocalizedText.display_time+" :"), "alignx right, gapx 0px 10px");
+			//Display time
+			add(new JLabel(LocalizedText.display_time+" :"), "alignx right");
 			add(new UnitJSpinner("sec", 0, null), "alignx left, aligny center, wrap");
 			
 			//Background image select
-			final JButton btnSelectImage = new JButton(LocalizedText.select_an_image);
+			add(new JLabel(LocalizedText.background_image+" :"), "alignx right");
+			
+			lblNameBackgroundImageFile = new JLabel(LocalizedText.no_file_selected);
+			update(backgroundImageFile);
+			add(lblNameBackgroundImageFile, "wrap, gap 10 10");
+
+			final JButton btnSelectImage = new JButton(LocalizedText.choose_an_image);
 			btnSelectImage.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					ImageFileChooser fileDialog = new ImageFileChooser(LocalizedText.select_an_image);
+					MediaFileChooser fileDialog = new MediaFileChooser(LocalizedText.choose_an_image, MediaFileChooser.Type.IMAGE);
 					
 					if(fileDialog.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
 						update(fileDialog.getSelectedFile());						
 				}
 			});
-			
-			add(new JLabel(LocalizedText.background_image+" :"), "alignx right, gapx 0px 10px");
-			
-			lblNameBackgroundImageFile = new JLabel(LocalizedText.no_file_selected);
-			update(backgroundImageFile);
-			add(lblNameBackgroundImageFile, "wrap, gap 10 10");
-			add((Component)new JLabel());
-			add(btnSelectImage, "wrap");
+			add(btnSelectImage, "skip 1, wrap");
 		}
 	}
 		

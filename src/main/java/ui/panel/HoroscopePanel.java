@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.filechooser.FileSystemView;
 
 import ui.LocalizedText;
-import ui.filechooser.ImageFileChooser;
+import ui.filechooser.MediaFileChooser;
 import ui.form.UnitJSpinner;
 import net.miginfocom.swing.MigLayout;
 
@@ -22,28 +22,28 @@ public class HoroscopePanel extends TabContentPanel {
 	private JLabel lblNameBackgroundImageFile;
 	
 	public HoroscopePanel() {
-		super(new MigLayout("ins 10", "[150:150:150][]", ""), LocalizedText.horoscope_settings);
+		super(new MigLayout("ins 10", "[150:150:150]10[]", ""), LocalizedText.horoscope_settings);
 		
-		add(new JLabel(LocalizedText.display_time+" :"), "alignx right,gapx 0px 10px");
+		//Display time
+		add(new JLabel(LocalizedText.display_time+" :"), "alignx right");
 		add(new UnitJSpinner("sec", 0, null), "wrap");
 		
+		//Background image select
+		add(new JLabel(LocalizedText.background_image+" :"), "alignx right");
 		
-		final JButton btnSelectImage = new JButton(LocalizedText.select_an_image);
+		lblNameBackgroundImageFile = new JLabel(LocalizedText.no_file_selected);
+		add(lblNameBackgroundImageFile, "wrap, gap 10 10");
+		
+		final JButton btnSelectImage = new JButton(LocalizedText.choose_an_image);
 		btnSelectImage.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ImageFileChooser fileDialog = new ImageFileChooser(LocalizedText.select_an_image);
+				MediaFileChooser fileDialog = new MediaFileChooser(LocalizedText.choose_an_image, MediaFileChooser.Type.IMAGE);
 				
 				if(fileDialog.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
 					update(fileDialog.getSelectedFile());	
 			}
 		});
-		
-		add(new JLabel(LocalizedText.background_image+" :"), "alignx right,gapx 0px 10px");
-		
-		lblNameBackgroundImageFile = new JLabel(LocalizedText.no_file_selected);
-		add(lblNameBackgroundImageFile, "wrap, gap 10 10");
-		add(new JLabel());
-		add(btnSelectImage, "wrap");
+		add(btnSelectImage, "skip 1, wrap");
 	}
 
 	public File getBackgroundImageFile() {
