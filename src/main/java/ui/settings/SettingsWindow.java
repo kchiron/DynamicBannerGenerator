@@ -3,12 +3,15 @@ package ui.settings;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
+import exception.UnknownOperatingSystem;
+import ffmpeg.FFmpeg;
 import net.miginfocom.swing.MigLayout;
 import ui.LocalizedText;
 import ui.panel.HoroscopePanel;
@@ -31,7 +34,6 @@ public class SettingsWindow extends JFrame {
 	
 	public SettingsWindow() {
 		super(LocalizedText.settings);
-		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 673, 425);
 		setLocationRelativeTo(null);
@@ -52,6 +54,9 @@ public class SettingsWindow extends JFrame {
 		setVisible(true);
 	}
 	
+	/**
+	 * Initializes the top part of the window with the sequence panel at the left and the tabbed panel at the right
+	 */
 	private void initTopPanel() {
 		{ //Left side of the main window
 			sequencePanel  = new SequencePanel(this);
@@ -66,6 +71,9 @@ public class SettingsWindow extends JFrame {
 		}
 	}
 	
+	/**
+	 * Initializes the bottom part of the window with the "Cancel" and "OK" buttons
+	 */
 	private JPanel initBottomPanel() {
 		FlowLayout fl_bottomJPanel = new FlowLayout(FlowLayout.RIGHT);
 		JPanel bottomJPanel = new JPanel(fl_bottomJPanel);
