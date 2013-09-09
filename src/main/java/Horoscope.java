@@ -2,6 +2,10 @@
 import java.io.*;
 import java.util.regex.*;
 import java.util.*;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 /*
  * To change this template, choose Tools | Templates
@@ -29,9 +33,6 @@ public class Horoscope {
         signs[9] = "capricorne";
         signs[10] = "verseau";
         signs[11] = "poissons";
-        
-        parts[0] = "Coeur";
-        parts[1] = "Vie active";
     }
 
     public String getSigns(int index) {
@@ -40,32 +41,20 @@ public class Horoscope {
 
     public String getParts(int index) {
         return parts[index];
-    }   
-    
-    public ArrayList<String> getContent(InputStream info)  {
-        BufferedReader in = new BufferedReader(new InputStreamReader(info));
-        String inputLine;
-        ArrayList<String> texts = new ArrayList<String>();
-        Pattern pExtract = Pattern.compile("<p class=\"texte_paragraphe\">([^<]+)</p>");
-        Matcher matchExtract;
-        
-        try{           
-            while ((inputLine = in.readLine()) != null) {
-                matchExtract = pExtract.matcher(inputLine);
-                if (matchExtract.find())   {
-                    texts.add(matchExtract.group(1));
-                    //System.out.println("Ligne1 : " + matchExtract.group(1));
-                }
+    }
+       
+    public ArrayList<String> getContent(String [] signs) throws IOException  {
+        for (int i = 0; i < signs.length; i++) {
+            Document dec = Jsoup.connect("http://www.marieclaire.fr/astro/horoscope-du-jour/"+signs[i]+"/").get();
+            System.out.println("url : http://www.marieclaire.fr/astro/horoscope-du-jour/"+signs[i]+"/");
+            Elements content = dec.select("p.texte_paragraphe");
+
+            for (Element e : content) {
+                e.text();
+                System.out.println(e.text());
             }
-            in.close();
-            if (texts.isEmpty())  {
-                throw new Exception("Can not find available text");
-            }
-        } 
-        catch (Exception e){
-            System.err.println("Error: " + e.getMessage());
         }
-        return texts;
+        return null;
     }
     
 }
