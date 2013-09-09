@@ -1,5 +1,3 @@
-package dynamicbannergenerator;
-
 
 import java.io.*;
 import java.util.regex.*;
@@ -32,7 +30,7 @@ public class Horoscope {
         signs[10] = "verseau";
         signs[11] = "poissons";
         
-        parts[0] = "Cœur";
+        parts[0] = "Coeur";
         parts[1] = "Vie active";
     }
 
