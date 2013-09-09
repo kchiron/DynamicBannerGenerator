@@ -1,23 +1,15 @@
 package ui.listview;
 
 import java.awt.Color;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.util.List;
 
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
 
-import media.MediaSequence;
-import media.element.MediaElement;
-import media.element.imported.InportedMediaElement;
+import data.media.MediaSequence;
+import data.media.element.MediaElement;
+import data.media.element.imported.InportedMediaElement;
 import ui.panel.SequencePanel;
 
 public class ListView extends JTable {
@@ -31,8 +23,8 @@ public class ListView extends JTable {
 
 		this.parent = parent;
 
-		setDefaultRenderer(MediaElement.class, new ListViewCell());
-		setDefaultEditor(MediaElement.class, new ListViewCell());
+		setDefaultRenderer(MediaElement.class, new ListViewCell(this));
+		setDefaultEditor(MediaElement.class, new ListViewCell(this));
 		setRowHeight(35);
 
 		setGridColor(Color.white);
@@ -69,6 +61,10 @@ public class ListView extends JTable {
 		return ((ListViewModel)getModel()).getSequence();
 	}
 	
+	public void setSequence(MediaSequence sequence) {
+		((ListViewModel)getModel()).setSequence(sequence);
+	}
+	
 	/**
 	 * Swaps the selected row with the one under or above it
 	 */
@@ -89,5 +85,17 @@ public class ListView extends JTable {
 		((ListViewModel)getModel()).removeRow(selectedRow);
 		clearSelection();
 		requestFocus();
+	}
+	
+	public void addRow(MediaElement element) {
+		((ListViewModel)getModel()).addRow(element);
+	}
+
+	public void replaceElement(MediaElement oldElement, MediaElement newElement) {
+		((ListViewModel)getModel()).replaceRow(oldElement, newElement);
+	}
+
+	public void modifyRow(InportedMediaElement element) {
+		parent.modifyRow(element);
 	}
 }

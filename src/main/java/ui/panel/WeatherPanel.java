@@ -1,42 +1,37 @@
 package ui.panel;
 
-import java.awt.Component;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
 
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
 import javax.swing.UIManager;
-import javax.swing.filechooser.FileSystemView;
 
 import net.miginfocom.swing.MigLayout;
 import ui.LocalizedText;
-import ui.filechooser.MediaFileChooser;
-import ui.form.PlaceHolder;
 import ui.form.UnitJSpinner;
+import ui.form.filechooser.FileChooserField;
+import ui.form.filechooser.MediaFileChooser;
+import ui.form.weatherlocation.WeatherLocationField;
+import control.WeatherControl;
+import data.property.WeatherProperties;
 
 public class WeatherPanel extends TabContentPanel {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private final JTextField txtLocation;
 	private final JCheckBox cbNational;
 	private final JCheckBox cbRegional;
 	private final JCheckBox cbCity;
 	private final JCheckBox cbCurrentDay;
 	private final JCheckBox cbTheNextDay;
 
-	private JLabel lblNameBackgroundImageFile;
+	private final FileChooserField fileChooser;
+
+	private UnitJSpinner displayTime;
+
+	private WeatherLocationField locationField;
 	
-	private File backgroundImageFile;
-	
-	public WeatherPanel() {
+	public WeatherPanel(SequencePanel sequencePanel) {
 		super(new MigLayout("ins 10", "[150:150:150]10[]", ""), LocalizedText.weather_settings);
 		
 		Font title = new Font(UIManager.getDefaults().getFont("Panel.font").getFamily(), Font.BOLD, 12);
@@ -74,67 +69,75 @@ public class WeatherPanel extends TabContentPanel {
 		add(lblOtherTitle, "wrap");
 		{
 			//Location
-			add(new JLabel(LocalizedText.location+" :"), "alignx right");
-			txtLocation = new JTextField();
-			PlaceHolder placeHolder = new PlaceHolder(LocalizedText.city_zip_code_state, txtLocation, 0.5f);
-			placeHolder.changeStyle(Font.ITALIC);
-			add(txtLocation, "wrap, wmin 180px");
+			add(new JLabel(LocalizedText.location+" :"), "ax right");
+			locationField = new WeatherLocationField();
+			add(locationField, "wrap, wmin 180px");
 			
 			//Display time
-			add(new JLabel(LocalizedText.display_time+" :"), "alignx right");
-			add(new UnitJSpinner("sec", 0, null), "alignx left, aligny center, wrap");
+			add(new JLabel(LocalizedText.display_time+" :"), "ax right");
+			displayTime = new UnitJSpinner("sec", 0, null);
+			add(displayTime, "al left center, wrap");
 			
 			//Background image select
-			add(new JLabel(LocalizedText.background_image+" :"), "alignx right");
+			add(new JLabel(LocalizedText.background_image+" :"), "al right top");
 			
-			lblNameBackgroundImageFile = new JLabel(LocalizedText.no_file_selected);
-			update(backgroundImageFile);
-			add(lblNameBackgroundImageFile, "wrap, gap 10 10");
-
-			final JButton btnSelectImage = new JButton(LocalizedText.choose_an_image);
-			btnSelectImage.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					MediaFileChooser fileDialog = new MediaFileChooser(LocalizedText.choose_an_image, MediaFileChooser.Type.IMAGE);
-					
-					if(fileDialog.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
-						update(fileDialog.getSelectedFile());						
-				}
-			});
-			add(btnSelectImage, "skip 1, wrap");
+			fileChooser = new FileChooserField(
+				null, 
+				new MediaFileChooser(LocalizedText.choose_an_image, MediaFileChooser.Type.IMAGE), 
+				LocalizedText.choose_an_image, 
+				LocalizedText.no_file_selected
+			);
+			add(fileChooser);
 		}
-	}
 		
-	public File getBackgroundImageFile() {
-		return backgroundImageFile;
+		WeatherControl weatherControl = new WeatherControl(sequencePanel, this);
+		for(WeatherProperties.Type type : WeatherProperties.Type.values())
+			getWeatherTypeCheckBox(type).addActionListener(weatherControl);
+		for(int i = 0; i < 2; i++)
+			getDaysCheckBox(i).addActionListener(weatherControl);
+		locationField.addActionListener(weatherControl);
+		displayTime.addActionListener(weatherControl);
+		fileChooser.addActionListener(weatherControl);
 	}
-
-	public void update(File backgroundImageFile) {
-		this.backgroundImageFile = backgroundImageFile;
-		if(backgroundImageFile != null) {
-			FileSystemView view = FileSystemView.getFileSystemView();
-			lblNameBackgroundImageFile.setText(backgroundImageFile.getName());
-			lblNameBackgroundImageFile.setIcon(view.getSystemIcon(backgroundImageFile)); 
-			lblNameBackgroundImageFile.setToolTipText(backgroundImageFile.getAbsolutePath());
-			repaint();
+	
+	/**
+	 * Gets a weather type check box given the weather type.
+	 */
+	public JCheckBox getWeatherTypeCheckBox(WeatherProperties.Type type) {
+		switch (type) {
+			case CITY: return cbCity;
+			case NATIONAL: return cbNational;
+			case REGIONAL: return cbRegional;
 		}
-	}
-
-	@Override
-	public Component add(Component comp) {
-		if(comp instanceof JComponent) ((JComponent) comp).setOpaque(false);
-		return super.add(comp);
+		return null;
 	}
 	
-	@Override
-	public void add(Component comp, Object constraints) {
-		if(comp instanceof JComponent) ((JComponent) comp).setOpaque(false);
-		super.add(comp, constraints);
+	/**
+	 * Gets a day check box given the number of the day.<br/>
+	 * Only two days available:<br/>
+	 * <ol start="0">
+	 * 	<li> => the current day</li>
+	 * 	<li> => the next day </li>
+	 * </ol>
+	 */
+	public JCheckBox getDaysCheckBox(int numDay) {
+		switch (numDay) {
+			case 0: return cbCurrentDay;
+			case 1: return cbCurrentDay;
+		}
+		return null;
 	}
 	
 	
-	@Override
-	public void add(Component comp, Object constraints, int index) {
-		if(comp instanceof JComponent) ((JComponent) comp).setOpaque(false);
-		super.add(comp, constraints, index);
+	public FileChooserField getFileChooser() {
+		return fileChooser;
+	}
+	
+	public UnitJSpinner getDisplayTime() {
+		return displayTime;
+	}
+	
+	public WeatherLocationField getLocationField() {
+		return locationField;
 	}
 }

@@ -27,6 +27,14 @@ public class FileExtended extends File {
 		this(pathToFile, true);
 	}
 	
+	public FileExtended(File file) throws IOException {
+		this(file.getAbsolutePath());
+	}
+	
+	public FileExtended(File file, boolean shouldExist) throws IOException {
+		this(file.getAbsolutePath(), shouldExist);
+	}
+	
 	/**
 	 * Gets the extension of the file
 	 * @return the extension of the file

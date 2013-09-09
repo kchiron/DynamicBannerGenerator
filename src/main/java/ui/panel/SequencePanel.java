@@ -5,50 +5,45 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
-import javax.swing.table.AbstractTableModel;
 
-import exception.ZeroOrNegativeNumberException;
-import media.MediaSequence;
-import media.element.MediaElement;
-import media.element.generated.HoroscopeElement;
-import media.element.generated.WeatherElement;
-import media.element.imported.ImageElement;
-import media.element.imported.VideoElement;
 import net.miginfocom.swing.MigLayout;
 import ui.LocalizedText;
 import ui.form.IconButton;
 import ui.listview.ListView;
+import ui.listview.ListViewModel;
 import ui.settings.AddModifyMediaElementWindow;
+import data.media.MediaSequence;
+import data.media.element.MediaElement;
+import data.media.element.imported.InportedMediaElement;
+import data.property.PropertyManager;
 
 public class SequencePanel extends TabContentPanel {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private JButton up;
-	private JButton down;
-	private JButton plus;
-	private JButton minus;
+	private final JButton up;
+	private final JButton down;
+	private final JButton plus;
+	private final JButton minus;
 	private final ListView listView;
+	private final JFrame parentFrame;
 
 	public SequencePanel(final JFrame parent) {
 		super(new MigLayout("ins 0, gap 0px 2px", "[][][grow][][]", "[][grow][]"), LocalizedText.sequence_settings);
 		setMinimumSize(new Dimension(170, (int)getMinimumSize().getHeight()));
+
+		this.parentFrame = parent;
 		
 		add(new JLabel(LocalizedText.playlist), "cell 0 0 4 1, grow");
 		
@@ -59,17 +54,18 @@ public class SequencePanel extends TabContentPanel {
 			new LineBorder(new Color(154, 154, 154), 1)
 		);
 		
+		/*
 		MediaSequence elements = new MediaSequence();
-		elements.add(new WeatherElement("Périgueux, France", WeatherElement.Type.CITY));
-		elements.add(new HoroscopeElement("Horoscope", "poisson, bélier"));
-		elements.add(new VideoElement("Publicité", new File("toto.mp4")));
-		elements.add(new HoroscopeElement("Horoscope", "tarreau, sagitaire"));
-		elements.add(new WeatherElement("Aquitaine, France", WeatherElement.Type.REGIONAL));
 		try {
-			elements.add(new ImageElement("Pub image", new File("tata.jpg"), 5));
-		} catch (ZeroOrNegativeNumberException e) {e.printStackTrace();}
+			elements.add(new WeatherElement("Périgueux, France", WeatherElement.Type.CITY, 1, 5));
+			//elements.add(new VideoElement("Publicité", new FileExtended("evolution.avi")));
+			elements.add(new WeatherElement("Aquitaine, France", WeatherElement.Type.REGIONAL, 1, 5));
+			//elements.add(new ImageElement("Pub image", new FileExtended("/Users/guillaume/Developper/Java/DynamicBannerGenerator/src/test/resources/sun.jpg"), 5));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}*/
 		
-		listView = new ListView(elements, this);
+		listView = new ListView(PropertyManager.getSequence(), this);
 		
 		JScrollPane scrollPane = new JScrollPane(listView);
 		scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
@@ -111,9 +107,10 @@ public class SequencePanel extends TabContentPanel {
 		
 		
 		//Plus listener
+		final SequencePanel sequencePanel = this;
 		plus.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent paramActionEvent) {
-				(new AddModifyMediaElementWindow(parent)).setVisible(true);
+				(new AddModifyMediaElementWindow(parent, sequencePanel)).setVisible(true);
 			}
 		});
 		
@@ -131,6 +128,10 @@ public class SequencePanel extends TabContentPanel {
 			}
 		});
 
+	}
+	
+	public void setSequence(MediaSequence sequence) {
+		listView.setSequence(sequence);
 	}
 	
 	public MediaSequence getSequence() {
@@ -164,5 +165,20 @@ public class SequencePanel extends TabContentPanel {
 		if(isDeletable) minus.setEnabled(true);
 		else minus.setEnabled(false);
 	}
+	
+	public void addElement(MediaElement element) {
+		listView.addRow(element);
+	}
 	 
+	public void updateElement(MediaElement oldElement, MediaElement newElement) {
+		listView.replaceElement(oldElement, newElement);
+	}
+	
+	public void modifyRow(InportedMediaElement element) {
+		(new AddModifyMediaElementWindow(parentFrame, this, element)).setVisible(true);
+	}
+
+	public void refreshList() {
+		((ListViewModel)listView.getModel()).fireTableStructureChanged();
+	}
 }

@@ -19,7 +19,6 @@ public class FFmpegTest {
 	private static String ffmpegTestFolderPath;
 	private static String testFolderPath;
 
-
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		File outputFolder;
@@ -41,15 +40,20 @@ public class FFmpegTest {
 	 */
 	@Test
 	public void testExecution() throws IOException, InterruptedException, UnknownOperatingSystem {
-		int exitCode = FFmpeg.execute(false, new String[] {"-h"});
-		assertThat(0, is(exitCode));
+		int exitCode = FFmpeg.execute(new String[] {"-h"});
+		assertThat(exitCode, is(0));
 	}
-
-
+	
+	@Test
+	public void testGetVideoDuration() throws IOException {
+		FileExtended video = new FileExtended(testFolderPath+"testVideo.mp4");
+		assertThat(FFmpeg.getVideoDuration(video), is(8));
+	}
+	
 	@Test
 	public void testConvertImageToVideo() throws IOException, InterruptedException, UnknownOperatingSystem {
 		File result = FFmpeg.convertImageToVideo(new FileExtended(ffmpegTestFolderPath, false), 5, new FileExtended(testFolderPath+"sun.jpg"));
-		assertThat(null, not(result));
+		assertThat(result, notNullValue());
 	}
 
 	@Test
@@ -61,6 +65,6 @@ public class FFmpegTest {
 		FileExtended output = new FileExtended(ffmpegTestFolderPath+"concat.mp4", false);
 
 		int exitCode = FFmpeg.concatenateVideos(output, input);
-		assertThat(0, is(exitCode));
+		assertThat(exitCode, is(0));
 	}
 }

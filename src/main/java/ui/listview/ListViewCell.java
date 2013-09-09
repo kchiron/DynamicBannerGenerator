@@ -1,12 +1,14 @@
 package ui.listview;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridLayout;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -14,8 +16,14 @@ import javax.swing.UIManager;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-import media.element.MediaElement;
-import net.miginfocom.swing.MigLayout;
+import ui.listview.contextmenu.ListViewListener;
+import data.media.element.MediaElement;
+import data.media.element.generated.HoroscopeElement;
+import data.media.element.generated.WeatherElement;
+import data.media.element.imported.ImageElement;
+import data.media.element.imported.InportedMediaElement;
+import data.media.element.imported.VideoElement;
+import javax.swing.SwingConstants;
 
 public class ListViewCell extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
@@ -28,61 +36,87 @@ public class ListViewCell extends AbstractCellEditor implements TableCellEditor,
 	private JLabel lblSubTitle;
 	
 	private Color titleColor;
-	private Color subTitleColor;
+	private Color lightGrayColor;
 	private Color textSelected;
 
-	public ListViewCell() {
-		panel = new JPanel(new MigLayout("ins 2, gap 0px 0px", "[30px][grow]", "[15px][15px]"));
+	private ListViewListener mouseListener;
+	private ListView parentTable;
+
+	private MediaElement element;
+
+	private JLabel lblDuration;
+
+	public ListViewCell(ListView parentTable) {
+		this.parentTable = parentTable;
+		panel = new JPanel(new BorderLayout());
 
 		String defaultFontFamily = UIManager.getDefaults().getFont("Panel.font").getFamily();
 		
 		{//Cell icon 30x30
 			this.lblIcon = new JLabel();
-			this.lblIcon.setPreferredSize(new Dimension(30, 30));
-			this.lblIcon.setMinimumSize(new Dimension(30, 30));
-
-			panel.add(lblIcon, "cell 0 0 1 2, gap 2px 4px");
+			this.lblIcon.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
+			panel.add(lblIcon, BorderLayout.WEST);
 		}
 		
-		{//Cell title
-			this.lblTitle = new JLabel();
-			this.lblTitle.setFont(new Font(defaultFontFamily, Font.BOLD, 12));
+		{//Cell title and sub-title
+			JPanel center = new JPanel(new GridLayout(2, 1));
+			center.setOpaque(false);
+			center.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
 			
-			titleColor = Color.BLACK;
-			panel.add(lblTitle, "cell 1 0, growx, aligny bottom");
-		}
-		
-		{//Cell sub-title
-			this.lblSubTitle = new JLabel();
+			this.lblTitle = new JLabel("T");
+			lblTitle.setVerticalAlignment(SwingConstants.BOTTOM);
+			this.lblTitle.setFont(new Font(defaultFontFamily, Font.BOLD, 12));
+			center.add(lblTitle);
+			
+			this.lblSubTitle = new JLabel("St");
+			lblSubTitle.setVerticalAlignment(SwingConstants.TOP);
 			this.lblSubTitle.setFont(new Font(defaultFontFamily, Font.BOLD, 9));
+			center.add(lblSubTitle);
+			
+			panel.add(center, BorderLayout.CENTER);
+		}
 
-			subTitleColor = new Color(133, 133, 133);
-			panel.add(lblSubTitle, "cell 1 1, growx, aligny top");
+		{//Cell duration time
+			this.lblDuration = new JLabel();
+			this.lblDuration.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 2));
+			this.lblDuration.setFont(new Font(defaultFontFamily, Font.BOLD, 9));
+			panel.add(lblDuration, BorderLayout.EAST);
 		}
 
 		panel.setBorder(BorderFactory.createEmptyBorder());
-		
+
+		titleColor = Color.BLACK;
+		lightGrayColor = new Color(133, 133, 133);
 		textSelected = Color.WHITE;
+		
+		mouseListener = new ListViewListener(this);
+		panel.addMouseListener(mouseListener);
 	}
 
 	private void updateData(MediaElement element, boolean isSelected, JTable table) {
+		if(element != null) {
+			this.element = element;
+			mouseListener.setElement(element);
+		}
 		try {
 			lblTitle.setText(element.getTitle());
 			lblSubTitle.setText(element.getSubTitle());
+			lblDuration.setText(formatDurationTime(element.getDuration()));
 
-			if (isSelected) lblIcon.setIcon(element.getSelectedIcon());
-			else lblIcon.setIcon(element.getIcon());
+			lblIcon.setIcon(getElementIcon(element, isSelected));
 		} catch (NullPointerException e) {}
 
 		if (isSelected) {
 			panel.setBackground(table.getSelectionBackground());
 			lblTitle.setForeground(textSelected);
 			lblSubTitle.setForeground(textSelected);
+			lblDuration.setForeground(textSelected);
 		}
 		else {
 			panel.setBackground(Color.WHITE);
 			lblTitle.setForeground(titleColor);
-			lblSubTitle.setForeground(subTitleColor);
+			lblSubTitle.setForeground(lightGrayColor);
+			lblDuration.setForeground(lightGrayColor);
 		}
 	}
 
@@ -105,4 +139,35 @@ public class ListViewCell extends AbstractCellEditor implements TableCellEditor,
 		return panel;
 	}
 
+	public void remove() {
+		parentTable.removeSelectedRow();
+	}
+
+	public void edit() {
+		parentTable.modifyRow((InportedMediaElement)element);
+	}
+	
+	private String formatDurationTime(int seconds) {
+		String out = "";
+		
+		if(seconds>3600)
+			out += String.format("%02d", seconds / 3600) + ":";
+		
+		out += String.format("%02d", (seconds % 3600) / 60 )+ ":";
+		out += String.format("%02d", seconds % 3600  % 60);
+		
+		return out;
+	}
+
+	private ImageIcon getElementIcon(MediaElement element, boolean selected) {
+		if(element.getClass() == ImageElement.class) 
+			return new ImageIcon(getClass().getResource("image"+(selected?"_on":"")+".png"));
+		else if(element.getClass() == VideoElement.class)
+			return new ImageIcon(getClass().getResource("video"+(selected?"_on":"")+".png"));
+		else if(element.getClass() == WeatherElement.class)
+			return new ImageIcon(getClass().getResource("weather"+(selected?"_on":"")+".png"));
+		else if(element.getClass() == HoroscopeElement.class)
+			return new ImageIcon(getClass().getResource("horoscope"+(selected?"_on":"")+".png"));
+		return null;
+	} 
 }

@@ -1,111 +1,101 @@
 package ui.settings;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.FlowLayout;
-import java.io.IOException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
+import javax.swing.JSplitPane;
+import javax.swing.WindowConstants;
 
-import exception.UnknownOperatingSystem;
-import ffmpeg.FFmpeg;
-import net.miginfocom.swing.MigLayout;
 import ui.LocalizedText;
 import ui.panel.HoroscopePanel;
 import ui.panel.SequencePanel;
 import ui.panel.TabPanel;
 import ui.panel.VideoOutputPanel;
 import ui.panel.WeatherPanel;
-import ui.util.UiUtils;
+import data.property.PropertyManager;
 
 public class SettingsWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-	private SequencePanel sequencePanel;
-	private VideoOutputPanel videoOutputPanel;
-	private WeatherPanel weatherPanel;
-	private HoroscopePanel horoscopePanel;
+	private final SequencePanel sequencePanel;
 	
-	private TabPanel tabPanel;
+	private final TabPanel tabPanel;
+	private final VideoOutputPanel videoOutputPanel;
+	private final WeatherPanel weatherPanel;
+	private final HoroscopePanel horoscopePanel;
 	
 	public SettingsWindow() {
 		super(LocalizedText.settings);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		getContentPane().setLayout(new BorderLayout());
+
+		{//Top part
+			//Left side of the main window (SequencePanel)
+			sequencePanel  = new SequencePanel(this);
+			Dimension d = sequencePanel.getPreferredSize();
+			d.width = 200;
+			sequencePanel.setPreferredSize(d);
+			getContentPane().add(sequencePanel);
+
+			//Right side of the main window (TabPanel)
+			videoOutputPanel = new VideoOutputPanel();
+			weatherPanel = new WeatherPanel(sequencePanel);
+			horoscopePanel = new HoroscopePanel(sequencePanel);
+			tabPanel = new TabPanel(weatherPanel, horoscopePanel, videoOutputPanel);
+
+			//Split pane
+			JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sequencePanel, tabPanel);
+			split.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
+			split.setContinuousLayout(true);
+			getContentPane().add(split, BorderLayout.CENTER);
+		}	
+
+		{//Bottom part
+			final JPanel bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+			JButton btnCancel = new JButton(LocalizedText.cancel);
+			bottom.add(btnCancel);
+
+			JButton btnOK = new JButton(LocalizedText.ok);
+			bottom.add(btnOK);
+
+			getRootPane().setDefaultButton(btnOK);	
+
+			getContentPane().add(bottom, BorderLayout.SOUTH);
+			
+			btnOK.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent paramActionEvent) {
+					saveAndExit();
+				}
+			});
+			
+			btnCancel.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent paramActionEvent) {
+					exit();
+				}
+			});	
+		}
+
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		setMinimumSize(new Dimension(640, 420));
 		setBounds(100, 100, 673, 425);
 		setLocationRelativeTo(null);
-		
-		getContentPane().setLayout(new MigLayout("ins 10, gap 5px 5px", "[30%][grow]", "[grow][]"));
-		
-		//Top part
-		initTopPanel();
-		getContentPane().add(sequencePanel, "cell 0 0,grow");
-		getContentPane().add(tabPanel, "cell 1 0,grow");		
-		
-		//Bottom part
-		JPanel bottomJPanel = initBottomPanel();
-		getContentPane().add(bottomJPanel, "cell 1 1,alignx right");
-		
-		setMinimumSize(new Dimension(640, 400));
-		
-		setVisible(true);
-	}
-	
-	/**
-	 * Initializes the top part of the window with the sequence panel at the left and the tabbed panel at the right
-	 */
-	private void initTopPanel() {
-		{ //Left side of the main window
-			sequencePanel  = new SequencePanel(this);
-		}
-		
-		{ //Right side of the main window
-			videoOutputPanel = new VideoOutputPanel();
-			weatherPanel = new WeatherPanel();
-			horoscopePanel = new HoroscopePanel();
-			
-			tabPanel = new TabPanel(weatherPanel, horoscopePanel, videoOutputPanel);
-		}
-	}
-	
-	/**
-	 * Initializes the bottom part of the window with the "Cancel" and "OK" buttons
-	 */
-	private JPanel initBottomPanel() {
-		FlowLayout fl_bottomJPanel = new FlowLayout(FlowLayout.RIGHT);
-		JPanel bottomJPanel = new JPanel(fl_bottomJPanel);
-		fl_bottomJPanel.setVgap(0);
-		fl_bottomJPanel.setHgap(0);
-		
-		JButton btnCancel = new JButton(LocalizedText.cancel);
-		bottomJPanel.add(btnCancel);
-		
-		JButton btnOK = new JButton(LocalizedText.ok);
-		bottomJPanel.add(btnOK);
-		
-		getRootPane().setDefaultButton(btnOK);
-		
-		return bottomJPanel;
 	}
 
-	public static void main(String[] args) {
-		UiUtils.initUIManager();
-		
-		//Loading English text interface
-		//LocalizedText.loadLanguage("/en.lang");
-
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					SettingsWindow frame = new SettingsWindow();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		
+	
+	public void exit() {
+		this.dispose();
+	}
+	
+	public void saveAndExit() {
+		PropertyManager.saveToFile();
+		exit();
 	}
 }

@@ -1,4 +1,4 @@
-package ui.filechooser;
+package ui.form.filechooser;
 
 import java.io.File;
 

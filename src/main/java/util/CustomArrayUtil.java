@@ -1,6 +1,5 @@
 package util;
 
-import java.util.Arrays;
 
 public class CustomArrayUtil {
 	public static String[] mergeArray(String[] array1, String[] array2) {

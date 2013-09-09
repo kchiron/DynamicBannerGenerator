@@ -2,12 +2,10 @@ package ui.listview;
 
 import java.util.Collections;
 
-import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
 
-import media.MediaSequence;
-import media.element.MediaElement;
+import data.media.MediaSequence;
+import data.media.element.MediaElement;
 
 public class ListViewModel extends AbstractTableModel {
 
@@ -17,7 +15,6 @@ public class ListViewModel extends AbstractTableModel {
 	
 	public ListViewModel(MediaSequence sequence) {
 		this.sequence = sequence;
-		new DefaultTableModel();
 	}
 	
 	public int getRowCount() {
@@ -64,5 +61,15 @@ public class ListViewModel extends AbstractTableModel {
 	
 	public MediaSequence getSequence() {
 		return sequence;
+	}
+	
+	public void setSequence(MediaSequence sequence) {
+		this.sequence = sequence;
+		fireTableStructureChanged();
+	}
+
+	public void replaceRow(MediaElement oldElement, MediaElement newElement) {
+		sequence.set(sequence.indexOf(oldElement), newElement);
+		fireTableStructureChanged();
 	}
 }
