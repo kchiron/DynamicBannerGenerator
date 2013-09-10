@@ -42,7 +42,6 @@ public class HoroscopeTest {
     @Test
     public void test() throws Exception {
         Horoscope h = new Horoscope();
-        String [] tab = {"belier", "taureau", "gemeaux"};
-        h.getContent(tab);
+        System.out.println(h.getContent("Sagittaire"));
     }
 }

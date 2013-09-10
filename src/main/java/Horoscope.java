@@ -42,19 +42,20 @@ public class Horoscope {
     public String getParts(int index) {
         return parts[index];
     }
-       
-    public ArrayList<String> getContent(String [] signs) throws IOException  {
-        for (int i = 0; i < signs.length; i++) {
-            Document dec = Jsoup.connect("http://www.marieclaire.fr/astro/horoscope-du-jour/"+signs[i]+"/").get();
-            System.out.println("url : http://www.marieclaire.fr/astro/horoscope-du-jour/"+signs[i]+"/");
-            Elements content = dec.select("p.texte_paragraphe");
-
-            for (Element e : content) {
-                e.text();
-                System.out.println(e.text());
-            }
-        }
-        return null;
-    }
     
+    /*
+     * Retourne tout le contenu d'un signe
+     */
+    public String getContent(String signs) throws IOException  {
+        String text;
+        Document dec = Jsoup.connect("http://www.marieclaire.fr/astro/horoscope-du-jour/"+signs+"/").get();
+        Elements content = dec.select("p.texte_paragraphe");
+        text = "";
+
+        for (Element e : content) {
+            text += e.text() + " ";
+        }
+        
+        return text;    
+    }
 }
