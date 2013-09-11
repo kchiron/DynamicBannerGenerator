@@ -37,7 +37,7 @@ public class LocalizedText {
 	public static String current_day				= "Le jour même";
 	public static String the_next_day				= "Le jour d'après";
 	public static String location					= "Localisation";
-	public static String city_zip_code_state		= "Ville, Code postal, état";
+	public static String city_zip_code_state		= "Ville, Code postal, Pays";
 	public static String displayed_days				= "Affichage des jours";
 	public static String other						= "Autre";
 	public static String image						= "Image";

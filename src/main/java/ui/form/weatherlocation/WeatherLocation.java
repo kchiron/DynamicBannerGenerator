@@ -12,8 +12,7 @@ public class WeatherLocation implements Serializable{
 	private final double longitute;
 	private final double latitude;
 	
-	public WeatherLocation(String country, String region, String city,
-			double longitute, double latitude) {
+	public WeatherLocation(String country, String region, String city, double longitute, double latitude) {
 		this.country = country;
 		this.region = region;
 		this.city = city;
@@ -43,6 +42,6 @@ public class WeatherLocation implements Serializable{
 	
 	@Override
 	public String toString() {
-		return city + region + country;
+		return city + ", " + region + ", " + country;
 	}
 }

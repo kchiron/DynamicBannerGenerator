@@ -1,6 +1,8 @@
 package ui.form.weatherlocation;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.JMenuItem;
@@ -8,13 +10,24 @@ import javax.swing.JPopupMenu;
 import javax.swing.MenuElement;
 import javax.swing.MenuSelectionManager;
 
+import com.claygregory.api.google.places.Prediction;
+
 public class WeatherLocationDropDown extends JPopupMenu {
 
 	private static final long serialVersionUID = 1L;
-	private ArrayList<String> locations;
+	private final ActionListener menuAction;
+	private int pos;
 	
-	public WeatherLocationDropDown() {
-		locations = new ArrayList<String>();
+	public WeatherLocationDropDown(final WeatherLocationField parent) {
+		menuAction = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(e.getSource() instanceof PredictionMenuItem) {
+					PredictionMenuItem it = (PredictionMenuItem)e.getSource();
+					parent.setWeatherLocationFromPrediction(it.getPrediction());
+				}
+			}
+		};
 	}
 	
 	public void updateList(ArrayList<String> locations) {
@@ -26,14 +39,25 @@ public class WeatherLocationDropDown extends JPopupMenu {
 	
 	@Override
 	public void removeAll() {
-		locations.clear();
 		super.removeAll();
 	}
 	
-	@Override
-	public JMenuItem add(String s) {
-		locations.add(s);
-		return super.add(s);
+	public JMenuItem add(Prediction s) {
+		return super.add(new PredictionMenuItem(s));
+	}
+	
+	public PredictionMenuItem getSelectedItem() {
+		MenuElement[] selectedPath = MenuSelectionManager.defaultManager().getSelectedPath();
+
+		if(selectedPath.length != 0 && isVisible()) { 
+			Component c = selectedPath[selectedPath.length-1].getComponent();
+			
+			if(c instanceof PredictionMenuItem) {
+				return (PredictionMenuItem) c;
+			}
+			else return null;
+		}
+		else return null;
 	}
 	
 	public void up() {
@@ -44,27 +68,45 @@ public class WeatherLocationDropDown extends JPopupMenu {
 		move(1);
 	}
 	
-	/** Moves selected menu item */
+	/** Moves selected menu item if the menu is opened */
 	private void move(int offset) {
 		MenuElement[] selectedPath = MenuSelectionManager.defaultManager().getSelectedPath();
-		
-		if(selectedPath.length != 0) {
-			for(MenuElement elem: selectedPath) {
-				Component c = elem.getComponent();
+
+		if(selectedPath.length != 0 && isVisible()) {
+			Component c = selectedPath[selectedPath.length-1].getComponent();
+			JMenuItem newSelected = null;
+			
+			if(c instanceof JMenuItem) {
+				if(pos <= 0 && offset < 0) return;
+				if(pos >= getComponents().length && offset > 0) return;
+				pos += offset;
 				
-				if(c instanceof JMenuItem) {
-					int pos = locations.indexOf(((JMenuItem)c).getText());
-					
-					if(pos <= 0 && offset < 0) return;
-					if(pos >= locations.size() && offset > 0) return;
-					
-					JMenuItem newSelected = (JMenuItem)getComponent(pos+offset);
-					
-					MenuSelectionManager.defaultManager().setSelectedPath(new MenuElement[]{this, newSelected});
-				}
+				newSelected = (JMenuItem)getComponent(pos);
+			}
+			else if(c instanceof JPopupMenu) {
+				pos = 0;
+				newSelected = (JMenuItem)getComponent(0);
+			}
+			
+			if(newSelected != null) {
+				MenuSelectionManager.defaultManager().setSelectedPath(new MenuElement[]{this, newSelected});
 			}
 		}
-		else MenuSelectionManager.defaultManager().setSelectedPath(new MenuElement[]{this, (JMenuItem)getComponent(0)});
-		System.out.println("ok");
+	}
+	
+	class PredictionMenuItem extends JMenuItem {
+		
+		private static final long serialVersionUID = 1L;
+		private final Prediction prediction;
+		
+		public PredictionMenuItem(Prediction prediction) {
+			super(prediction.getDescription());
+			this.prediction = prediction;
+			addActionListener(menuAction);
+		}
+		
+		public Prediction getPrediction() {
+			return prediction;
+		}
 	}
 }
