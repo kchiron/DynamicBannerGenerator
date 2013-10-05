@@ -5,6 +5,9 @@
 *.war
 *.ear
 
+# Non-maven lib accepted in lib/
+!lib/*.jar
+
 # Maven
 /target
 
@@ -15,3 +18,11 @@
 
 # Netbeans
 nbactions.xml
+
+# Video Files
+*.mp4
+*.ts
+*.avi
+
+# Test video accepted
+!testVideo.mp4

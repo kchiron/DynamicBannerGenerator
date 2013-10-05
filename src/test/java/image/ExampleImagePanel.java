@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import ui.custom.MultiLineLabel;
+import ui.MultiLineLabel;
 import ui.util.UiUtils;
 import util.TestUtils;
 

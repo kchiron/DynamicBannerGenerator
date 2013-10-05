@@ -8,12 +8,39 @@ import java.awt.Rectangle;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
+import javax.swing.UIManager;
+
+import ui.LocalizedText;
 
 /**
  * Class regrouping swing UI utilities 
  * @author gcornut
  */
 public class UiUtils {
+	/**
+	 * Initializes the UiManager with some basic settings
+	 */
+	public static void initUIManager() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+
+		UIManager.put("FileChooser.saveButtonText", LocalizedText.save);
+		UIManager.put("FileChooser.openButtonText", LocalizedText.open);
+		UIManager.put("FileChooser.cancelButtonText", LocalizedText.cancel);
+		UIManager.put("FileChooser.updateButtonText", LocalizedText.reload);
+		UIManager.put("FileChooser.helpButtonText", LocalizedText.help);
+		UIManager.put("FileChooser.saveButtonToolTipText", LocalizedText.save_the_file);
+		UIManager.put("FileChooser.filesOfTypeLabelText", LocalizedText.file_format);
+
+		UIManager.put("OptionPane.cancelButtonText", LocalizedText.cancel);
+		UIManager.put("OptionPane.noButtonText", LocalizedText.no);
+		UIManager.put("OptionPane.okButtonText", LocalizedText.ok);
+		UIManager.put("OptionPane.yesButtonText", LocalizedText.yes);
+	}
+
 	/**
 	 * Forces relayout of a component and its child
 	 * @param c a Component
@@ -27,7 +54,7 @@ public class UiUtils {
 			}
 		}
 	}
-	
+
 	/*
 	 *	Try to make the component transparent.
 	 *  For components that use renderers, like JTable, you will also need to
@@ -36,18 +63,18 @@ public class UiUtils {
 	 */
 	public static void makeComponentTransparent(JComponent component) {
 		component.setOpaque(false);
-		
+
 		if(component instanceof JScrollPane) {
 			JScrollPane scrollPane = (JScrollPane) component;
 			JViewport viewport = scrollPane.getViewport();
 			viewport.setOpaque(false);
 			Component c = viewport.getView();
-			
+
 			if(c instanceof JComponent)
 				((JComponent)c).setOpaque(false);
 		}
 	}
-	
+
 	/**
 	 * This method scales and shift components that are contained in a parent element having an absolute layout
 	 * @param parent the parent container component having child component to be scaled and shifted
@@ -61,11 +88,11 @@ public class UiUtils {
 			//Scaling and shifting the component position and size
 			Rectangle r = child.getBounds();
 			r.setBounds(
-				(int)(r.getX()*scale+shiftX),	//X scaled and shifted
-				(int)(r.getY()*scale+shiftY),	//Y scaled and shifted
-				(int)(r.getWidth()*scale),		//Width scaled
-				(int)(r.getHeight()*scale)		//Height scaled
-			);
+					(int)(r.getX()*scale+shiftX),	//X scaled and shifted
+					(int)(r.getY()*scale+shiftY),	//Y scaled and shifted
+					(int)(r.getWidth()*scale),		//Width scaled
+					(int)(r.getHeight()*scale)		//Height scaled
+					);
 			child.setBounds(r);
 
 			// Scaling text size
