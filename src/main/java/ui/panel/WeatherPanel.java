@@ -22,17 +22,19 @@ public class WeatherPanel extends TabContentPanel {
 	private final JCheckBox cbNational;
 	private final JCheckBox cbRegional;
 	private final JCheckBox cbCity;
-	private final JCheckBox cbCurrentDay;
-	private final JCheckBox cbTheNextDay;
+	private WeatherLocationField locationField;
 
+	private final UnitJSpinner spinNbDays;
+	private final UnitJSpinner displayTime;
 	private final FileChooserField fileChooser;
 
-	private UnitJSpinner displayTime;
-
-	private WeatherLocationField locationField;
+	/*
+	private final JCheckBox cbCurrentDay;
+	private final JCheckBox cbTheNextDay;
+	 */
 	
 	public WeatherPanel(SequencePanel sequencePanel) {
-		super(new MigLayout("ins 10", "[150:150:150]10[]", ""), LocalizedText.weather_settings);
+		super(new MigLayout("ins 10", "[130:130:150]10[]", ""), LocalizedText.weather_settings);
 		
 		Font title = new Font(UIManager.getDefaults().getFont("Panel.font").getFamily(), Font.BOLD, 12);
 		
@@ -49,29 +51,22 @@ public class WeatherPanel extends TabContentPanel {
 			
 			cbCity = new JCheckBox(LocalizedText.city_weather);
 			add(cbCity, "wrap");
-		}
-		
-		//Displayed days
-		JLabel lblDayDisplayTitle = new JLabel(LocalizedText.displayed_days);
-		lblDayDisplayTitle.setFont(title);
-		add(lblDayDisplayTitle, "wrap");
-		{
-			cbCurrentDay = new JCheckBox(LocalizedText.current_day);
-			add(cbCurrentDay);
 			
-			cbTheNextDay = new JCheckBox(LocalizedText.the_next_day);
-			add(cbTheNextDay, "wrap");
-		}
-		
-		//Other
-		JLabel lblOtherTitle = new JLabel(LocalizedText.other);
-		lblOtherTitle.setFont(title);
-		add(lblOtherTitle, "wrap");
-		{
 			//Location
 			add(new JLabel(LocalizedText.location+" :"), "ax right");
 			locationField = new WeatherLocationField();
 			add(locationField, "wrap, wmin 180px");
+		}
+		
+		//Other
+		JLabel lblOtherTitle = new JLabel(LocalizedText.others);
+		lblOtherTitle.setFont(title);
+		add(lblOtherTitle, "wrap");
+		{
+			// Nb Days
+			add(new JLabel(LocalizedText.nb_days_displayed+" :"), "ax right");
+			spinNbDays = new UnitJSpinner(LocalizedText.days, 1, 2);
+			add(spinNbDays, "wrap");
 			
 			//Display time
 			add(new JLabel(LocalizedText.display_time+" :"), "ax right");
@@ -80,7 +75,6 @@ public class WeatherPanel extends TabContentPanel {
 			
 			//Background image select
 			add(new JLabel(LocalizedText.background_image+" :"), "al right top");
-			
 			fileChooser = new FileChooserField(
 				null, 
 				new MediaFileChooser(LocalizedText.choose_an_image, MediaFileChooser.Type.IMAGE), 
@@ -93,8 +87,13 @@ public class WeatherPanel extends TabContentPanel {
 		WeatherControl weatherControl = new WeatherControl(sequencePanel, this);
 		for(WeatherProperties.Type type : WeatherProperties.Type.values())
 			getWeatherTypeCheckBox(type).addActionListener(weatherControl);
+		
+		/*
 		for(int i = 0; i < 2; i++)
 			getDaysCheckBox(i).addActionListener(weatherControl);
+		*/
+		
+		spinNbDays.addActionListener(weatherControl);
 		locationField.addActionListener(weatherControl);
 		displayTime.addActionListener(weatherControl);
 		fileChooser.addActionListener(weatherControl);
@@ -112,6 +111,7 @@ public class WeatherPanel extends TabContentPanel {
 		return null;
 	}
 	
+	/*
 	/**
 	 * Gets a day check box given the number of the day.<br/>
 	 * Only two days available:<br/>
@@ -119,15 +119,18 @@ public class WeatherPanel extends TabContentPanel {
 	 * 	<li> => the current day</li>
 	 * 	<li> => the next day </li>
 	 * </ol>
-	 */
+	
 	public JCheckBox getDaysCheckBox(int numDay) {
 		switch (numDay) {
 			case 0: return cbCurrentDay;
 			case 1: return cbCurrentDay;
 		}
 		return null;
-	}
+	}*/
 	
+	public UnitJSpinner getSpinNbDays() {
+		return spinNbDays;
+	}
 	
 	public FileChooserField getFileChooser() {
 		return fileChooser;

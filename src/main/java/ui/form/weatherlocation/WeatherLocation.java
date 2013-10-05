@@ -42,6 +42,6 @@ public class WeatherLocation implements Serializable{
 	
 	@Override
 	public String toString() {
-		return city + ", " + region + ", " + country;
+		return city + (region != null ? ", " + region : "") + (country != null ? ", " + country : "");
 	}
 }

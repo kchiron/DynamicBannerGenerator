@@ -38,8 +38,9 @@ public class LocalizedText {
 	public static String the_next_day				= "Le jour d'après";
 	public static String location					= "Localisation";
 	public static String city_zip_code_state		= "Ville, Code postal, Pays";
+	public static String nb_days_displayed			= "Jours affichés";
 	public static String displayed_days				= "Affichage des jours";
-	public static String other						= "Autre";
+	public static String others						= "Autres";
 	public static String image						= "Image";
 	public static String video						= "Vidéo";
 	public static String save_the_file				= "Enregistrer le fichier";
@@ -85,6 +86,8 @@ public class LocalizedText {
 	public static String enter_googleapikey			= "Veuillez entrer une clé API Google Places :";
 	public static String missing_data				= "Information manquante";
 	public static String googleapikey_required		= "Clé google API indispensable";
+	
+	public static String days						= "jour(s)";
 	
 	
 	/**

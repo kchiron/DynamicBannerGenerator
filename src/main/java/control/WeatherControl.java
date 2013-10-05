@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBox;
 
+import ui.form.UnitJSpinner;
 import ui.panel.SequencePanel;
 import ui.panel.WeatherPanel;
 import data.property.PropertyManager;
@@ -33,10 +34,14 @@ public class WeatherControl implements ActionListener {
 			}
 		}
 		
+		weatherPanel.getSpinNbDays().setValue(properties.getNbDays());
+		
+		/*
 		//Update the days check boxes on the weather panel
 		for(int i = 0; i < properties.getNbDays(); i++) {
 			weatherPanel.getDaysCheckBox(i).setSelected(true);
 		}
+		*/
 
 		//Update the weather location field on the weather panel
 		if(properties.getLocation() != null) {
@@ -66,15 +71,22 @@ public class WeatherControl implements ActionListener {
 				}
 			}
 			
+			/*
 			int nbDays = 0;
 			for(int i = 0; i < properties.getNbDays(); i++) {
 				if(weatherPanel.getDaysCheckBox(i).isSelected())
 					nbDays++;
 			}
 			properties.setNbDays(nbDays);
+			*/
 			return;
 		}
-
+		else if(e.getSource() instanceof JCheckBox) {
+			UnitJSpinner source = (UnitJSpinner) e.getSource();
+			if(source.equals(weatherPanel.getSpinNbDays())) {
+				properties.setNbDays(source.getValue());
+			}
+		}
 		
 	}
 

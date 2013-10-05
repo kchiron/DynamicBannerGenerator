@@ -10,10 +10,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -60,18 +60,17 @@ public class WeatherLocationField extends JPanel {
 		customListeners = new ArrayList<ActionListener>(1);
 		dropDown = new WeatherLocationDropDown(this);
 		
-		defaultBorder = new CompoundBorder(new LineBorder(new Color(0,0,0, 50)), new EmptyBorder(2, 2, 2, 2));
-		errorBorder = new CompoundBorder(new LineBorder(new Color(255, 0 , 0, 100)), new EmptyBorder(2, 2, 2, 2));
+		defaultBorder = new CompoundBorder(new LineBorder(new Color(0, 0, 0, 70)), new EmptyBorder(2, 5, 2, 5));
+		errorBorder = new CompoundBorder(new LineBorder(new Color(255, 0 , 0, 150)), new EmptyBorder(2, 5, 2, 5));
 
-		//Components
-		{
+		{ // Components
 			txtLocation = new JTextField();
 			PlaceHolder placeHolder = new PlaceHolder(LocalizedText.city_zip_code_state, txtLocation, 0.5f);
 			placeHolder.changeStyle(Font.ITALIC);
 			add(txtLocation, BorderLayout.CENTER);
 		}
 		
-		//Catch text entering
+		// Catch text entering
 		txtLocation.getDocument().addDocumentListener(new DocumentListener() {
 			public void removeUpdate(DocumentEvent e) {
 				showDropDown(e);
@@ -86,7 +85,7 @@ public class WeatherLocationField extends JPanel {
 			}
 		});
 		
-		//Catch special keys
+		// Catch special keys
 		txtLocation.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -116,24 +115,24 @@ public class WeatherLocationField extends JPanel {
 	private void checkValidLocation() {
 		if(weatherLocation == null) {
 			txtLocation.setBorder(errorBorder);
-			repaint();
+			txtLocation.revalidate();
 		} else {
 			txtLocation.setBorder(defaultBorder);
-			repaint();
+			txtLocation.revalidate();
 		}
 	}
 	
-	private void showDropDown(DocumentEvent e) {
+	private void showDropDown(final DocumentEvent e) {
 		if(e.getDocument().getLength() > 0) {
-			if(weatherLocation != null) {
-				weatherLocation = null;
-				checkValidLocation();	
-			}
 			
 			if(!dropDown.isVisible()) { 
 				Rectangle r = txtLocation.getBounds();
 				dropDown.show(txtLocation, (r.x), (r.y+r.height));
 				dropDown.setVisible(true);
+				
+				if(weatherLocation != null) {
+					weatherLocation = null;
+				}
 			}
 			
 			SwingUtilities.invokeLater(new Runnable() {
@@ -143,6 +142,11 @@ public class WeatherLocationField extends JPanel {
 					dropDown.add("Loading...");
 					dropDown.pack();
 					dropDown.revalidate();
+					
+					if(e.getDocument().getLength() == 1) {
+						txtLocation.setSelectionStart(1);
+						txtLocation.setSelectionEnd(1);
+					}
 					
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
@@ -158,34 +162,26 @@ public class WeatherLocationField extends JPanel {
 									dropDown.add(p);
 								dropDown.pack();
 								dropDown.revalidate();
+								checkValidLocation();
 							} else {
 								//Google connection error
-								dropDown.setVisible(false);
+								//dropDown.setVisible(false);
+								dropDown.removeAll();
+								dropDown.add("Error...");
+								dropDown.pack();
+								dropDown.revalidate();
 							}
+							
 						}
 					});
 				}
 			});
 			
-			//
 			txtLocation.requestFocus();
-			txtLocation.setCaretPosition(txtLocation.getText().length());  
 		}
 		else {
 			dropDown.setVisible(false);
 		}
-	}
-	
-	public void addActionListener(ActionListener listener) {
-		customListeners.add(listener);
-	}
-
-	public WeatherLocation getWeatherLocation() {
-		return weatherLocation;
-	}
-	
-	public void setWeatherLocation(WeatherLocation weatherLocation) {
-		this.weatherLocation = weatherLocation;
 	}
 	
 	public void setWeatherLocationFromPrediction(Prediction p) {
@@ -217,11 +213,24 @@ public class WeatherLocationField extends JPanel {
 			weatherLocation = new WeatherLocation(country, region, city, longitute, latitude);
 		}
 		else weatherLocation = null;
+		
 		checkValidLocation();
 		for(ActionListener listener: customListeners)
 			listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "weatherLocation validation"));
 		
 		txtLocation.setText(weatherLocation.toString());
 		dropDown.setVisible(false);
+	}
+
+	public void addActionListener(ActionListener listener) {
+		customListeners.add(listener);
+	}
+
+	public WeatherLocation getWeatherLocation() {
+		return weatherLocation;
+	}
+	
+	public void setWeatherLocation(WeatherLocation weatherLocation) {
+		this.weatherLocation = weatherLocation;
 	}
 }
