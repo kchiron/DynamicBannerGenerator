@@ -3,7 +3,7 @@ package data.media.element.imported;
 import ffmpeg.FFmpeg;
 import ffmpeg.FileExtended;
 
-public class VideoElement extends InportedMediaElement {
+public class VideoElement extends ImportedMediaElement {
 
 	private static final long serialVersionUID = 1L;
 

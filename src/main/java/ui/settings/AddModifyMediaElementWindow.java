@@ -17,7 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileSystemView;
 
 import data.media.element.imported.ImageElement;
-import data.media.element.imported.InportedMediaElement;
+import data.media.element.imported.ImportedMediaElement;
 import data.media.element.imported.VideoElement;
 import net.miginfocom.swing.MigLayout;
 import ui.LocalizedText;
@@ -35,8 +35,8 @@ public class AddModifyMediaElementWindow extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	
-	private InportedMediaElement oldInportedMediaElement;
-	private InportedMediaElement inportedMediaElement;
+	private ImportedMediaElement oldInportedMediaElement;
+	private ImportedMediaElement inportedMediaElement;
 	
 	private JLabel lblInportedFileName;
 	private JLabel lblDisplayTime;
@@ -141,7 +141,7 @@ public class AddModifyMediaElementWindow extends JDialog {
 				if(title.equals(""))
 					errors.add(LocalizedText.error_empty_title);
 				else {
-					Class<? extends InportedMediaElement> elementClass = 
+					Class<? extends ImportedMediaElement> elementClass = 
 						(inportedMediaElement == null) ? VideoElement.class : inportedMediaElement.getClass();
 					
 					updateData(elementClass, title, null, 0);
@@ -185,7 +185,7 @@ public class AddModifyMediaElementWindow extends JDialog {
 		});
 	}
 	
-	public AddModifyMediaElementWindow(JFrame parent, SequencePanel sequencePanel, InportedMediaElement inportedMediaElement) {
+	public AddModifyMediaElementWindow(JFrame parent, SequencePanel sequencePanel, ImportedMediaElement inportedMediaElement) {
 		this(parent, sequencePanel);
 		setTitle(LocalizedText.modify_media);
 		this.oldInportedMediaElement = inportedMediaElement;
@@ -213,7 +213,7 @@ public class AddModifyMediaElementWindow extends JDialog {
 		pack();
 	}
 
-	private void updateData(Class<? extends InportedMediaElement> elementClass, String title, FileExtended inportedFile, int displayTime) {
+	private void updateData(Class<? extends ImportedMediaElement> elementClass, String title, FileExtended inportedFile, int displayTime) {
 		if(elementClass == ImageElement.class && inportedMediaElement == null) {
 			inportedMediaElement = new ImageElement(
 				title != null ? title : "", 
@@ -257,7 +257,7 @@ public class AddModifyMediaElementWindow extends JDialog {
 		refreshUi();
 	}
 	
-	private void updateData(InportedMediaElement inportedMediaElement) {
+	private void updateData(ImportedMediaElement inportedMediaElement) {
 		this.inportedMediaElement = inportedMediaElement;
 		refreshUi();
 	}
@@ -278,7 +278,7 @@ public class AddModifyMediaElementWindow extends JDialog {
 		lblInportedFileName.revalidate();
 	}
 
-	public InportedMediaElement getInportedMediaElement() {
+	public ImportedMediaElement getInportedMediaElement() {
 		return inportedMediaElement;
 	}
 }

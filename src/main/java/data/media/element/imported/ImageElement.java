@@ -6,7 +6,7 @@ import ffmpeg.FileExtended;
  * Image element in a sequence
  * @author gcornut
  */
-public class ImageElement extends InportedMediaElement {
+public class ImageElement extends ImportedMediaElement {
 
 	private static final long serialVersionUID = 1L;
 	

@@ -9,7 +9,7 @@ import javax.swing.event.ListSelectionListener;
 
 import data.media.MediaSequence;
 import data.media.element.MediaElement;
-import data.media.element.imported.InportedMediaElement;
+import data.media.element.imported.ImportedMediaElement;
 import ui.panel.SequencePanel;
 
 public class ListView extends JTable {
@@ -52,7 +52,7 @@ public class ListView extends JTable {
 		if(!lsm.isSelectionEmpty()) {
 			isTop = getSelectedRow()==0;
 			isBottom = getSelectedRow()==getRowCount()-1;
-			isDeletable = getModel().getValueAt(getSelectedRow(), 0) instanceof InportedMediaElement;
+			isDeletable = getModel().getValueAt(getSelectedRow(), 0) instanceof ImportedMediaElement;
 		}
 		parent.rowSelected(!lsm.isSelectionEmpty(), isTop, isBottom, isDeletable);
 	}
@@ -95,7 +95,7 @@ public class ListView extends JTable {
 		((ListViewModel)getModel()).replaceRow(oldElement, newElement);
 	}
 
-	public void modifyRow(InportedMediaElement element) {
+	public void modifyRow(ImportedMediaElement element) {
 		parent.modifyRow(element);
 	}
 }
