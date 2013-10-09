@@ -77,7 +77,8 @@ public class WeatherLocationField extends JPanel {
 			}
 			
 			public void insertUpdate(DocumentEvent e) {
-				showDropDown(e);
+				if(e.getLength() != txtLocation.getText().length())
+					showDropDown(e);
 			}
 			
 			public void changedUpdate(DocumentEvent e) {

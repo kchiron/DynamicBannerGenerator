@@ -7,7 +7,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import data.media.element.MediaElement;
-import data.media.element.imported.InportedMediaElement;
+import data.media.element.imported.ImportedMediaElement;
 import ui.LocalizedText;
 import ui.listview.ListViewCell;
 
@@ -16,7 +16,7 @@ public class ListViewContextMenu extends JPopupMenu {
 	private static final long serialVersionUID = 1L;
 	
 	public ListViewContextMenu(MediaElement element, final ListViewCell parent) {
-		if(element instanceof InportedMediaElement) {
+		if(element instanceof ImportedMediaElement) {
 			//Remove option
 			JMenuItem remove = new JMenuItem(LocalizedText.remove);
 			add(remove);

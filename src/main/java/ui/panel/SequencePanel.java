@@ -25,7 +25,7 @@ import ui.listview.ListViewModel;
 import ui.settings.AddModifyMediaElementWindow;
 import data.media.MediaSequence;
 import data.media.element.MediaElement;
-import data.media.element.imported.InportedMediaElement;
+import data.media.element.imported.ImportedMediaElement;
 import data.property.PropertyManager;
 
 public class SequencePanel extends TabContentPanel {
@@ -174,7 +174,7 @@ public class SequencePanel extends TabContentPanel {
 		listView.replaceElement(oldElement, newElement);
 	}
 	
-	public void modifyRow(InportedMediaElement element) {
+	public void modifyRow(ImportedMediaElement element) {
 		(new AddModifyMediaElementWindow(parentFrame, this, element)).setVisible(true);
 	}
 

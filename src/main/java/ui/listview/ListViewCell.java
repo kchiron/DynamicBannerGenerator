@@ -21,7 +21,7 @@ import data.media.element.MediaElement;
 import data.media.element.generated.HoroscopeElement;
 import data.media.element.generated.WeatherElement;
 import data.media.element.imported.ImageElement;
-import data.media.element.imported.InportedMediaElement;
+import data.media.element.imported.ImportedMediaElement;
 import data.media.element.imported.VideoElement;
 import javax.swing.SwingConstants;
 
@@ -144,7 +144,7 @@ public class ListViewCell extends AbstractCellEditor implements TableCellEditor,
 	}
 
 	public void edit() {
-		parentTable.modifyRow((InportedMediaElement)element);
+		parentTable.modifyRow((ImportedMediaElement)element);
 	}
 	
 	private String formatDurationTime(int seconds) {
