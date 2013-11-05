@@ -77,6 +77,7 @@ public class HoroscopeElement extends MediaElement {
 	JLabel text = new JLabel("Hello, World!");
 	
 	text.setForeground(Color.white);
+        //
 	text.setBounds(250, 300, 800, 250);
 	
 	icone.setBounds(50, 50, 128, 128);
