@@ -30,7 +30,7 @@ public class FFmpeg extends ExecutableCommand {
 	private static void initialize() throws IOException, UnknownOperatingSystem {
 		defaultSize = "1440x900";
 		defaultBitRate = "450k";
-        
+	
 		String path = "ffmpeg-native";
 		System.getProperty("os.name").toLowerCase();
 
@@ -39,7 +39,7 @@ public class FFmpeg extends ExecutableCommand {
 		if(os.contains("mac"))
 			path = path + File.separator + "ffmpeg-mac";
 		else if(os.contains("win")) {
-            path = path + File.separator + "ffmpeg-w" + (os.contains("64") ? "64" : "32") + ".exe";
+			path = path + File.separator + "ffmpeg-w" + (os.contains("64") ? "64" : "32") + ".exe";
 		}
 		else throw new UnknownOperatingSystem("No executable available for this operating system");
 

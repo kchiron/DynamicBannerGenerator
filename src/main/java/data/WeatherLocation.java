@@ -1,7 +1,11 @@
-package ui.form.weatherlocation;
+package data;
 
 import java.io.Serializable;
 
+/**
+ * Data class that stores a location with latitude, longitude, city, region and country
+ * This class is used for the weather localization
+ */
 public class WeatherLocation implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
@@ -42,6 +46,19 @@ public class WeatherLocation implements Serializable{
 	
 	@Override
 	public String toString() {
-		return city + (region != null ? ", " + region : "") + (country != null ? ", " + country : "");
+		final StringBuilder str = new StringBuilder();
+		
+		if(city != null) {
+			str.append(city);
+		}
+		if(region != null) {
+			if(str.length() > 0) str.append(", ");
+			str.append(region);
+		}
+		if(country != null) {
+			if(str.length() > 0) str.append(", ");
+			str.append(country);
+		}
+		return (str.length() > 0) ? str.toString() : "-";
 	}
 }

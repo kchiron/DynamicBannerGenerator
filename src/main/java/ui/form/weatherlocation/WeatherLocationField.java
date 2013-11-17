@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -31,6 +30,7 @@ import com.claygregory.api.google.places.PlaceDetail;
 import com.claygregory.api.google.places.PlaceDetailResult;
 import com.claygregory.api.google.places.Prediction;
 
+import data.WeatherLocation;
 import data.property.PropertyManager;
 
 /**
@@ -131,9 +131,7 @@ public class WeatherLocationField extends JPanel {
 				dropDown.show(txtLocation, (r.x), (r.y+r.height));
 				dropDown.setVisible(true);
 				
-				if(weatherLocation != null) {
-					weatherLocation = null;
-				}
+				weatherLocation = null;
 			}
 			
 			SwingUtilities.invokeLater(new Runnable() {
@@ -144,9 +142,9 @@ public class WeatherLocationField extends JPanel {
 					dropDown.pack();
 					dropDown.revalidate();
 					
-					if(e.getDocument().getLength() == 1) {
-						txtLocation.setSelectionStart(1);
-						txtLocation.setSelectionEnd(1);
+					if(e.getDocument().getLength() == 2) {
+						txtLocation.setSelectionStart(2);
+						txtLocation.setSelectionEnd(2);
 					}
 					
 					SwingUtilities.invokeLater(new Runnable() {
@@ -185,22 +183,22 @@ public class WeatherLocationField extends JPanel {
 		}
 	}
 	
-	public void setWeatherLocationFromPrediction(Prediction p) {
+	public WeatherLocation weatherLocationFromPrediction(Prediction p) {
+		WeatherLocation weatherLocation;
 		PlaceDetailResult res = places.detail(p.getReference(), false);
 		
 		if(res.isOkay()) {
 			PlaceDetail detail = res.getResult();
 			float longitute = detail.getGeometry().getLocation().getLongitude();
 			float latitude = detail.getGeometry().getLocation().getLatitude();
-			String country = "";
-			String region = "";
-			String city = "";
+			String country = null;
+			String region = null;
+			String city = null;
 			
-			/*if(!detail.getTypes().contains("geocode")) {
-				detail = places.
-			}*/
-			
+			String postal = null; //in case the region is not set
 			for(AddressComponent adr: detail.getAddressComponents()) {
+				//System.out.println(adr.getLongName()+"-"+adr.getTypes());
+
 				if(adr.getTypes().contains("political")) {
 					if(adr.getTypes().contains("locality"))
 						city = adr.getLongName();
@@ -209,18 +207,29 @@ public class WeatherLocationField extends JPanel {
 					else if(adr.getTypes().contains("country"))
 						country = adr.getLongName();
 				}
+				else if(adr.getTypes().contains("postal_code")) 
+					postal = adr.getLongName();
+			}
+			
+			//If region missing while city registered, redo a search
+			if(city != null && region == null) {
+				if(postal != null) {
+					AutocompleteQueryOptions options = new AutocompleteQueryOptions();
+					options.param("components", "country:fr");
+					options.param("language", "fr");
+					AutocompleteResult result = places.autocomplete(postal, options, false);
+					
+					if(result.isOkay()) {
+						return weatherLocationFromPrediction(result.iterator().next());
+					}
+				}
 			}
 			
 			weatherLocation = new WeatherLocation(country, region, city, longitute, latitude);
 		}
 		else weatherLocation = null;
 		
-		checkValidLocation();
-		for(ActionListener listener: customListeners)
-			listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "weatherLocation validation"));
-		
-		txtLocation.setText(weatherLocation.toString());
-		dropDown.setVisible(false);
+		return weatherLocation;
 	}
 
 	public void addActionListener(ActionListener listener) {
@@ -233,5 +242,12 @@ public class WeatherLocationField extends JPanel {
 	
 	public void setWeatherLocation(WeatherLocation weatherLocation) {
 		this.weatherLocation = weatherLocation;
+
+		checkValidLocation();
+		for(ActionListener listener: customListeners)
+			listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "weatherLocation validation"));
+		
+		txtLocation.setText(weatherLocation.toString());
+		dropDown.setVisible(false);
 	}
 }

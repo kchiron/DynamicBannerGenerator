@@ -24,7 +24,7 @@ public class WeatherLocationDropDown extends JPopupMenu {
 			public void actionPerformed(ActionEvent e) {
 				if(e.getSource() instanceof PredictionMenuItem) {
 					PredictionMenuItem it = (PredictionMenuItem)e.getSource();
-					parent.setWeatherLocationFromPrediction(it.getPrediction());
+					parent.setWeatherLocation(parent.weatherLocationFromPrediction(it.getPrediction()));
 				}
 			}
 		};

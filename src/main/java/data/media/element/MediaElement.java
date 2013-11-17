@@ -2,6 +2,8 @@ package data.media.element;
 
 import java.io.Serializable;
 
+import data.WeatherLocation;
+
 /**
  * MediaElement of a <code>MediaSequence</code>
  * @author gcornut
@@ -46,4 +48,5 @@ public abstract class MediaElement implements Serializable {
 	public String getSubTitle() {
 		return subTitle;
 	}
+
 }

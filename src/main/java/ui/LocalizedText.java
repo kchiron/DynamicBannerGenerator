@@ -48,14 +48,14 @@ public class LocalizedText {
 	public static String video_output_folder 		= "Dossier sortie vidéo";
 	public static String choose_video_or_image_file	= "Sélectionner un fichier image ou vidéo";
 	public static String choose_a_folder			= "Sélectionner un dossier";
-	public static String no_file_selected			= "Aucun fichier sélectionner";
-	public static String no_folder_selected			= "Aucun dossier sélectionner";
+	public static String no_file_selected			= "Aucun fichier sélectionné";
+	public static String no_folder_selected			= "Aucun dossier sélectionné";
 	public static String file_format				= "Format de fichier";
 	public static String title						= "Titre";
 	public static String video_or_image_file		= "Vidéo ou Image";
 	public static String new_media					= "Nouveau média";
 	public static String modify_media				= "Modifier un média";
-	public static String error_file_not_found		= "Une erreur est survenue lors de la recherche du fichier.\nCelui-ci n'a pas pu être localiser.";
+	public static String error_file_not_found		= "Une erreur est survenue lors de la recherche du fichier.\nCelui-ci n'a pas pu être localisé.";
 	public static String file_not_found				= "Fichier introuvable";
 	public static String error_empty_title			= "titre manquant";
 	public static String error_no_file_selected		= "fichier manquant";
@@ -88,6 +88,7 @@ public class LocalizedText {
 	public static String googleapikey_required		= "Clé google API indispensable";
 	
 	public static String days						= "jour(s)";
+	public static String elements 					= "élément(s)";
 	
 	
 	/**

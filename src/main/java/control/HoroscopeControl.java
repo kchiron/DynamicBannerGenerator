@@ -12,6 +12,7 @@ import ui.panel.HoroscopePanel;
 import ui.panel.SequencePanel;
 import data.media.element.MediaElement;
 import data.media.element.generated.HoroscopeElement;
+import data.media.element.generated.WeatherElement;
 import data.property.HoroscopeProperties;
 import data.property.PropertyManager;
 
@@ -30,12 +31,12 @@ public class HoroscopeControl implements ActionListener {
 		this.horoscopePanel = horoscopePanel;
 		
 		properties = PropertyManager.getHoroscopeProperties();
-		this.horoscopePanel.getFileChooser().setFile(properties.getBackgroundImage());
 		this.horoscopePanel.getDisplayTime().setValue(properties.getDisplayTime());
 		this.horoscopePanel.getSignsPerPage().setValue(properties.getSignPerPage());
+		this.horoscopePanel.getFileChooser().setFile(properties.getBackgroundImage());
 		
-		updateSequenceHoroscopeElement(properties.getSignPerPage());
-		updateTime(properties.getDisplayTime());
+		updateSequenceHoroscopeElement();
+		updateTime();
 	}
 	
 	/** Handles all user action on the horoscope panel */
@@ -46,12 +47,26 @@ public class HoroscopeControl implements ActionListener {
 		if(source.equals(horoscopePanel.getSignsPerPage())) {
 			final int signPerPage = (int)((JSpinner)source).getValue();
 			properties.setSignPerPage(signPerPage);
-			updateSequenceHoroscopeElement(signPerPage);
+			updateSequenceHoroscopeElement();
 		}
 		else if(source.equals(horoscopePanel.getDisplayTime())) {
 			final int displayTime = (int)((JSpinner)source).getValue();
-			properties.setDisplayTime(displayTime);
-			updateTime(displayTime);
+			
+			if(displayTime > 0 && properties.getDisplayTime() <= 0) {
+				// If the displayTime turns into positive
+				
+				properties.setDisplayTime(displayTime);	
+				updateSequenceHoroscopeElement();
+			}
+			else if(displayTime <= 0 && properties.getDisplayTime() > 0) {
+				// If the displayTime turns into negative
+				
+				sequencePanel.getSequence().removeAllElementsByClass(HoroscopeElement.class);
+				sequencePanel.refreshList();
+			}
+			
+			properties.setDisplayTime(displayTime);	
+			updateTime();
 		}
 		else if(source.equals(horoscopePanel.getFileChooser())) {
 			properties.setBackgroundImage(((FileChooserField)source).getFile());
@@ -59,54 +74,59 @@ public class HoroscopeControl implements ActionListener {
 	}
 	
 	/** Updates the media sequence with the correct number of horoscope pages to display depending on the number of signs per page */
-	private void updateSequenceHoroscopeElement(final int signPerPage) {
-		ArrayList<HoroscopeElement> horoscopeElements = sequencePanel.getSequence().getElementsByClass(HoroscopeElement.class);
+	private void updateSequenceHoroscopeElement() {
 		
-		int nbHoroscopeElement = (int) Math.ceil((double)Signs.values().length/(double)signPerPage);
-		int diff = horoscopeElements.size() - nbHoroscopeElement;
-		
-		if(diff > 0) {
-			for(int i = 0; i < diff; i++) {
-				HoroscopeElement element = horoscopeElements.get(horoscopeElements.size()-1);
-				sequencePanel.getSequence().remove(element);
-				horoscopeElements.remove(element);
-			}
-		}
-		else if(diff < 0) {
-			for(int i = 0; i < Math.abs(diff); i++) {
-				HoroscopeElement element = new HoroscopeElement(properties.getDisplayTime());
-				sequencePanel.getSequence().add(element);
-				horoscopeElements.add(element);
-			}
-		}
-		
-		final Signs[] signs = Signs.values();
-		final Signs[] elementSigns = new Signs[signPerPage];
-		for(int i = 0; i < horoscopeElements.size(); i++) {
-			HoroscopeElement element = horoscopeElements.get(i);
+		if(properties.getDisplayTime() > 0) {
+			ArrayList<HoroscopeElement> horoscopeElements = sequencePanel.getSequence().getElementsByClass(HoroscopeElement.class);
 			
-			for(int j = 0; j < signPerPage; j++) {
-				try {
-					elementSigns[j] = signs[i*signPerPage+j];
-				} catch (ArrayIndexOutOfBoundsException e) {
-					elementSigns[j] = null;
+			int nbHoroscopeElement = (int) Math.ceil((double)Signs.values().length/(double)properties.getSignPerPage());
+			int diff = horoscopeElements.size() - nbHoroscopeElement;
+			
+			if(diff > 0) {
+				for(int i = 0; i < diff; i++) {
+					HoroscopeElement element = horoscopeElements.get(horoscopeElements.size()-1);
+					sequencePanel.getSequence().remove(element);
+					horoscopeElements.remove(element);
+				}
+			}
+			else if(diff < 0) {
+				for(int i = 0; i < Math.abs(diff); i++) {
+					HoroscopeElement element = new HoroscopeElement(properties.getDisplayTime());
+					sequencePanel.getSequence().add(element);
+					horoscopeElements.add(element);
 				}
 			}
 			
-			element.setSigns(elementSigns);
+			final Signs[] signs = Signs.values();
+			final Signs[] elementSigns = new Signs[properties.getSignPerPage()];
+			for(int i = 0; i < horoscopeElements.size(); i++) {
+				HoroscopeElement element = horoscopeElements.get(i);
+				
+				for(int j = 0; j < properties.getSignPerPage(); j++) {
+					try {
+						elementSigns[j] = signs[i*properties.getSignPerPage()+j];
+					} catch (ArrayIndexOutOfBoundsException e) {
+						elementSigns[j] = null;
+					}
+				}
+				
+				element.setSigns(elementSigns);
+			}
+			
+			sequencePanel.refreshList();
 		}
-		
-		sequencePanel.refreshList();
 	}
 	
 	/** Updates the display time for each horoscope elements in the MediaSequence */
-	private void updateTime(final int displayTime) {
-		for(MediaElement element : sequencePanel.getSequence().getElementsByClass(HoroscopeElement.class)) {
-			element.setDuration(displayTime);
+	private void updateTime() {
+		if(properties.getDisplayTime() > 0) {
+			for(MediaElement element : sequencePanel.getSequence().getElementsByClass(HoroscopeElement.class)) {
+				element.setDuration(properties.getDisplayTime());
+			}
+			
+			sequencePanel.refreshList();
 		}
-		sequencePanel.refreshList();
 	}
-	
 	
 	/** Horoscope signs enum */
 	public enum Signs {

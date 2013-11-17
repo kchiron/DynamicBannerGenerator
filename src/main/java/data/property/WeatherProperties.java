@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import data.WeatherLocation;
 import ui.LocalizedText;
-import ui.form.weatherlocation.WeatherLocation;
 
 public class WeatherProperties implements Serializable {
 
@@ -35,7 +35,8 @@ public class WeatherProperties implements Serializable {
 	}
 	
 	public void addActiveType(Type type) {
-		this.activeTypes.add(type);
+		if(!this.activeTypes.contains(type))
+			this.activeTypes.add(type);
 	}
 	
 	public void removeActiveType(Type type) {

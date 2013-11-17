@@ -25,13 +25,13 @@ public class HoroscopePanel extends TabContentPanel {
 
 		{//Number of signs per page
 			add(new JLabel(LocalizedText.sign_per_page+" :"));
-			signsPerPage = new UnitJSpinner(1, 12);
+			signsPerPage = new UnitJSpinner(2, 3);
 			add(signsPerPage, "wrap");
 		}
 
 		{//Display time
 			add(new JLabel(LocalizedText.display_time+" :"));
-			displayTime = new UnitJSpinner("sec", 1, null);
+			displayTime = new UnitJSpinner("sec", 0, null);
 			add(displayTime, "wrap");
 		}
 

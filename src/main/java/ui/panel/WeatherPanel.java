@@ -4,6 +4,7 @@ import java.awt.Font;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JSpinner;
 import javax.swing.UIManager;
 
 import net.miginfocom.swing.MigLayout;
@@ -22,16 +23,11 @@ public class WeatherPanel extends TabContentPanel {
 	private final JCheckBox cbNational;
 	private final JCheckBox cbRegional;
 	private final JCheckBox cbCity;
-	private WeatherLocationField locationField;
+	private final WeatherLocationField locationField;
 
 	private final UnitJSpinner spinNbDays;
 	private final UnitJSpinner displayTime;
 	private final FileChooserField fileChooser;
-
-	/*
-	private final JCheckBox cbCurrentDay;
-	private final JCheckBox cbTheNextDay;
-	 */
 	
 	public WeatherPanel(SequencePanel sequencePanel) {
 		super(new MigLayout("ins 10", "[130:130:150]10[]", ""), LocalizedText.weather_settings);
@@ -88,11 +84,6 @@ public class WeatherPanel extends TabContentPanel {
 		for(WeatherProperties.Type type : WeatherProperties.Type.values())
 			getWeatherTypeCheckBox(type).addActionListener(weatherControl);
 		
-		/*
-		for(int i = 0; i < 2; i++)
-			getDaysCheckBox(i).addActionListener(weatherControl);
-		*/
-		
 		spinNbDays.addActionListener(weatherControl);
 		locationField.addActionListener(weatherControl);
 		displayTime.addActionListener(weatherControl);
@@ -111,33 +102,16 @@ public class WeatherPanel extends TabContentPanel {
 		return null;
 	}
 	
-	/*
-	/**
-	 * Gets a day check box given the number of the day.<br/>
-	 * Only two days available:<br/>
-	 * <ol start="0">
-	 * 	<li> => the current day</li>
-	 * 	<li> => the next day </li>
-	 * </ol>
-	
-	public JCheckBox getDaysCheckBox(int numDay) {
-		switch (numDay) {
-			case 0: return cbCurrentDay;
-			case 1: return cbCurrentDay;
-		}
-		return null;
-	}*/
-	
-	public UnitJSpinner getSpinNbDays() {
-		return spinNbDays;
+	public JSpinner getSpinNbDays() {
+		return spinNbDays.getSpinner();
 	}
 	
 	public FileChooserField getFileChooser() {
 		return fileChooser;
 	}
 	
-	public UnitJSpinner getDisplayTime() {
-		return displayTime;
+	public JSpinner getDisplayTime() {
+		return displayTime.getSpinner();
 	}
 	
 	public WeatherLocationField getLocationField() {
