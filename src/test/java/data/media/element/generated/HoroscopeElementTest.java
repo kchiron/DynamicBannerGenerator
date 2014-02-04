@@ -5,6 +5,7 @@
 package data.media.element.generated;
 
 import control.HoroscopeControl;
+import control.HoroscopeControl.Signs;
 import data.property.PropertyManager;
 import exception.ImageGenerationException;
 import java.awt.image.BufferedImage;
@@ -60,8 +61,9 @@ public class HoroscopeElementTest {
 	HoroscopeElement instance = new HoroscopeElement(12);
 	BufferedImage expResult = null;
 	PropertyManager.loadFromFile();
-	PropertyManager.getHoroscopeProperties().setBackgroundImage(new File (HoroscopeElementTest.class.getResource("horoscope.jpg").getPath()));
+	PropertyManager.getHoroscopeProperties().setBackgroundImage(new File (HoroscopeElementTest.class.getResource("soft.png").getPath()));
 	//TestUtils.getTestFile("horoscope.jpg")
+        instance.setSigns(new HoroscopeControl.Signs[] {HoroscopeControl.Signs.AQUARIUS, HoroscopeControl.Signs.ARIES, HoroscopeControl.Signs.CAPRICORN});
 	BufferedImage result = instance.imageGeneration();
 	assertEquals(expResult, result);
 	// TODO review the generated test code and remove the default call to fail.
