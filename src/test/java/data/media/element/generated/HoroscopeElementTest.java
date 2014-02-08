@@ -63,7 +63,7 @@ public class HoroscopeElementTest {
 	PropertyManager.loadFromFile();
 	PropertyManager.getHoroscopeProperties().setBackgroundImage(new File (HoroscopeElementTest.class.getResource("soft.png").getPath()));
 	//TestUtils.getTestFile("horoscope.jpg")
-        instance.setSigns(new HoroscopeControl.Signs[] {HoroscopeControl.Signs.AQUARIUS, HoroscopeControl.Signs.ARIES, HoroscopeControl.Signs.CAPRICORN});
+        instance.setSigns(new HoroscopeControl.Signs[] {HoroscopeControl.Signs.AQUARIUS, HoroscopeControl.Signs.ARIES});
 	BufferedImage result = instance.imageGeneration();
 	assertEquals(expResult, result);
 	// TODO review the generated test code and remove the default call to fail.
