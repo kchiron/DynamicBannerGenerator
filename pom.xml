@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>DynamicBannerGenerator</groupId>
-    <artifactId>DynamicBannerGenerator</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>DynamicBannerGenerator</name>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>DynamicBannerGenerator</groupId>
+	<artifactId>DynamicBannerGenerator</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>DynamicBannerGenerator</name>
 
 	<!-- Project properties -->
 	<properties>
@@ -40,18 +40,18 @@
 				</executions>
 			</plugin>
 
-            <plugin>
-                <inherited>true</inherited>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                    <optimize>true</optimize>
-                    <showWarnings>true</showWarnings>
-                </configuration>
-            </plugin>
+			<plugin>
+				<inherited>true</inherited>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<optimize>true</optimize>
+					<showWarnings>true</showWarnings>
+				</configuration>
+			</plugin>
 
 			<!-- Prevent the jar creation to have only the jar with dependencies -->
 			<plugin>
@@ -83,12 +83,18 @@
 			<scope>test</scope>
 		</dependency>
 
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.7.2</version>
-        </dependency>
-            
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.7.2</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.claygregory</groupId>
 			<artifactId>google-places-api-java</artifactId>
