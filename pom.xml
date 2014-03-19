@@ -12,7 +12,6 @@
 	</properties>
 
 	<build>
-
 		<!-- Maven plugins specifications -->
 		<plugins>
 			<plugin>
@@ -67,6 +66,14 @@
 		</plugins>
 	</build>
 
+	<repositories>
+		<repository>
+			<id>project.local</id>
+			<name>local-repo</name>
+			<url>file:${project.basedir}/local-repo</url>
+		</repository>
+	</repositories>
+
 	<!-- Dependency specifications -->
 	<dependencies>
 		<dependency>
@@ -88,7 +95,7 @@
 			<artifactId>jsoup</artifactId>
 			<version>1.7.2</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -99,8 +106,6 @@
 			<groupId>com.claygregory</groupId>
 			<artifactId>google-places-api-java</artifactId>
 			<version>0.2-SNAPSHOT</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/google-places-api-java-0.2-SNAPSHOT-jar-with-dependencies.jar</systemPath>
 		</dependency>
 	</dependencies>
 </project>

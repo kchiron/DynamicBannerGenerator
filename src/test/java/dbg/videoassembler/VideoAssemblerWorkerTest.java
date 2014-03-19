@@ -1,7 +1,5 @@
 package dbg.videoassembler;
 
-import static org.junit.Assert.*;
-
 import java.util.concurrent.ExecutionException;
 
 import org.junit.BeforeClass;

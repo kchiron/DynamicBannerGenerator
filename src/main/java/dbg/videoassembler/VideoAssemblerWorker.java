@@ -11,19 +11,15 @@ import javax.swing.SwingWorker;
 import org.apache.commons.io.FileUtils;
 
 import dbg.data.media.MediaSequence;
-import dbg.data.media.element.MediaElement;
-import dbg.data.media.element.generated.HoroscopeElement;
-import dbg.data.media.element.generated.WeatherElement;
 import dbg.data.media.element.imported.ImageElement;
 import dbg.data.media.element.imported.ImportedMediaElement;
-import dbg.data.media.element.imported.VideoElement;
 import dbg.data.property.PropertyManager;
 import dbg.ffmpeg.FFmpeg;
-import dbg.ffmpeg.FileExtended;
+import dbg.ffmpeg.FFmpegConcat;
 import dbg.ui.LocalizedText;
 import dbg.ui.videoassembler.VideoAssemblerWindow;
 
-public class VideoAssemblerWorker extends SwingWorker<FileExtended, String> {
+public class VideoAssemblerWorker extends SwingWorker<File, String> {
 
 	private VideoAssemblerWindow window;
 	
@@ -42,10 +38,10 @@ public class VideoAssemblerWorker extends SwingWorker<FileExtended, String> {
 	}
 	
 	@Override
-	protected FileExtended doInBackground() {
+	protected File doInBackground() {
 		try {
 			MediaSequence sequence = PropertyManager.getSequence();
-			FileExtended videoOutput = new FileExtended("output.mp4", false);
+			File videoOutput = new File("output");
 			
 			// Folder for temporary video creation
 			final File tmp = new File("tmp");
@@ -57,50 +53,17 @@ public class VideoAssemblerWorker extends SwingWorker<FileExtended, String> {
 				+ sequence.size();
 
 			//List of videos to concatenate
-			ArrayList<FileExtended> videoToConcatenate = new ArrayList<FileExtended>();
-			
-			//Step one: convert everything in video format
-			int i = 0;
-			for (int j = 0; j < sequence.size(); j++) {
-				if(isCancelled()) return null;
-				
-				MediaElement element = sequence.get(j);
-				if (element instanceof ImageElement) {
-					publish(LocalizedText.converting_image+" ["+element.getTitle()+"]");
-					videoToConcatenate.add(
-						FFmpeg.convertImageToVideo(
-							tmp,
-							element.getDuration(),
-							((ImageElement)element).getFile(),
-							"elem"+Integer.toString(j),
-							false
-						)
-					);
-					i++;
-					
-					setProgress(i*100/nbSteps);
-				}
-				else if(element instanceof HoroscopeElement) {
-					publish();
-					//TODO convert horoscope to video
-				}
-				else if(element instanceof WeatherElement) {
-					publish();
-					//TODO convert weather to video
-				}
-				else if(element instanceof VideoElement) {
-					publish(LocalizedText.adding_video+" ["+element.getTitle()+"]");
-					videoToConcatenate.add(((VideoElement)element).getFile());
-				}
-			}
-			
-			if(isCancelled()) return null;
-			
+			ArrayList<File> videoToConcatenate = new ArrayList<File>();
+		
 			//Step two: concatenate every video in one video
 			publish(LocalizedText.concatenating_videos);
-			FFmpeg.concatenateVideos(videoOutput, videoToConcatenate.toArray(new FileExtended[videoToConcatenate.size()]));
-
+			String videoSize = PropertyManager.getVideoOutputProperties().getVideoSize();
+			
+			//TODO: concat
+			//FFmpegConcat.concatMediaSequenceToVideo(sequence, videoSize , videoOutput);
+			
 			//Done
+			int i = 0;
 			i += sequence.size();
 			setProgress(i*100/nbSteps);
 			return videoOutput;

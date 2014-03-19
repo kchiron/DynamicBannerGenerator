@@ -2,25 +2,41 @@
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import dbg.exception.UnknownOperatingSystem;
-import dbg.util.CustomArrayUtil;
 
 /**
  * FFmpeg class encapsulating the ffmpeg native executables specific of each platform.
  * @author gcornut
  */
-public class FFmpeg extends ExecutableCommand {
+public class FFmpeg {
 
 	private static String pathToExecutable = null;
-	private static String defaultSize;
-	private static String defaultBitRate;
+	protected static final OutputProcessor<Object> debugPrint = new OutputProcessor<Object>(){
+		@Override
+		public Object call() throws Exception {
+			String line;
+			try {
+				while((line = processStdErr.readLine()) != null) {
+					System.out.println(line);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+	};;
 
 	/**
 	 * Initializes the class by searching the suitable ffmpeg executable for the detected operating system (and architecture) 
@@ -28,9 +44,6 @@ public class FFmpeg extends ExecutableCommand {
 	 * @throws UnknownOperatingSystem if no ffmpeg executable is available for the detected operating system
 	 */
 	private static void initialize() throws IOException, UnknownOperatingSystem {
-		defaultSize = "1440x900";
-		defaultBitRate = "450k";
-	
 		String path = "ffmpeg-native";
 		System.getProperty("os.name").toLowerCase();
 
@@ -51,47 +64,37 @@ public class FFmpeg extends ExecutableCommand {
 
 	/**
 	 * Executes the ffmpeg program
-	 * @param arguments arguments passed to the ffmpeg program
-	 * @param processor a output processor that will handle the stout and stderr results (optional, can be null)
-	 * @throws IOException if the ffmpeg executable id not found
-	 * @throws InterruptedException if the fmmpeg have been interrupted
-	 * @throws UnknownOperatingSystem if no ffmpeg executable is available for the detected operating system
-	 * @return exit value of the ffmpeg program
-	 */
-	public static int execute(String[] arguments, OutputProcessor processor) throws IOException, InterruptedException, UnknownOperatingSystem {
+	*/
+	@SuppressWarnings("unchecked")
+	public static int execute(List<String> arguments, @SuppressWarnings("rawtypes") final OutputProcessor outputProcessor, final InputGenerator inputGenerator) throws IOException, InterruptedException, UnknownOperatingSystem {
 		if(pathToExecutable == null) initialize();
 
-		String cmd[];
-
-		if(arguments != null)  {
-			cmd = CustomArrayUtil.mergeArray(new String[]{pathToExecutable}, arguments);
-
-			for (String p: cmd)
-				System.out.print(p+" ");
-			System.out.println();
-		} 
-		else {
-			cmd = new String[]{pathToExecutable};
-		}
-
-		ProcessBuilder pb = new ProcessBuilder(cmd);
-		Process p = pb.start();
-
-		p.waitFor();
+		List<String> ffmpegCommand = new ArrayList<String>(arguments);
+		ffmpegCommand.add(0, pathToExecutable);
 		
-		if(processor != null) {
-			processor.process(
-				new BufferedReader(new InputStreamReader(p.getErrorStream())),
-				new BufferedReader(new InputStreamReader(p.getInputStream()))
-			);
+		System.out.println(ffmpegCommand);
+		final ProcessBuilder pb = new ProcessBuilder(ffmpegCommand);
+		final Process ffmpegProcess = pb.start();
+		
+		//If any, launch the input generator for the ffmpeg process
+		if(inputGenerator != null) {
+			inputGenerator.setOutputStreamToProcessInput(ffmpegProcess.getOutputStream());
+			inputGenerator.start();
 		}
 
-		return p.exitValue();
+		//If any, launch the output processor for the ffmpeg process
+		if(outputProcessor != null) {
+			outputProcessor.setProcessStreams(new BufferedReader(new InputStreamReader(ffmpegProcess.getErrorStream())), new BufferedReader(new InputStreamReader(ffmpegProcess.getInputStream())));
+			outputProcessor.setFuture(Executors.newFixedThreadPool(1).submit(outputProcessor));
+		}
+		
+		ffmpegProcess.waitFor();
+
+		return ffmpegProcess.exitValue();
 	}
 
-	/** Executes the ffmpeg program without output processor  */
-	public static int execute(String[] arguments) throws IOException, InterruptedException, UnknownOperatingSystem {
-		return execute(arguments, null);
+	public static int execute(List<String> arguments) throws IOException, InterruptedException, UnknownOperatingSystem {
+		return execute(arguments, null, null);
 	}
 
 	/**
@@ -99,106 +102,73 @@ public class FFmpeg extends ExecutableCommand {
 	 * @param video
 	 * @return
 	 */
-	public static int getVideoDuration(FileExtended video) {
-		String[] args  = new String[]{
-			"-i",
-			video.getPath()
-		};
-		final ArrayList<Integer> time = new ArrayList<Integer>();
+	public static int getVideoDuration(File video) {
+		return getVideoData(video).getDuration();
+	}
+	
 
-		OutputProcessor processor = (new FFmpeg()).new OutputProcessor() {
-			public void process(BufferedReader stderr, BufferedReader stdout) throws IOException{
+	public static FFmpegVideoData getVideoData(File video) {
+		List<String> args  = Arrays.asList("-i", video.getPath());
+		final FFmpegVideoData out = new FFmpegVideoData();
+		
+		OutputProcessor<FFmpegVideoData> processor = new OutputProcessor<FFmpegVideoData>() {
+			@Override
+			public FFmpegVideoData call() throws Exception {
 				String line;
-				while((line = stderr.readLine()) != null) {
-					if(line.contains("Duration")) {
-						Pattern p = Pattern.compile("\\s+Duration:\\s(\\d{2}):(\\d{2}):(\\d{2})");
-						Matcher m = p.matcher(line);
+				try {
+					Pattern pg = Pattern.compile("\\s+Duration:\\s(\\d{2}):(\\d{2}):(\\d{2})");
+					Pattern pr = Pattern.compile("\\s+Stream.*Video:\\s(.*)");
+					
+					while((line = processStdErr.readLine()) != null) {
+						if(line.contains("Duration:")) {
+							Matcher m = pg.matcher(line);
 
-						if (m.find()) {
-							final int hours = Integer.parseInt(m.group(1));
-							final int minutes = Integer.parseInt(m.group(2));
-							final int seconds = Integer.parseInt(m.group(3));
-							time.add(hours*60*60 + minutes*60 + seconds);
-							break;
+							if (m.find()) {
+								final int hours = Integer.parseInt(m.group(1));
+								final int minutes = Integer.parseInt(m.group(2));
+								final int seconds = Integer.parseInt(m.group(3));
+								out.setDuration(hours*60*60 + minutes*60 + seconds);
+							}
+						}
+						if(line.contains("Video:")) {
+							Matcher m = pr.matcher(line);
+
+							if (m.find()) {
+								String[] videoInfos = m.group(1).split(",");
+								
+								out.setCodec(videoInfos[0]);
+								
+								String size = videoInfos[2];
+								size = size.replaceAll("^\\s", "").replaceAll("\\s.*$", "");
+								out.setSize(size);
+								
+								String bitRate = videoInfos[3];
+								bitRate = bitRate.replace(" ", "").replace("kb/s", "k");
+								out.setBitRate(bitRate);
+								
+								return out;
+							}
 						}
 					}
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
+				return out;
 			}
 		};
 		try {
-			FFmpeg.execute(args, processor);
+			FFmpeg.execute(args, processor, null);
 		} catch (IOException | InterruptedException | UnknownOperatingSystem e) {
 			e.printStackTrace();
 		}
 		
-		return time.size() > 0 ? time.get(0) : -1;
+		try {
+			return processor.getFuture().get();
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
-	/**
-	 * Concatenates a list of videos into one video.
-	 * @param inputVideoFiles output video file
-	 * @param inputVideoFiles list of input video files
-	 * @return the exit code of ffmpeg
-	 * @throws IOException if the ffmpeg executable id not found
-	 * @throws InterruptedException if the fmmpeg have been interrupted
-	 * @throws UnknownOperatingSystem if no ffmpeg executable is available for the detected operating system
-	 */
-	public static int concatenateVideos(FileExtended outputVideoFile, FileExtended... inputVideoFiles) throws IOException, InterruptedException, UnknownOperatingSystem {
-		final String size = defaultSize;
-		final String bitRate = defaultBitRate;
-		final String fps = "21";
-
-		final VideoOutputOption tsFormatOption = new VideoOutputOption(size, bitRate, fps, "mpeg2video", "ts");
-
-		FileExtended[] tmpVideoFiles = new FileExtended[inputVideoFiles.length];
-
-		//First convert all videos to mpeg2 transport streams (if not already done)
-		for(int i = 0; i < inputVideoFiles.length; i++) {
-			FileExtended inputVideo = inputVideoFiles[i];
-
-			if(!inputVideo.getName().endsWith("ts")) {
-				String inputFolder = inputVideo.getParent();
-				String tmpVideo = (inputFolder != null ? inputFolder + File.separator : "") + "tmp_" + inputVideo.getNameWithoutExtension();
-				tsFormatOption.setFileName(tmpVideo);
-
-				String arguments = "-y -i " + inputVideo.getPath() + " " + tsFormatOption.toString();
-
-				if(execute(arguments.split(" ")) != 0) 
-					return -1;
-
-				tmpVideoFiles[i] = new FileExtended(tmpVideo + ".ts");
-			}
-			else tmpVideoFiles[i] = inputVideoFiles[i];
-		}
-
-		final String outputFolder = outputVideoFile.getParent() != null ? outputVideoFile.getParent() + File.separator : "";
-
-		//List video to concatenate into a file
-		File videoList = new File(outputFolder+"videoList.txt");
-		FileWriter fs = new FileWriter(videoList);
-		for(FileExtended video: tmpVideoFiles) {
-			fs.write("file '"+video.getPath()+"'\n");
-		}
-		fs.close();
-
-		String arguments = "-y -f concat -i "+videoList.getPath();
-
-		//Defining output format and name
-		final String outputFileName = outputFolder + outputVideoFile.getNameWithoutExtension();
-		VideoOutputOption mp4FormatOption = new VideoOutputOption(size, bitRate, fps, "libx264", "mp4", outputFileName);
-		arguments += " " + mp4FormatOption.toString();
-
-		int exitcode = execute(arguments.split(" "));
-
-		boolean deleteWorked = true;
-		deleteWorked &= videoList.delete();
-		//Delete temporary Files
-		for(FileExtended tmpVideoFile: tmpVideoFiles) {
-			deleteWorked &= tmpVideoFile.delete();
-		}
-
-		return deleteWorked ? exitcode : -1;
-	}
 
 	/**
 	 * Convert an image to a video with a defined duration in seconds and a given name
@@ -211,55 +181,60 @@ public class FFmpeg extends ExecutableCommand {
 	 * @throws InterruptedException if the fmmpeg have been interrupted
 	 * @throws UnknownOperatingSystem if no ffmpeg executable is available for the detected operating system
 	 */
-	public static FileExtended convertImageToVideo(File outputFolder, int duration, FileExtended inputImage, String outputName, boolean debug) throws IOException, InterruptedException, UnknownOperatingSystem {
-		final String videoPath = outputFolder.getPath() + File.separator + outputName;
+	public static File convertImageToVideo(File outputFolder, int duration, File inputImage, String outputName, boolean debug) throws IOException, InterruptedException, UnknownOperatingSystem {
+		final String videoOutputPath = outputFolder.getPath() + File.separator + outputName + ".ts";
 
-		final String videoOptions = (new VideoOutputOption(defaultSize, defaultBitRate, "1", "mpeg2video", "ts", videoPath)).toString();
-
-		final String args = new StringBuilder("-loop 1 -f image2 -i ")
-			.append(inputImage.getPath())
-			.append(" -t ").append(duration)
-			.append(" ").append(videoOptions)
-			.append(" -y").toString();
-
-		OutputProcessor processor = null;
-		if(debug) {
-			processor = (new FFmpeg()).new OutputProcessor(){
-				public void process(BufferedReader stderr, BufferedReader stdout)
-						throws IOException {
-					String line;
-					while((line = stderr.readLine()) != null) {
-						System.out.println(line);
-					}
-				}
-			};
-		}
-		if(execute(args.split(" "), processor) == 0)
-			return new FileExtended(videoPath+".ts");
+		final List<String> ffArgs = new ArrayList<String>(Arrays.asList(
+			"-loop", "1", 
+			"-f", "image2", 
+			"-i", inputImage.getPath(), 
+			"-t", ""+duration, 
+			"-c:v", "mpeg2video",
+			"-r", "1",
+			"-s", "1440x900",
+			"-b:v", "450k",
+			videoOutputPath,
+			"-y"
+		));
+		
+		if(execute(ffArgs, debug?debugPrint:null, null) == 0)
+			return new File(videoOutputPath);
 		else
 			return null;
 		//ffmpeg -loop 1 -f image2 -i IN.jpg -s 1440x900 -c:v libx264 -t 10 -b:v 400k -r 21 OUT.mp4 -y
 		//ffmpeg -loop 1 -f image2 -i NIK_001.jpg -s 1440x900 -c:v mpeg2video -t 10 -b:v 400k -r 1 NIK_001.ts -y
 	}
-	
-	/*
-	 * Convert an image to a video with a defined duration in seconds. The video will take the name of the image
-	 * @param outputFolder the output folder
-	 * @param duration duration of the video in seconds
-	 * @param inputImage input image file
-	 * @return The output video if all went good; null otherwise
-	 * @throws IOException if the ffmpeg executable id not found
-	 * @throws InterruptedException if the fmmpeg have been interrupted
-	 * @throws UnknownOperatingSystem if no ffmpeg executable is available for the detected operating system
-	 *
-	public static FileExtended convertImageToVideo(File outputFolder, int duration, FileExtended inputImage) throws IOException, InterruptedException, UnknownOperatingSystem {
-		return convertImageToVideo(outputFolder, duration, inputImage, inputImage.getNameWithoutExtension(), false);
-	}
+
+	/** 
+	 * Ouput processor class used to process standard output and error output from the ffmpeg process. 
 	 */
-
-
-	/** Ouput processor class used to process stdout output and stderr output from the ffmpeg command */
-	public abstract class  OutputProcessor {
-		public abstract void process(BufferedReader stderr, BufferedReader stdout) throws IOException;
+	public static abstract class OutputProcessor<T> implements Callable<T> {
+		private Future<T> future;
+		protected BufferedReader processStdOut;
+		protected BufferedReader processStdErr;
+		
+		public void setProcessStreams(BufferedReader processStdErr, BufferedReader processStdOut) {
+			this.processStdErr = processStdErr;
+			this.processStdOut = processStdOut;
+		}
+		
+		public Future<T> getFuture() {
+			return future;
+		}
+		
+		public void setFuture(Future<T> future) {
+			this.future = future;
+		}
+	}
+	
+	/**
+	 * Input generator class used to generate a stream for the input of a ffmpeg process.
+	 */
+	public static abstract class InputGenerator extends Thread {
+		protected OutputStream outputStreamToProcessInput;
+		
+		public void setOutputStreamToProcessInput(OutputStream outputStreamToProcessInput) {
+			this.outputStreamToProcessInput = outputStreamToProcessInput;
+		}
 	}
 }

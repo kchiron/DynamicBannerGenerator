@@ -1,20 +1,18 @@
 package dbg.ffmpeg;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.Assert.*;
 
 import dbg.exception.UnknownOperatingSystem;
-import dbg.ffmpeg.FFmpeg;
-import dbg.ffmpeg.FileExtended;
-
 
 public class FFmpegTest {
 
@@ -42,31 +40,30 @@ public class FFmpegTest {
 	 */
 	@Test
 	public void testExecution() throws IOException, InterruptedException, UnknownOperatingSystem {
-		int exitCode = FFmpeg.execute(new String[] {"-h"});
+		int exitCode = FFmpeg.execute(Arrays.asList("-h"));
 		assertThat(exitCode, is(0));
 	}
 	
 	@Test
 	public void testGetVideoDuration() throws IOException {
-		FileExtended video = new FileExtended(testFolderPath+"testVideo.mp4");
-		assertThat(FFmpeg.getVideoDuration(video), is(8));
+		File video = new File(testFolderPath + "earth.ts");
+		assertThat(FFmpeg.getVideoDuration(video), is(4));
+	}
+	
+	@Test
+	public void testGetVideoData() throws IOException {
+		File video = new File(testFolderPath + "earth.ts");
+		FFmpegVideoData videoData = FFmpeg.getVideoData(video);
+		System.out.println("Duration: "+videoData.getDuration());
+		System.out.println("Size: "+videoData.getSize());
+		System.out.println("Codec: "+videoData.getCodec());
 	}
 	
 	@Test
 	public void testConvertImageToVideo() throws IOException, InterruptedException, UnknownOperatingSystem {
-		File result = FFmpeg.convertImageToVideo(new FileExtended(ffmpegTestFolderPath, false), 5, new FileExtended(testFolderPath+"sun.jpg"), "sun", false);
+		File result = FFmpeg.convertImageToVideo(
+			new File(ffmpegTestFolderPath), 5, new File(testFolderPath + "sun.jpg"), "sun", false
+		);
 		assertThat(result, notNullValue());
-	}
-
-	@Test
-	public void testConcatenateVideos() throws IOException, InterruptedException, UnknownOperatingSystem {
-		FileExtended video1 = FFmpeg.convertImageToVideo(new FileExtended(ffmpegTestFolderPath, false), 5, new FileExtended(testFolderPath+"sun.jpg"), "sun", false);
-		FileExtended video2 = FFmpeg.convertImageToVideo(new FileExtended(ffmpegTestFolderPath, false), 5, new FileExtended(testFolderPath+"moon.jpg"), "moon", false);
-
-		FileExtended[] input = {video1,	video2};
-		FileExtended output = new FileExtended(ffmpegTestFolderPath+"concat.mp4", false);
-
-		int exitCode = FFmpeg.concatenateVideos(output, input);
-		assertThat(exitCode, is(0));
 	}
 }

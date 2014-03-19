@@ -1,6 +1,6 @@
 package dbg.data.media.element.imported;
 
-import dbg.ffmpeg.FileExtended;
+import java.io.File;
 
 /**
  * Image element in a sequence
@@ -10,7 +10,7 @@ public class ImageElement extends ImportedMediaElement {
 
 	private static final long serialVersionUID = 1L;
 	
-	public ImageElement(String title, FileExtended inportedFile, int duration) {
+	public ImageElement(String title, File inportedFile, int duration) {
 		super(title, inportedFile, duration);	
 	}
 	

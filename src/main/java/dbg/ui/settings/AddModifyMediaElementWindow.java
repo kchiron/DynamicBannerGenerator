@@ -16,10 +16,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileSystemView;
 
+import org.apache.commons.io.FilenameUtils;
+
 import dbg.data.media.element.imported.ImageElement;
 import dbg.data.media.element.imported.ImportedMediaElement;
 import dbg.data.media.element.imported.VideoElement;
-import dbg.ffmpeg.FileExtended;
 import dbg.ffmpeg.SupportedFileFormat;
 import dbg.ui.LocalizedText;
 import dbg.ui.form.UnitJSpinner;
@@ -112,8 +113,9 @@ public class AddModifyMediaElementWindow extends JDialog {
 				
 				if(fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 					try {
-						FileExtended file = new FileExtended(fileChooser.getSelectedFile());
-						String extension = file.getExtension().toLowerCase();
+						File file = fileChooser.getSelectedFile();
+						if(!file.exists()) throw new IOException("File not found");
+						String extension = FilenameUtils.getExtension(file.getName()).toLowerCase();
 
 						if(SupportedFileFormat.getImageFormatsList().contains(extension)){
 							updateData(ImageElement.class, null, file, 0);
@@ -213,7 +215,7 @@ public class AddModifyMediaElementWindow extends JDialog {
 		pack();
 	}
 
-	private void updateData(Class<? extends ImportedMediaElement> elementClass, String title, FileExtended inportedFile, int displayTime) {
+	private void updateData(Class<? extends ImportedMediaElement> elementClass, String title, File inportedFile, int displayTime) {
 		if(elementClass == ImageElement.class && importedMediaElement == null) {
 			importedMediaElement = new ImageElement(
 				title != null ? title : "", 

@@ -40,4 +40,10 @@ public class MediaSequence extends ArrayList<MediaElement> implements Serializab
 			remove(element);
 	}
 	
+	public int getDuration() {
+		int duration = 0;
+		for(MediaElement e: this)
+			duration += e.getDuration();
+		return duration;
+	}
 }

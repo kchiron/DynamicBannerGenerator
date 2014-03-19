@@ -96,8 +96,8 @@ public class LocalizedText {
 	public static String video_assembler			= "Assembleur Vidéo";
 	public static String assemble_video 			= "Assembler la vidéo";
 	public static String show						= "Afficher";
+	public static String converting_elements		= "Convertissage des éléments (images, video, horoscope, ...)";
 	public static String concatenating_videos		= "Assemblage final des vidéos";
-	public static String converting_image			= "Convertissage de l'image en vidéo";
 	public static String adding_video				= "Ajout du fichier vidéo dans la liste";
 	public static String video_assembly_canceled	= "Assemblage vidéo annulé!";
 	public static String video_assembly_error 		= "Une erreur est survenue lors de l'assamblage vidéo!";

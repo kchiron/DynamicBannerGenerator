@@ -3,7 +3,6 @@ package dbg.data.media.element.imported;
 import java.io.File;
 
 import dbg.data.media.element.MediaElement;
-import dbg.ffmpeg.FileExtended;
 
 /**
  * Abstract class for data.media element imported from a file (as opposed to the generated elements)
@@ -13,17 +12,18 @@ public abstract class ImportedMediaElement extends MediaElement {
 
 	private static final long serialVersionUID = 1L;
 	
-	private FileExtended file;
+	private File file;
 
 	public ImportedMediaElement(String title, File inportedFile, int duration) {
 		super(title, (inportedFile != null ? inportedFile.getName() : ""), duration);
+		this.file = inportedFile;
 	}
 
-	public FileExtended getFile() {
+	public File getFile() {
 		return file;
 	}
 	
-	public void setFile(FileExtended inportedFile) {
+	public void setFile(File inportedFile) {
 		this.file = inportedFile;
 		setSubTitle(inportedFile.getName());
 	}

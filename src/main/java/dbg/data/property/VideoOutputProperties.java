@@ -62,7 +62,7 @@ public class VideoOutputProperties implements Serializable {
 		this.outputFolder = outputFolder;
 	}
 	
-	public static String[] getStandardvideosize() {
+	public static String[] getStandardVideoSize() {
 		return standardVideoSize;
 	}
 	
