@@ -16,12 +16,13 @@ import dbg.data.media.element.imported.ImportedMediaElement;
 import dbg.data.property.PropertyManager;
 import dbg.ffmpeg.FFmpeg;
 import dbg.ffmpeg.FFmpegConcat;
+import dbg.ffmpeg.FFmpegVideoData;
 import dbg.ui.LocalizedText;
 import dbg.ui.videoassembler.VideoAssemblerWindow;
 
 public class VideoAssemblerWorker extends SwingWorker<File, String> {
 
-	private VideoAssemblerWindow window;
+	private final VideoAssemblerWindow window;
 	
 	public VideoAssemblerWorker(final VideoAssemblerWindow window) {
 		this.window = window;
@@ -42,30 +43,22 @@ public class VideoAssemblerWorker extends SwingWorker<File, String> {
 		try {
 			MediaSequence sequence = PropertyManager.getSequence();
 			File videoOutput = new File("output");
-			
-			// Folder for temporary video creation
-			final File tmp = new File("tmp");
-			if (!tmp.exists()) tmp.mkdir();
-			else FileUtils.cleanDirectory(tmp);
-
-			final int nbSteps = sequence.getElementsByClass(ImageElement.class).size()
-				+ (sequence.size() - sequence.getElementsByClass(ImportedMediaElement.class).size()) // Nb generated elements
-				+ sequence.size();
-
-			//List of videos to concatenate
-			ArrayList<File> videoToConcatenate = new ArrayList<File>();
 		
-			//Step two: concatenate every video in one video
-			publish(LocalizedText.concatenating_videos);
-			String videoSize = PropertyManager.getVideoOutputProperties().getVideoSize();
+      FFmpegVideoData options = new FFmpegVideoData();
+      options.setSize(videoSize);
 			
-			//TODO: concat
-			//FFmpegConcat.concatMediaSequenceToVideo(sequence, videoSize , videoOutput);
+      FFmpegConcat concat = new FFmpegConcat(sequence, videoOutput, options) {
+          @Override
+          public void setProgress(String arg0, int arg1) {
+              if(arg0 != null)
+                 this.VideoAssemblerWorker.publish(arg0);
+              this.VideoAssemblerWorker.setProgress(arg1);
+          }
+      };
+      concat.execute();
 			
 			//Done
-			int i = 0;
-			i += sequence.size();
-			setProgress(i*100/nbSteps);
+			setProgress(100);
 			return videoOutput;
 		}
 		catch(Exception e) {
@@ -87,6 +80,5 @@ public class VideoAssemblerWorker extends SwingWorker<File, String> {
 	@Override
 	protected void done() {
 		super.done();
-		
 	}
 }

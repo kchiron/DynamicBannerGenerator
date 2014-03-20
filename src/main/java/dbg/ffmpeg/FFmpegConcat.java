@@ -121,9 +121,8 @@ public abstract class FFmpegConcat {
 					//TODO : Generate non imported elements
 				}
 				
-				ffArgs.addAll(Arrays.asList(
-					"-f", "mpegts"
-				));
+				ffArgs.add("-f");
+        ffArgs.add("mpegts");
 				
 				File ouputFile = File.createTempFile("DBG-tmp-video", ".ts");
 				ffArgs.add(ouputFile.getAbsolutePath());
@@ -174,6 +173,7 @@ public abstract class FFmpegConcat {
 					try {
 						Pattern p = Pattern.compile("\\s*frame=.*time=(\\d+):(\\d+):(\\d+.?\\d*)\\s.*");
 						boolean in = false;
+            int step = 0;
 						while((line = processStdErr.readLine()) != null) {
 							System.out.println(line);
 							Matcher m = p.matcher(line);
@@ -183,12 +183,15 @@ public abstract class FFmpegConcat {
 								int time = (int)Math.ceil(Double.parseDouble(m.group(3)));
 								time += minute * 60 + hour * 60 * 60;
 								
-								int step = (time * (MAX_STEP-currentStep)) / videoDuration;
+								step = (time * (MAX_STEP-currentStep)) / videoDuration;
 								setProgress(null, currentStep + step);
 								
 								in = true;
 							}
-							else if(in) return null;
+							else if(in) {
+                 currentStep = step;
+                 return null;
+              };
 						}
 					} catch(IOException e) {}
 					return null;

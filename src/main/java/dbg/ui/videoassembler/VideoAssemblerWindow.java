@@ -22,7 +22,7 @@ public class VideoAssemblerWindow extends JDialog {
 		super();
 		setTitle(LocalizedText.video_assembler);
 		setModal(true);
-		getContentPane().setLayout(new MigLayout("insets 5", "[grow][]", "[grow][][]"));
+		getContentPane().setLayout(new MigLayout("insets 5", "[grow][]", "[][][]"));
 		
 		lblCurrentTaskName = new JLabel("");
 		getContentPane().add(lblCurrentTaskName, "cell 0 0 2 1,grow");
@@ -69,12 +69,14 @@ public class VideoAssemblerWindow extends JDialog {
 	}
 	
 	public void updateMessage(String str) {
-		lblCurrentTaskName.setText(str);
-		repaint();
+		if(str != null) {
+      lblCurrentTaskName.setText(str);
+		  repaint();
+    }
 	}
 	
 	public void updateProgress(int percent) {
-		progressBar.setValue(percent);
+		progressBar.setValue(Math.max(0, Math.min(100, percent)));
 		repaint();
 	}
 	
