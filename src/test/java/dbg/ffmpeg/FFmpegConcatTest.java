@@ -2,6 +2,7 @@ package dbg.ffmpeg;
 
 import java.io.File;
 
+import dbg.util.TestUtils;
 import org.junit.BeforeClass;
 
 import dbg.data.media.MediaSequence;
@@ -18,9 +19,9 @@ public class FFmpegConcatTest {
 	@SuppressWarnings("serial")
 	@BeforeClass
 	public static void setUpClass() {
-		final VideoElement videoElement1 = new VideoElement("Earth", getFile("earth.ts"));
-		final ImageElement imageElement1 = new ImageElement("Moon", getFile("moon.jpg"), 15);
-		final ImageElement imageElement2 = new ImageElement("Sun", getFile("sun.jpg"), 10);
+		final VideoElement videoElement1 = new VideoElement("Earth", TestUtils.getMediaSample("earth.ts"));
+		final ImageElement imageElement1 = new ImageElement("Moon", TestUtils.getMediaSample("moon.jpg"), 15);
+		final ImageElement imageElement2 = new ImageElement("Sun", TestUtils.getMediaSample("sun.jpg"), 10);
 
 		sequence = new MediaSequence(){{
 			add(videoElement1); //4 sec
@@ -45,9 +46,5 @@ public class FFmpegConcatTest {
 		};
 		
 		concat.execute();
-	}
-	
-	private static File getFile(String name) {
-		return new File(FFmpegTest.class.getResource(File.separator+name).getPath());
 	}
 }

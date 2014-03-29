@@ -35,7 +35,7 @@ public class ImagePanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 	
-	public enum Scaling {SCALED, TILED, ACTUAL};
+	public enum Scaling {SCALED, TILED, ACTUAL}
 
 	private Paint painter;
 	private Image image;

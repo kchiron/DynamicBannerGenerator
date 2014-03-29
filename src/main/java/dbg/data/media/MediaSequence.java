@@ -20,7 +20,7 @@ public class MediaSequence extends ArrayList<MediaElement> implements Serializab
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends MediaElement> ArrayList<T> getElementsByClass(Class<? extends MediaElement> elementClass) {
-		final ArrayList<T> elements = new ArrayList<T>();
+		final ArrayList<T> elements = new ArrayList<>();
 		
 		for(MediaElement element : this)
 			if(element.getClass().equals(elementClass))
@@ -30,7 +30,7 @@ public class MediaSequence extends ArrayList<MediaElement> implements Serializab
 	}
 
 	public void removeAllElementsByClass(Class<? extends MediaElement> elementClass) {
-		final ArrayList<MediaElement> elementToRemove = new ArrayList<MediaElement>();
+		final ArrayList<MediaElement> elementToRemove = new ArrayList<>();
 		
 		for(MediaElement element : this)
 			if(element.getClass().equals(elementClass))

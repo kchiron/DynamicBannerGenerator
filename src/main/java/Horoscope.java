@@ -1,7 +1,6 @@
 
 import java.io.*;
-import java.util.regex.*;
-import java.util.*;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

@@ -27,7 +27,7 @@ public class PlaceHolder extends JLabel	implements FocusListener, DocumentListen
 	public enum Show {
 		ALWAYS,
 		FOCUS_GAINED,
-		FOCUS_LOST;
+		FOCUS_LOST
 	}
 
 	private JTextComponent component;

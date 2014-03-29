@@ -34,7 +34,7 @@ public class PropertyManager {
 			try {
 				ObjectInputStream input = new ObjectInputStream(new FileInputStream(configFile));
 
-				Object o = null;
+				Object o;
 				try {
 					while(true) {
 						o = input.readObject();
@@ -109,6 +109,10 @@ public class PropertyManager {
 
 	public static VideoOutputProperties getVideoOutputProperties() {
 		return videoOutputProperties;
+	}
+
+	public static void setVideoOutputProperties(VideoOutputProperties videoOutputProperties) {
+		PropertyManager.videoOutputProperties = videoOutputProperties;
 	}
 
 	public static HoroscopeProperties getHoroscopeProperties() {

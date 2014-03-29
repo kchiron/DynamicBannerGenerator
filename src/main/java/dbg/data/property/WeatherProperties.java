@@ -91,5 +91,5 @@ public class WeatherProperties implements Serializable {
 		public String toString() {
 			return title;
 		}
-	};
+	}
 }

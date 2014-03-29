@@ -23,8 +23,7 @@ public class FileChooserField extends JPanel {
 	private final JFileChooser fileChooser;
 	
 	private final JLabel lblFileName;
-	private final JButton btnChooseFile;
-	
+
 	private final String noSelectionMessage;
 	
 	private final ArrayList<ActionListener> customListeners;
@@ -39,7 +38,7 @@ public class FileChooserField extends JPanel {
 	public FileChooserField(File currentDirectory, JFileChooser fileChooser, String selectMessage, String noSelectionMessage) {
 		super();
 		
-		this.customListeners = new ArrayList<ActionListener>(1);
+		this.customListeners = new ArrayList<>(1);
 		this.noSelectionMessage = noSelectionMessage;
 		
 		setLayout(new BorderLayout());
@@ -48,8 +47,8 @@ public class FileChooserField extends JPanel {
 		lblFileName = new JLabel(noSelectionMessage);
 		lblFileName.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
 		add(lblFileName, BorderLayout.NORTH);
-		
-		btnChooseFile = new JButton(selectMessage);
+
+		JButton btnChooseFile = new JButton(selectMessage);
 		add(btnChooseFile, BorderLayout.CENTER);
 		
 		this.fileChooser = fileChooser;

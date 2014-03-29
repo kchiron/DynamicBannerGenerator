@@ -9,7 +9,8 @@ import javax.swing.JLabel;
 public class MultiLineLabel extends JLabel {
 	
 	private static final long serialVersionUID = 1L; 
-	public enum TextAlign {LEFT, JUSTIFY, CENTER, RIGTH};
+	public enum TextAlign {LEFT, JUSTIFY, CENTER, RIGTH}
+
 	private TextAlign align;
 	
 	public MultiLineLabel(String text, TextAlign align) {

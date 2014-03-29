@@ -1,13 +1,10 @@
 package dbg.ui;
 
-import java.awt.GraphicsConfiguration;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.text.ParseException;
-
-import javax.swing.Icon;
 
 public class LocalizedText {
 

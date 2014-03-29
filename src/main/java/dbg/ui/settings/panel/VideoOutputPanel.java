@@ -30,7 +30,7 @@ public class VideoOutputPanel extends TabContentPanel {
 		{//Video size select
 			add(new JLabel(LocalizedText.video_size+" :"), "alignx right");
 
-			cbVideoSize = new JComboBox<String>(VideoOutputProperties.getStandardVideoSize());
+			cbVideoSize = new JComboBox<>(VideoOutputProperties.getStandardVideoSize());
 			add(cbVideoSize, "wrap");	
 		}
 

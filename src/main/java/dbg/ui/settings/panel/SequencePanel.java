@@ -34,7 +34,6 @@ public class SequencePanel extends TabContentPanel {
 	
 	private final JButton up;
 	private final JButton down;
-	private final JButton plus;
 	private final JButton minus;
 	private final ListView listView;
 	private final JFrame parentFrame;
@@ -51,7 +50,7 @@ public class SequencePanel extends TabContentPanel {
 		
 		final Border fancy = new CompoundBorder(
 			// Outside border 1px bottom light color
-			new MatteBorder(0, 0, 1, 0, (Color) new Color(255, 255, 255)),
+			new MatteBorder(0, 0, 1, 0, new Color(255, 255, 255)),
 			// Border all around panel 1px dark grey 
 			new LineBorder(new Color(154, 154, 154), 1)
 		);
@@ -85,7 +84,8 @@ public class SequencePanel extends TabContentPanel {
 			sequenceInfo.setFont(new Font(f.getFamily(), f.getStyle(), 9));
 			add(sequenceInfo, "cell 2 2, alignx center");
 		}
-		
+
+		JButton plus;
 		{ // Plus, minus button
 			plus = createMiniIconButton("plus.png", "+", butSize);
 			

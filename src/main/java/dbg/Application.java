@@ -44,8 +44,7 @@ public class Application {
 									new String[]{LocalizedText.save, LocalizedText.quit, LocalizedText.cancel},
 									LocalizedText.save)
 							) {
-								case 2: return;
-								case 1: window.exit();
+								case 1: window.dispose();
 								case 0: window.saveAndExit();
 								default: return;
 							}

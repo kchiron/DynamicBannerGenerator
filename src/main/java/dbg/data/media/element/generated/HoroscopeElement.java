@@ -14,7 +14,7 @@ public class HoroscopeElement extends MediaElement {
 	
 	public HoroscopeElement(int duration) {
 		super(LocalizedText.horoscope, "", duration);
-		this.signs = new ArrayList<HoroscopeControl.Signs>();
+		this.signs = new ArrayList<>();
 	}
 
 	public void setSigns(HoroscopeControl.Signs[] signs) {

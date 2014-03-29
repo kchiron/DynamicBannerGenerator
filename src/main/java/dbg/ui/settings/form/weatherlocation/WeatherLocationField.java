@@ -56,7 +56,7 @@ public class WeatherLocationField extends JPanel {
 		super(new BorderLayout());
 
 		places = new GooglePlaces(PropertyManager.getGooglePlacesAPIKey());
-		customListeners = new ArrayList<ActionListener>(1);
+		customListeners = new ArrayList<>(1);
 		dropDown = new WeatherLocationDropDown(this);
 		
 		defaultBorder = new CompoundBorder(new LineBorder(new Color(0, 0, 0, 70)), new EmptyBorder(2, 5, 2, 5));

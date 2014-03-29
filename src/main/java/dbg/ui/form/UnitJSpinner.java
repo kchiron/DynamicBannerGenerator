@@ -31,7 +31,7 @@ public class UnitJSpinner extends JPanel {
 	public UnitJSpinner(String unit, final Integer min, final Integer max) {
 		super(new FlowLayout());
 		
-		this.customListeners = new ArrayList<ActionListener>(1);
+		this.customListeners = new ArrayList<>(1);
 		FlowLayout flowLayout = (FlowLayout) getLayout();
 		flowLayout.setVgap(0);
 		flowLayout.setHgap(0);

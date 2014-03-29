@@ -29,14 +29,14 @@ public class FFmpeg {
 			String line;
 			try {
 				while((line = processStdErr.readLine()) != null) {
-					System.out.println(line);
+					System.err.println(line);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			return null;
 		}
-	};;
+	};
 
 	/**
 	 * Initializes the class by searching the suitable ffmpeg executable for the detected operating system (and architecture) 
@@ -45,7 +45,6 @@ public class FFmpeg {
 	 */
 	private static void initialize() throws IOException, UnknownOperatingSystem {
 		String path = "ffmpeg-native";
-		System.getProperty("os.name").toLowerCase();
 
 		String os = (System.getProperty("os.name") + " " + System.getProperty("os.arch")).toLowerCase();
 
@@ -69,10 +68,11 @@ public class FFmpeg {
 	public static int execute(List<String> arguments, @SuppressWarnings("rawtypes") final OutputProcessor outputProcessor, final InputGenerator inputGenerator) throws IOException, InterruptedException, UnknownOperatingSystem {
 		if(pathToExecutable == null) initialize();
 
-		List<String> ffmpegCommand = new ArrayList<String>(arguments);
+		List<String> ffmpegCommand = new ArrayList<>(arguments);
 		ffmpegCommand.add(0, pathToExecutable);
 		
-		System.out.println(ffmpegCommand);
+		//System.out.println(ffmpegCommand);
+
 		final ProcessBuilder pb = new ProcessBuilder(ffmpegCommand);
 		final Process ffmpegProcess = pb.start();
 		
@@ -184,7 +184,7 @@ public class FFmpeg {
 	public static File convertImageToVideo(File outputFolder, int duration, File inputImage, String outputName, boolean debug) throws IOException, InterruptedException, UnknownOperatingSystem {
 		final String videoOutputPath = outputFolder.getPath() + File.separator + outputName + ".ts";
 
-		final List<String> ffArgs = new ArrayList<String>(Arrays.asList(
+		final List<String> ffArgs = new ArrayList<>(Arrays.asList(
 			"-loop", "1", 
 			"-f", "image2", 
 			"-i", inputImage.getPath(), 
