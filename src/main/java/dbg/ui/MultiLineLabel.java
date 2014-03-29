@@ -16,6 +16,8 @@ public class MultiLineLabel extends JLabel {
 	public MultiLineLabel(String text, TextAlign align) {
 		super(wrap(align, text));
 		this.align = align;
+                setVerticalAlignment(TOP);
+                setVerticalTextPosition(TOP);
 	}
 	
 	@Override

@@ -73,7 +73,7 @@ public class LocalizedText {
 	public static String gemini						= "Gémeaux";
 	public static String cancer						= "Cancer";
 	public static String leo						= "Lion";
-	public static String virgo						= "Vièrge";
+	public static String virgo						= "Vierge";
 	public static String libra						= "Balance";
 	public static String scorpio					= "Scorpion";
 	public static String sagittarius				= "Sagittaire";

@@ -116,6 +116,7 @@ public class VideoAssembler extends SwingWorker<File, String> {
 			final FFmpegVideoData options = new FFmpegVideoData();
 			options.setSize(videoOutputProperties.getVideoSize());
 
+			//TODO: check for error in DBG configuration to prevent error during assembly
 			final FFmpegConcat concat = new FFmpegConcat(mediaSequence, videoOutput, options) {
 				@Override
 				public void setProgress(String message, int percent) {

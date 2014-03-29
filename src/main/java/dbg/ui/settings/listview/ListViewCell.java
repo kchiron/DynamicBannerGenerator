@@ -1,21 +1,5 @@
 package dbg.ui.settings.listview;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.GridLayout;
-
-import javax.swing.AbstractCellEditor;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.UIManager;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-
 import dbg.data.media.element.MediaElement;
 import dbg.data.media.element.generated.HoroscopeElement;
 import dbg.data.media.element.generated.WeatherElement;
@@ -24,7 +8,10 @@ import dbg.data.media.element.imported.ImportedMediaElement;
 import dbg.data.media.element.imported.VideoElement;
 import dbg.ui.settings.listview.contextmenu.ListViewListener;
 
-import javax.swing.SwingConstants;
+import javax.swing.*;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
 
 public class ListViewCell extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
@@ -161,7 +148,7 @@ public class ListViewCell extends AbstractCellEditor implements TableCellEditor,
 	}
 
 	private ImageIcon getElementIcon(MediaElement element, boolean selected) {
-		if(element.getClass() == ImageElement.class) 
+		if(element.getClass() == ImageElement.class)
 			return new ImageIcon(getClass().getResource("image"+(selected?"_on":"")+".png"));
 		else if(element.getClass() == VideoElement.class)
 			return new ImageIcon(getClass().getResource("video"+(selected?"_on":"")+".png"));

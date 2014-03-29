@@ -1,16 +1,14 @@
 package dbg.ui.settings.listview;
 
-import java.awt.Color;
-
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import dbg.data.media.MediaSequence;
 import dbg.data.media.element.MediaElement;
 import dbg.data.media.element.imported.ImportedMediaElement;
 import dbg.ui.settings.panel.SequencePanel;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 
 public class ListView extends JTable {
 

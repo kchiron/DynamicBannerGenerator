@@ -1,10 +1,8 @@
  package dbg.ffmpeg;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import dbg.exception.UnknownOperatingSystem;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,8 +11,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import dbg.exception.UnknownOperatingSystem;
 
 /**
  * FFmpeg class encapsulating the ffmpeg native executables specific of each platform.
@@ -71,7 +67,7 @@ public class FFmpeg {
 		List<String> ffmpegCommand = new ArrayList<>(arguments);
 		ffmpegCommand.add(0, pathToExecutable);
 		
-		//System.out.println(ffmpegCommand);
+		System.out.println(ffmpegCommand);
 
 		final ProcessBuilder pb = new ProcessBuilder(ffmpegCommand);
 		final Process ffmpegProcess = pb.start();

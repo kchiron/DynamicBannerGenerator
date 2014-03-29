@@ -183,7 +183,7 @@ public class AddModifyMediaElementWindow extends JDialog {
 			}
 		});
 	}
-	
+
 	public AddModifyMediaElementWindow(JFrame parent, SequencePanel sequencePanel, ImportedMediaElement importedMediaElement) {
 		this(parent, sequencePanel);
 		setTitle(LocalizedText.modify_media);
@@ -255,7 +255,7 @@ public class AddModifyMediaElementWindow extends JDialog {
 		
 		refreshUi();
 	}
-	
+
 	private void updateData(ImportedMediaElement importedMediaElement) {
 		this.importedMediaElement = importedMediaElement;
 		refreshUi();

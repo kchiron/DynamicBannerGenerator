@@ -48,8 +48,9 @@ public class SettingsWindow extends JFrame {
 			btnLaunchVideoAssembler.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					final VideoAssembler vaWindow = new VideoAssembler(PropertyManager.getSequence(), PropertyManager.getVideoOutputProperties(), SettingsWindow.this);
+					//Launching the video assembler in a separeted thread so that it won't be blocked by the modal that will open
 					new Thread() {public void run(){vaWindow.execute();}}.start();
-					vaWindow.setVisible(true);
+					vaWindow.setVisible(true); // <= blocking this current window thread since vaWindow is a modal
 				}
 			});
 			bottom.add(btnLaunchVideoAssembler);
@@ -86,5 +87,11 @@ public class SettingsWindow extends JFrame {
 	public void saveAndExit() {
 		PropertyManager.saveToFile();
 		dispose();
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		System.exit(0);
 	}
 }

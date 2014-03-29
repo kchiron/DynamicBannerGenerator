@@ -1,23 +1,5 @@
 package dbg.ui.settings.panel;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.border.MatteBorder;
-
-import net.miginfocom.swing.MigLayout;
 import dbg.data.media.MediaSequence;
 import dbg.data.media.element.MediaElement;
 import dbg.data.media.element.imported.ImportedMediaElement;
@@ -27,6 +9,16 @@ import dbg.ui.form.IconButton;
 import dbg.ui.settings.AddModifyMediaElementWindow;
 import dbg.ui.settings.listview.ListView;
 import dbg.ui.settings.listview.ListViewModel;
+import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class SequencePanel extends TabContentPanel {
 	

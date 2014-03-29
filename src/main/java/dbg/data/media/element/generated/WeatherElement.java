@@ -1,11 +1,12 @@
 package dbg.data.media.element.generated;
 
 import dbg.data.WeatherLocation;
-import dbg.data.media.element.MediaElement;
 import dbg.data.property.WeatherProperties;
 import dbg.ui.LocalizedText;
 
-public class WeatherElement extends MediaElement {
+import java.io.File;
+
+public class WeatherElement extends GeneratedMediaElement {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -37,5 +38,10 @@ public class WeatherElement extends MediaElement {
 
 	public void setLocation(WeatherLocation location) {
 		setSubTitle((location==null)?"-":location.toString());
+	}
+
+	@Override
+	public File generateImage() {
+		return null;
 	}
 }

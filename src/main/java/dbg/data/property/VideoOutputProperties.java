@@ -13,11 +13,11 @@ public class VideoOutputProperties implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private final static String[] standardVideoSize = {
-		"640×360", 
-		"1024×576", 
-		"1280×720 (720p)", 
-		"1440x900", 
-		"1600×900", 
+		"640x360",
+		"1024x576",
+		"1280x720 (720p)",
+		"1440x900",
+		"1600x900",
 		"1920x1080 (1080p)"
 	};
 	
