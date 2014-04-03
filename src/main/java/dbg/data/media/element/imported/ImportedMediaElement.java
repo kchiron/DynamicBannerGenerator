@@ -1,8 +1,9 @@
 package dbg.data.media.element.imported;
 
-import java.io.File;
-
 import dbg.data.media.element.MediaElement;
+
+import java.io.File;
+import java.net.URI;
 
 /**
  * Abstract class for data.media element imported from a file (as opposed to the generated elements)
@@ -12,19 +13,20 @@ public abstract class ImportedMediaElement extends MediaElement {
 
 	private static final long serialVersionUID = 1L;
 	
-	private File file;
+	private String filePath;
 
 	public ImportedMediaElement(String title, File inportedFile, int duration) {
 		super(title, (inportedFile != null ? inportedFile.getName() : ""), duration);
-		this.file = inportedFile;
+		setFile(inportedFile);
 	}
 
 	public File getFile() {
-		return file;
+		return new File(filePath);
 	}
 	
 	public void setFile(File inportedFile) {
-		this.file = inportedFile;
+		URI outputRelativeURI = new File("").toURI().relativize(inportedFile.toURI());
+		this.filePath = outputRelativeURI.getPath();
 		setSubTitle(inportedFile.getName());
 	}
 }

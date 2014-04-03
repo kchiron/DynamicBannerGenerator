@@ -62,6 +62,7 @@ public class HoroscopeElementTest {
 		//TestUtils.getTestFile("horoscope.jpg")
 		instance.setSigns(new HoroscopeControl.Signs[]{HoroscopeControl.Signs.AQUARIUS, HoroscopeControl.Signs.ARIES});
 		File result = instance.generateImage();
+		result.renameTo(new File(".", result.getName()));
 		assertNotNull(result);
 		// TODO review the generated test code and remove the default call to fail.
 		//fail("The test case is a prototype.");

@@ -5,7 +5,7 @@ import dbg.data.property.PropertyManager;
 import dbg.exception.ImageGenerationException;
 import dbg.image.ImagePanel;
 import dbg.ui.LocalizedText;
-import dbg.ui.MultiLineLabel;
+import dbg.ui.util.MultiLineLabel;
 import dbg.ui.util.UiUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -48,10 +48,15 @@ public class HoroscopeElement extends GeneratedMediaElement {
 	 * Retourne tout le contenu d'un seul signe
 	 */
 	public String getContent(String sign) throws IOException {
+
+		//TODO: change this HTML parse (the web site changed :( )
+
 		String text;
 		sign = Normalizer.normalize(sign, Normalizer.Form.NFD);
 		sign = sign.replaceAll("[^\\p{ASCII}]", "");
-		Document dec = Jsoup.connect("http://www.marieclaire.fr/astro/horoscope-du-jour/" + sign + "/").get();
+		String url = "http://www.marieclaire.fr/astro/horoscope-du-jour/" + sign + "/";
+		System.out.println(url);
+		Document dec = Jsoup.connect(url).get();
 		Elements content = dec.select("p.texte_paragraphe");
 		text = "";
 
@@ -154,10 +159,10 @@ public class HoroscopeElement extends GeneratedMediaElement {
 		int shiftX = scale > 1.0 ? (int) ((d.width - 1920.0 * scale) / 2.0) : 0;
 		int shiftY = scale > 1.0 ? (int) ((d.height - 1080.0 * scale) / 2.0) : 0;
 
-		UiUtils.scaleAndShiftComponents(imgTitle, scale, shiftX, shiftY);
+		//Scale panel and all its components to fit the size of the background
 		UiUtils.scaleAndShiftComponents(panel, scale, shiftX, shiftY);
 
-		// Create a temporary file and export image to this file
+		// Create a temporary file (in tmp folder of the current OS) and export image to this file
 		File out = File.createTempFile("DBG-horoscopePage-", ".png");
 		panel.exportToImage(out, "png");
 

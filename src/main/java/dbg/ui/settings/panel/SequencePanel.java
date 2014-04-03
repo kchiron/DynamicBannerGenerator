@@ -5,7 +5,7 @@ import dbg.data.media.element.MediaElement;
 import dbg.data.media.element.imported.ImportedMediaElement;
 import dbg.data.property.PropertyManager;
 import dbg.ui.LocalizedText;
-import dbg.ui.form.IconButton;
+import dbg.ui.settings.form.IconButton;
 import dbg.ui.settings.AddModifyMediaElementWindow;
 import dbg.ui.settings.listview.ListView;
 import dbg.ui.settings.listview.ListViewModel;

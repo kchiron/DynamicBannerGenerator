@@ -23,8 +23,8 @@ import dbg.data.media.element.imported.ImportedMediaElement;
 import dbg.data.media.element.imported.VideoElement;
 import dbg.ffmpeg.SupportedFileFormat;
 import dbg.ui.LocalizedText;
-import dbg.ui.form.UnitJSpinner;
-import dbg.ui.form.filechooser.MediaFileChooser;
+import dbg.ui.settings.form.UnitJSpinner;
+import dbg.ui.settings.form.filechooser.MediaFileChooser;
 import dbg.ui.settings.panel.SequencePanel;
 import net.miginfocom.swing.MigLayout;
 

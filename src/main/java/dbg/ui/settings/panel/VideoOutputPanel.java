@@ -9,8 +9,8 @@ import javax.swing.JLabel;
 import dbg.control.VideoOutputControl;
 import dbg.data.property.VideoOutputProperties;
 import dbg.ui.LocalizedText;
-import dbg.ui.form.filechooser.FileChooserField;
-import dbg.ui.form.filechooser.FolderChooser;
+import dbg.ui.settings.form.filechooser.FileChooserField;
+import dbg.ui.settings.form.filechooser.FolderChooser;
 import net.miginfocom.swing.MigLayout;
 
 /**

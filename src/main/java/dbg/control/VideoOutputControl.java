@@ -8,7 +8,7 @@ import javax.swing.JComboBox;
 
 import dbg.data.property.PropertyManager;
 import dbg.data.property.VideoOutputProperties;
-import dbg.ui.form.filechooser.FileChooserField;
+import dbg.ui.settings.form.filechooser.FileChooserField;
 import dbg.ui.settings.panel.VideoOutputPanel;
 
 public class VideoOutputControl implements ActionListener {

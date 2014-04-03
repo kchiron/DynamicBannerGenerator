@@ -1,18 +1,18 @@
 package dbg.ffmpeg;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import dbg.exception.UnknownOperatingSystem;
+import dbg.util.TestUtils;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import dbg.exception.UnknownOperatingSystem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 public class FFmpegTest {
 
@@ -46,13 +46,13 @@ public class FFmpegTest {
 	
 	@Test
 	public void testGetVideoDuration() throws IOException {
-		File video = new File(testFolderPath + "earth.ts");
+		File video = TestUtils.getMediaSample("earth.ts");
 		assertThat(FFmpeg.getVideoDuration(video), is(4));
 	}
 	
 	@Test
 	public void testGetVideoData() throws IOException {
-		File video = new File(testFolderPath + "earth.ts");
+		File video = TestUtils.getMediaSample("earth.ts");
 		FFmpegVideoData videoData = FFmpeg.getVideoData(video);
 		System.out.println("Duration: "+videoData.getDuration());
 		System.out.println("Size: "+videoData.getSize());
@@ -62,7 +62,7 @@ public class FFmpegTest {
 	@Test
 	public void testConvertImageToVideo() throws IOException, InterruptedException, UnknownOperatingSystem {
 		File result = FFmpeg.convertImageToVideo(
-			new File(ffmpegTestFolderPath), 5, new File(testFolderPath + "sun.jpg"), "sun", false
+			new File(ffmpegTestFolderPath), 5, TestUtils.getMediaSample("sun.jpg"), "sun", false
 		);
 		assertThat(result, notNullValue());
 	}

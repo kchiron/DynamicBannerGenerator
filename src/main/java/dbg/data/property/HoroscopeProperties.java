@@ -7,7 +7,7 @@ public class HoroscopeProperties implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	private File backgroundImage;
+	private String backgroundImagePath;
 	private int displayTime;
 	private int signPerPage;
 	
@@ -20,17 +20,17 @@ public class HoroscopeProperties implements Serializable {
 	
 	public HoroscopeProperties(File backgroundImage, int horoscopeDisplayTime, int signPerPage) {
 		super();
-		this.backgroundImage = backgroundImage;
+		setBackgroundImage(backgroundImage);
 		this.displayTime = horoscopeDisplayTime;
 		this.signPerPage = signPerPage;
 	}
 
 	public File getBackgroundImage() {
-		return backgroundImage;
+		return backgroundImagePath == null ? null : new File(backgroundImagePath);
 	}
 
 	public void setBackgroundImage(File backgroundImage) {
-		this.backgroundImage = backgroundImage;
+		this.backgroundImagePath = backgroundImage == null ? null : new File("").toURI().relativize(backgroundImage.toURI()).getPath();
 	}
 
 	public int getDisplayTime() {

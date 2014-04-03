@@ -1,17 +1,12 @@
-package dbg.ui.form.filechooser;
+package dbg.ui.settings.form.filechooser;
 
-import java.awt.BorderLayout;
+import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.filechooser.FileSystemView;
 
 /**
  * A panel grouping a button that launches a JFileChooser and a label that displays the current selected file.

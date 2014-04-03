@@ -16,7 +16,7 @@ public class SettingsWindow extends JFrame {
 
 	public SettingsWindow() {
 		super(LocalizedText.settings);
-		getContentPane().setLayout(new BorderLayout());
+		setLayout(new BorderLayout());
 
 		{//Top part
 			//Left side of the main window (SequencePanel)
@@ -41,7 +41,7 @@ public class SettingsWindow extends JFrame {
 		}
 
 		{//Bottom part
-			final JPanel bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+			final JPanel pnlBottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
 			JButton btnLaunchVideoAssembler = new JButton(LocalizedText.assemble_video);
 			btnLaunchVideoAssembler.setHorizontalAlignment(JButton.LEFT);
@@ -53,29 +53,22 @@ public class SettingsWindow extends JFrame {
 					vaWindow.setVisible(true); // <= blocking this current window thread since vaWindow is a modal
 				}
 			});
-			bottom.add(btnLaunchVideoAssembler);
+			pnlBottom.add(btnLaunchVideoAssembler);
 
-			JButton btnCancel = new JButton(LocalizedText.cancel);
-			bottom.add(btnCancel);
-
-			JButton btnOK = new JButton(LocalizedText.ok);
-			bottom.add(btnOK);
-
-			getRootPane().setDefaultButton(btnOK);
-
-			getContentPane().add(bottom, BorderLayout.SOUTH);
-
-			btnOK.addActionListener(new ActionListener() {
+			// Save button
+			JButton btnSave = new JButton(LocalizedText.save_settings);
+			pnlBottom.add(btnSave);
+			btnSave.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent paramActionEvent) {
-					saveAndExit();
+					PropertyManager.saveToFile();
 				}
 			});
 
-			btnCancel.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent paramActionEvent) {
-					dispose();
-				}
-			});
+			// Make "Save & Quit" button default
+			getRootPane().setDefaultButton(btnSave);
+
+			// Display bottom panel
+			getContentPane().add(pnlBottom, BorderLayout.SOUTH);
 		}
 
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);

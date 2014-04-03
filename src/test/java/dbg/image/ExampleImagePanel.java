@@ -9,8 +9,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import dbg.image.ImagePanel;
-import dbg.ui.MultiLineLabel;
+import dbg.ui.util.MultiLineLabel;
 import dbg.ui.util.UiUtils;
 import dbg.util.TestUtils;
 

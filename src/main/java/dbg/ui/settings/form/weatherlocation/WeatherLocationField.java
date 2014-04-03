@@ -30,7 +30,7 @@ import com.claygregory.api.google.places.Prediction;
 import dbg.data.WeatherLocation;
 import dbg.data.property.PropertyManager;
 import dbg.ui.LocalizedText;
-import dbg.ui.form.PlaceHolder;
+import dbg.ui.settings.form.PlaceHolder;
 
 /**
  * Weather location text field handling search and confirmation of the typed location (using Google APIs)

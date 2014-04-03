@@ -1,4 +1,4 @@
-package dbg.ui;
+package dbg.ui.util;
 
 import javax.swing.JLabel;
 

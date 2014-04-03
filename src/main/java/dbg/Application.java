@@ -1,14 +1,12 @@
 package dbg;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import dbg.data.property.PropertyManager;
 import dbg.ui.LocalizedText;
 import dbg.ui.settings.SettingsWindow;
 import dbg.ui.util.UiUtils;
+
+import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Application {
 
@@ -41,7 +39,7 @@ public class Application {
 									JOptionPane.YES_NO_CANCEL_OPTION, 
 									JOptionPane.WARNING_MESSAGE,
 									null, 
-									new String[]{LocalizedText.save, LocalizedText.quit, LocalizedText.cancel},
+									new String[]{LocalizedText.save_n_quit, LocalizedText.quit, LocalizedText.cancel},
 									LocalizedText.save)
 							) {
 								case 1: window.dispose();
@@ -56,5 +54,7 @@ public class Application {
 			JOptionPane.showMessageDialog(null, e.getMessage(), LocalizedText.error, JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
+
+
 	}
 }

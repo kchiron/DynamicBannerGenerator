@@ -8,12 +8,16 @@ import java.text.ParseException;
 
 public class LocalizedText {
 
+	//TODO: use Java ResourceBundle instead of this list of value
+
 	public static String cancel						= "Annuler";
 	public static String ok							= "Ok";
 	public static String no							= "Non";
 	public static String yes						= "Oui";
 	public static String quit						= "Quitter";
 	public static String save						= "Enregistrer";
+	public static String save_settings				= "Enregistrer les réglages";
+	public static String save_n_quit				= "Enregistrer et Quitter";
 	public static String open						= "Ouvrir";
 	public static String reload						= "Actualiser";
 	public static String help						= "Aide";

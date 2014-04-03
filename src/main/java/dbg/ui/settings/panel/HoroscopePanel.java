@@ -1,16 +1,14 @@
 package dbg.ui.settings.panel;
 
-import java.awt.event.ActionListener;
-
-import javax.swing.JLabel;
-import javax.swing.JSpinner;
-
 import dbg.control.HoroscopeControl;
 import dbg.ui.LocalizedText;
-import dbg.ui.form.UnitJSpinner;
-import dbg.ui.form.filechooser.FileChooserField;
-import dbg.ui.form.filechooser.MediaFileChooser;
+import dbg.ui.settings.form.UnitJSpinner;
+import dbg.ui.settings.form.filechooser.FileChooserField;
+import dbg.ui.settings.form.filechooser.MediaFileChooser;
 import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import java.awt.event.ActionListener;
 
 public class HoroscopePanel extends TabContentPanel {
 

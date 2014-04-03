@@ -11,9 +11,9 @@ import net.miginfocom.swing.MigLayout;
 import dbg.control.WeatherControl;
 import dbg.data.property.WeatherProperties;
 import dbg.ui.LocalizedText;
-import dbg.ui.form.UnitJSpinner;
-import dbg.ui.form.filechooser.FileChooserField;
-import dbg.ui.form.filechooser.MediaFileChooser;
+import dbg.ui.settings.form.UnitJSpinner;
+import dbg.ui.settings.form.filechooser.FileChooserField;
+import dbg.ui.settings.form.filechooser.MediaFileChooser;
 import dbg.ui.settings.form.weatherlocation.WeatherLocationField;
 
 public class WeatherPanel extends TabContentPanel {

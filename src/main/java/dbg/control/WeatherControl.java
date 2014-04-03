@@ -12,7 +12,7 @@ import dbg.data.media.element.MediaElement;
 import dbg.data.media.element.generated.WeatherElement;
 import dbg.data.property.PropertyManager;
 import dbg.data.property.WeatherProperties;
-import dbg.ui.form.filechooser.FileChooserField;
+import dbg.ui.settings.form.filechooser.FileChooserField;
 import dbg.ui.settings.form.weatherlocation.WeatherLocationField;
 import dbg.ui.settings.panel.SequencePanel;
 import dbg.ui.settings.panel.WeatherPanel;

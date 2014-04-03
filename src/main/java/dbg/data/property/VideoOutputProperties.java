@@ -1,8 +1,8 @@
 package dbg.data.property;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 
 /**
  * Video output properties
@@ -22,24 +22,17 @@ public class VideoOutputProperties implements Serializable {
 	};
 	
 	private int indexOfVideoSize;
-	private File outputFolder;
+	private String outputFolderPath;
 
 	public VideoOutputProperties(int videoSize, File outputFolder) {
 		this.indexOfVideoSize = videoSize;
-		
-		if(outputFolder.getName().equals(".")){
-			try {
-				this.outputFolder = new File (outputFolder.getCanonicalFile().getParent());
-			} catch (IOException e) {
-				this.outputFolder = outputFolder;
-			}
-		}
-		else this.outputFolder = outputFolder;
+
+		setOutputFolder(outputFolder);
 	}
 
 	/** Constructs default video output properties */
 	public VideoOutputProperties() {
-		this(2, new File("."));
+		this(2, new File(""));
 	}
 
 	public String getVideoSize() {
@@ -55,11 +48,12 @@ public class VideoOutputProperties implements Serializable {
 	}
 
 	public File getOutputFolder() {
-		return outputFolder;
+		return new File(outputFolderPath);
 	}
 	
 	public void setOutputFolder(File outputFolder) {
-		this.outputFolder = outputFolder;
+		URI outputRelativeURI = new File("").toURI().relativize(outputFolder.toURI());
+		this.outputFolderPath = outputRelativeURI.getPath();
 	}
 	
 	public static String[] getStandardVideoSize() {

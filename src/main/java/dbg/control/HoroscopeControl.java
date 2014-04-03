@@ -1,19 +1,18 @@
 package dbg.control;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-
-import javax.swing.JSpinner;
-
 import dbg.data.media.element.MediaElement;
 import dbg.data.media.element.generated.HoroscopeElement;
 import dbg.data.property.HoroscopeProperties;
 import dbg.data.property.PropertyManager;
 import dbg.ui.LocalizedText;
-import dbg.ui.form.filechooser.FileChooserField;
+import dbg.ui.settings.form.filechooser.FileChooserField;
 import dbg.ui.settings.panel.HoroscopePanel;
 import dbg.ui.settings.panel.SequencePanel;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 /**
  * Class handling all user action on the horoscope panel and loading saved properties to the horoscope panel

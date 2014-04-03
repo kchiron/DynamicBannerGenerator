@@ -1,4 +1,4 @@
-package dbg.ui.form;
+package dbg.ui.settings.form;
 
 import java.awt.Font;
 import java.net.URL;

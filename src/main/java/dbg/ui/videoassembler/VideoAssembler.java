@@ -41,6 +41,10 @@ public class VideoAssembler extends SwingWorker<File, String> {
 			window.setTitle(LocalizedText.video_assembler);
 			window.setUndecorated(true);
 
+			((JComponent)window.getContentPane()).setBorder(
+					BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1)
+			);
+
 			Dimension d = new Dimension(400, 116);
 			window.setBounds(new Rectangle(d));
 			window.setMinimumSize(d);

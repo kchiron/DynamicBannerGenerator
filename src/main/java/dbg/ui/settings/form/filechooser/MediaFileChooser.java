@@ -1,4 +1,4 @@
-package dbg.ui.form.filechooser;
+package dbg.ui.settings.form.filechooser;
 
 import java.io.File;
 
