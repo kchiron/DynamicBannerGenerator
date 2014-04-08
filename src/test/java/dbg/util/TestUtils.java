@@ -1,6 +1,8 @@
 package dbg.util;
 
 
+import org.junit.Test;
+
 import java.io.File;
 
 /**
@@ -23,5 +25,16 @@ public class TestUtils {
 		File mediaSamples = new File(getTestFolder(), "media-samples");
 
 		return new File(mediaSamples, name);
+	}
+
+	@Test
+	public void testFile() {
+		File file = new File("");
+		File file2 = new File(file.getAbsolutePath());
+		System.out.println("is directory: "+file.isDirectory());
+		System.out.println("is file: "+file.isFile());
+		System.out.println("path: "+file.getAbsolutePath());
+		System.out.println("name: "+file.getName());
+		System.out.println("name2: "+file2.getName());
 	}
 }

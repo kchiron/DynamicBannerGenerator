@@ -53,7 +53,7 @@ public class FFmpeg {
 		if (os.contains("mac"))
 			programName = "ffmpeg-mac";
 		else if (os.contains("win")) {
-			suffix = "exe";
+			suffix = ".exe";
 			programName = "ffmpeg-w" + (os.contains("64") ? "64" : "32") + ".exe";
 		} else
 			throw error;
@@ -78,13 +78,9 @@ public class FFmpeg {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				FFmpeg.deleteTmp();
+				FFmpeg.ffmpegProgram.delete();
 			}
 		});
-	}
-
-	public static void deleteTmp() {
-		if(ffmpegProgram != null) ffmpegProgram.delete();
 	}
 
 	/**
@@ -97,7 +93,7 @@ public class FFmpeg {
 		List<String> ffmpegCommand = new ArrayList<>(arguments);
 		ffmpegCommand.add(0, ffmpegProgram.getAbsolutePath());
 
-		System.out.println(ffmpegCommand);
+		//System.out.println(ffmpegCommand);
 
 		final ProcessBuilder pb = new ProcessBuilder(ffmpegCommand);
 		final Process ffmpegProcess = pb.start();

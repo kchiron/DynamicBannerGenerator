@@ -13,6 +13,7 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,8 +26,6 @@ public abstract class FFmpegConcat {
 	private final MediaSequence mediaSequence;
 	private final File outputFile;
 	private final FFmpegVideoData outputVideoOptions;
-	private final int MAX_STEP = 100;
-	private int currentStep;
 
 	public FFmpegConcat(MediaSequence mediaSequence, File outputFile, FFmpegVideoData outputVideoOptions) {
 		super();
@@ -64,9 +63,7 @@ public abstract class FFmpegConcat {
 		Thread actionAfterInteruption;
 
 		//Start
-		currentStep = 0;
-
-		//TODO: find why concat fails if videoSize is different from the size of the concatenated elements
+		final ProgressState progressState = new ProgressState();
 
 		/*
 		 * Part one: convert every media element to same video format
@@ -74,7 +71,8 @@ public abstract class FFmpegConcat {
 		final List<File> concatFiles = new ArrayList<>();
 		final List<File> temporaryGeneratedImages = new ArrayList<>();
 		final File videoList = File.createTempFile("DBG-video-list", ".txt");
-		setProgress(LocalizedText.converting_elements, currentStep);
+		progressState.changeState(LocalizedText.converting_elements, 25);
+		progressState.setProgress(5);
 		{
 			final List<Future<Integer>> conversions = new ArrayList<>();
 			final ExecutorService executor = Executors.newFixedThreadPool(3);
@@ -113,7 +111,7 @@ public abstract class FFmpegConcat {
 						if (!mediaFileMetaData.getSize().equals(videoSize)) {
 							ffArgs.add("-s");
 							ffArgs.add(videoSize);
-							System.out.println("Resizing [" + element + "] from: " + mediaFileMetaData.getSize() + " to:" + videoSize);
+							//System.out.println("Resizing [" + element + "] from: " + mediaFileMetaData.getSize() + " to:" + videoSize);
 						}
 
 						ffArgs.add("-c:v");
@@ -137,7 +135,7 @@ public abstract class FFmpegConcat {
 					if (!mediaFileMetaData.getSize().equals(videoSize)) {
 						ffArgs.add("-s");
 						ffArgs.add(videoSize);
-						System.out.println("Resizing [" + element + "] from: " + mediaFileMetaData.getSize() + " to:" + videoSize);
+						//System.out.println("Resizing [" + element + "] from: " + mediaFileMetaData.getSize() + " to:" + videoSize);
 						resized = true;
 					}
 
@@ -184,10 +182,27 @@ public abstract class FFmpegConcat {
 					fs.write("file '" + outputFile.getAbsolutePath() + "'\n");
 
 					// Launch FFmpeg conversion to video
+					final File finalMediaFile = mediaFile;
+					final OutputProcessor debugOutFile = new OutputProcessor() {
+						@Override
+						public Object call() throws Exception {
+							PrintWriter writer = new PrintWriter("log-"+finalMediaFile.getName()+".txt", "UTF-8");
+							String line;
+							try {
+								while ((line = processStdErr.readLine()) != null) {
+									writer.println(line);
+								}
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							writer.close();
+							return null;
+						}
+					};
 					conversions.add(executor.submit(new Callable<Integer>() {
 						@Override
 						public Integer call() throws Exception {
-							return FFmpeg.execute(ffArgs, null, null);
+							return FFmpeg.execute(ffArgs, debugOutFile, null);
 						}
 					}));
 				}
@@ -210,9 +225,9 @@ public abstract class FFmpegConcat {
 			Runtime.getRuntime().addShutdownHook(actionAfterInteruption);
 
 			//Ensure that every media element were correctly converted to video
-			int step = 0;
-			final int MAX_PERCENT = 25;
+			int i = 1;
 			for (Future<Integer> conversion : conversions) {
+				progressState.setProgress(i * 100 / conversions.size());
 				Integer res = null;
 				try {
 					res = conversion.get();
@@ -225,17 +240,15 @@ public abstract class FFmpegConcat {
 					deleteAllFile(temporaryGeneratedImages);
 					return null;
 				}
-				step++;
-				setProgress(null, currentStep + (step * MAX_PERCENT) / conversions.size());
+				i++;
 			}
-			setProgress(null, currentStep += step);
 		}
 
 		/*
 		 * Part two: concatenate video files
 		 */
 		int exitCode;
-		setProgress(LocalizedText.concatenating_videos, currentStep);
+		progressState.changeState(LocalizedText.concatenating_videos, 75);
 		{
 			List<String> ffArgs = new ArrayList<>(Arrays.asList(
 					"-y",
@@ -258,7 +271,6 @@ public abstract class FFmpegConcat {
 					try {
 						Pattern p = Pattern.compile("\\s*frame=.*time=(\\d+):(\\d+):(\\d+.?\\d*)\\s.*");
 						boolean in = false;
-						int step = 0;
 						while ((line = processStdErr.readLine()) != null) {
 							//System.err.println(line);
 							Matcher m = p.matcher(line);
@@ -268,17 +280,14 @@ public abstract class FFmpegConcat {
 								int time = (int) Math.ceil(Double.parseDouble(m.group(3)));
 								time += minute * 60 + hour * 60 * 60;
 
-								step = (time * (MAX_STEP - currentStep)) / videoDuration;
-								setProgress(null, currentStep + step);
+								progressState.setProgress(time * 100 / videoDuration);
 
 								in = true;
 							} else if (in) {
-								currentStep = step;
 								return null;
 							}
 						}
 					} catch (IOException e) {}
-
 					return null;
 				}
 
@@ -300,7 +309,7 @@ public abstract class FFmpegConcat {
 			}});
 		}
 
-		setProgress(null, MAX_STEP);
+		progressState.setProgress(100);
 		Runtime.getRuntime().removeShutdownHook(actionAfterInteruption);
 		if (exitCode == 0)
 			return outputFile;
@@ -323,4 +332,32 @@ public abstract class FFmpegConcat {
 	}
 
 	public abstract void setProgress(String message, int progress);
+
+	class ProgressState {
+		int progress = 0;
+		State currentState;
+
+		void changeState(String description, int weight) {
+			if(currentState != null)
+				progress = currentState.progress * currentState.weight / 100;
+			currentState = new State(description, weight);
+			FFmpegConcat.this.setProgress(currentState.description, progress);
+		}
+
+		void setProgress(int newProgress) {
+			currentState.progress = newProgress;
+			FFmpegConcat.this.setProgress(null, progress + (currentState.progress * currentState.weight / 100));
+		}
+
+		class State {
+			int progress = 0;
+			String description;
+			int weight;
+
+			State(String description, int weight) {
+				this.description = description;
+				this.weight = weight;
+			}
+		}
+	}
 }

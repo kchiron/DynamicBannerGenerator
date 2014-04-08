@@ -53,10 +53,15 @@ public class FileChooserField extends JPanel {
 	
 	private void updateFile(File selectedFile) {
 		try {
+			if(selectedFile.getName().equals(""))
+				selectedFile = new File(selectedFile.getAbsolutePath());
+
 			FileSystemView view = FileSystemView.getFileSystemView();
 			lblFileName.setText(selectedFile.getName());
 			lblFileName.setIcon(view.getSystemIcon(selectedFile)); 
 			lblFileName.setToolTipText(selectedFile.getAbsolutePath());
+			fileChooser.setSelectedFile(selectedFile);
+			fileChooser.setCurrentDirectory(selectedFile);
 		} catch(NullPointerException e) {
 			lblFileName.setText(noSelectionMessage);
 			lblFileName.setIcon(null);
