@@ -21,9 +21,9 @@ public class VideoAssemblerWorkerTest {
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		MediaSequence mediaSequence = new MediaSequence(){{
-			add(new VideoElement("Earth", TestUtils.getMediaSample("earth.ts")));
+			add(new VideoElement("Earth", TestUtils.getMediaSample("earth.mts")));
 			add(new ImageElement("Moon", TestUtils.getMediaSample("moon.jpg"), 5));
-			add(new VideoElement("Earth", TestUtils.getMediaSample("earth.ts")));
+			add(new VideoElement("Earth", TestUtils.getMediaSample("earth.mts")));
 		}};
 		VideoOutputProperties videoOutputProperties = new VideoOutputProperties();
 		videoOutputProperties.setOutputFolder(new File(""));

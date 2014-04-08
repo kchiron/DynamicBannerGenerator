@@ -46,13 +46,13 @@ public class FFmpegTest {
 	
 	@Test
 	public void testGetVideoDuration() throws IOException {
-		File video = TestUtils.getMediaSample("earth.ts");
+		File video = TestUtils.getMediaSample("earth.mts");
 		assertThat(FFmpeg.getVideoDuration(video), is(4));
 	}
 	
 	@Test
 	public void testGetVideoData() throws IOException {
-		File video = TestUtils.getMediaSample("earth.ts");
+		File video = TestUtils.getMediaSample("earth.mts");
 		FFmpegVideoData videoData = FFmpeg.getVideoData(video);
 		System.out.println("Duration: "+videoData.getDuration());
 		System.out.println("Size: "+videoData.getSize());

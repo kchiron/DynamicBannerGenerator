@@ -19,7 +19,7 @@ public class FFmpegConcatTest {
 	@SuppressWarnings("serial")
 	@BeforeClass
 	public static void setUpClass() {
-		final VideoElement videoElement1 = new VideoElement("Earth", TestUtils.getMediaSample("earth.ts"));
+		final VideoElement videoElement1 = new VideoElement("Earth", TestUtils.getMediaSample("earth.mts"));
 		final ImageElement imageElement1 = new ImageElement("Moon", TestUtils.getMediaSample("moon.jpg"), 15);
 		final ImageElement imageElement2 = new ImageElement("Sun", TestUtils.getMediaSample("sun.jpg"), 10);
 

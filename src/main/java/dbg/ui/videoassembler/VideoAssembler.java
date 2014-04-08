@@ -153,13 +153,13 @@ public class VideoAssembler extends SwingWorker<File, String> {
 	*/
 	public static void main(String[] args) {
 		PropertyManager.setSequence(new MediaSequence() {{
-			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.ts")));
+			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.mts")));
 			add(new ImageElement("Moon", new File("src/test/resources/media-samples/moon.jpg"), 5));
-			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.ts")));
-			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.ts")));
-			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.ts")));
-			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.ts")));
-			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.ts")));
+			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.mts")));
+			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.mts")));
+			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.mts")));
+			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.mts")));
+			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.mts")));
 		}});
 		PropertyManager.setVideoOutputProperties(new VideoOutputProperties() {{
 			setOutputFolder(new File(""));
