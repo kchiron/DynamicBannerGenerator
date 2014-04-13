@@ -4,7 +4,6 @@ import dbg.exception.UnknownOperatingSystem;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,36 +42,33 @@ public class FFmpeg {
 	 * @throws IOException            if the ffmpeg executable is not found
 	 * @throws UnknownOperatingSystem if no ffmpeg executable is available for the detected operating system
 	 */
-	private static void initialize() throws UnknownOperatingSystem, IOException {
-		String os = (System.getProperty("os.name") + " " + System.getProperty("os.arch")).toLowerCase();
+	private synchronized static void initialize() throws UnknownOperatingSystem, IOException {
+		String programName = "ffmpeg-" + detectOS();
 
-		UnknownOperatingSystem error = new UnknownOperatingSystem("No executable available for this operating system");
+		File nativeFolder = new File("native");
+		if (!nativeFolder.exists()) nativeFolder.mkdir();
+		File program = new File(nativeFolder, programName);
 
-		String programName = "";
-		String suffix = "";
-		if (os.contains("mac"))
-			programName = "ffmpeg-mac";
-		else if (os.contains("win")) {
-			suffix = ".exe";
-			programName = "ffmpeg-w" + (os.contains("64") ? "64" : "32") + ".exe";
-		} else
-			throw error;
+		if (!program.exists()) {
+			InputStream original = null;
+			try {
+				original = FFmpeg.class.getResourceAsStream(programName);
+				Files.copy(original, program.getAbsoluteFile().toPath());
+				program.setExecutable(true);
+			} catch (IOException e) {
+				throw e;
+			} finally {
+				if (original != null) original.close();
+			}
+		}
+		ffmpegProgram = program;
+
+		/*
+		InputStream original = FFmpeg.class.getResourceAsStream(programName);
 
 		File program = File.createTempFile("ffmpeg", suffix);
-
-		InputStream link = FFmpeg.class.getResourceAsStream(programName);
-		Files.copy(link, program.getAbsoluteFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+		Files.copy(original, program.getAbsoluteFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
 		program.setExecutable(true);
-
-		/*File nativeFolder = new File("native");
-		if(!nativeFolder.exists()) nativeFolder.mkdir();
-
-		File program = new File(nativeFolder, "ffmpeg"+suffix);
-		if(!program.exists()) {
-			InputStream link = FFmpeg.class.getResourceAsStream(programName);
-			Files.copy(link, program.getAbsoluteFile().toPath());
-		}*/
-
 		ffmpegProgram = program;
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -81,6 +77,8 @@ public class FFmpeg {
 				FFmpeg.ffmpegProgram.delete();
 			}
 		});
+		original.close();
+		*/
 	}
 
 	/**
@@ -260,5 +258,19 @@ public class FFmpeg {
 		public void setOutputStreamToProcessInput(OutputStream outputStreamToProcessInput) {
 			this.outputStreamToProcessInput = outputStreamToProcessInput;
 		}
+	}
+
+	private static String detectOS() throws UnknownOperatingSystem {
+		String os = (System.getProperty("os.name") + " " + System.getProperty("os.arch")).toLowerCase();
+		System.out.println("[" + os + "]");
+
+		UnknownOperatingSystem error = new UnknownOperatingSystem("No executable available for this operating system");
+
+		if (os.contains("mac"))
+			return "mac";
+		else if (os.contains("win")) {
+			System.out.println();
+			return "win" + (os.contains("64") || System.getProperty("java.library.path").contains(" (x86)") ? "64" : "32") + ".exe";
+		} else throw error;
 	}
 }

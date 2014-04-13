@@ -16,6 +16,7 @@ public class LocalizedText {
 	public static String yes						= "Oui";
 	public static String quit						= "Quitter";
 	public static String save						= "Enregistrer";
+	public static String saving						= "Enregistrement";
 	public static String save_settings				= "Enregistrer les réglages";
 	public static String save_n_quit				= "Enregistrer et Quitter";
 	public static String open						= "Ouvrir";
@@ -102,8 +103,10 @@ public class LocalizedText {
 	public static String adding_video				= "Ajout du fichier vidéo dans la liste";
 	public static String video_assembly_canceled	= "Assemblage vidéo annulé!";
 	public static String video_assembly_error 		= "Une erreur est survenue lors de l'assamblage vidéo!";
-	
-	
+	public static String configuration_saved_success        = "Les réglages ont été sauvegardé correctement.";
+	public static String configuration_saved_failed = "Une erreur est survenue lors de la sauvegarde des réglages!";
+
+
 	/**
 	 * Loads a language file replacing the default text
 	 * @param langFile path to a language file with a specific syntax.<br/> syntax: <code>element=traduction</code> <br/> example: <code>title=Titre</code>

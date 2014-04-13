@@ -68,7 +68,7 @@ public class HoroscopeElement extends GeneratedMediaElement {
 	}
 
 	@Override
-	public File generateImage() throws Exception {
+	public File generateImage() throws ImageGenerationException, IOException {
 
 		BufferedImage img = null;
 		try {

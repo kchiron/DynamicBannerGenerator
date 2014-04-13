@@ -1,5 +1,6 @@
 package dbg.ui.settings;
 
+import com.ezware.dialog.task.TaskDialogs;
 import dbg.data.property.PropertyManager;
 import dbg.ui.LocalizedText;
 import dbg.ui.settings.panel.*;
@@ -9,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class SettingsWindow extends JFrame {
 
@@ -48,9 +50,20 @@ public class SettingsWindow extends JFrame {
 			btnLaunchVideoAssembler.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					final VideoAssembler vaWindow = new VideoAssembler(PropertyManager.getSequence(), PropertyManager.getVideoOutputProperties(), SettingsWindow.this);
-					//Launching the video assembler in a separeted thread so that it won't be blocked by the modal that will open
-					new Thread() {public void run(){vaWindow.execute();}}.start();
+					//Launching the video assembler in a separated thread so that it won't be blocked by the modal that will open
+					new Thread() {
+						public void run() {
+							vaWindow.execute();
+						}
+					}.start();
 					vaWindow.setVisible(true); // <= blocking this current window thread since vaWindow is a modal
+					try {
+						vaWindow.get();
+					} catch (Exception ex) {
+						TaskDialogs.build(SettingsWindow.this, LocalizedText.video_assembly_error, "")
+								.title(LocalizedText.error)
+								.showException(ex);
+					}
 				}
 			});
 			pnlBottom.add(btnLaunchVideoAssembler);
@@ -60,7 +73,7 @@ public class SettingsWindow extends JFrame {
 			pnlBottom.add(btnSave);
 			btnSave.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent paramActionEvent) {
-					PropertyManager.saveToFile();
+					save();
 				}
 			});
 
@@ -77,8 +90,17 @@ public class SettingsWindow extends JFrame {
 		setLocationRelativeTo(null);
 	}
 
+	public void save() {
+		try {
+			PropertyManager.saveToFile();
+			JOptionPane.showMessageDialog(SettingsWindow.this, LocalizedText.configuration_saved_success, LocalizedText.saving, JOptionPane.INFORMATION_MESSAGE);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(SettingsWindow.this, LocalizedText.configuration_saved_failed, LocalizedText.saving, JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
 	public void saveAndExit() {
-		PropertyManager.saveToFile();
+		save();
 		dispose();
 	}
 

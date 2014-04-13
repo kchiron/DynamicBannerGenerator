@@ -1,17 +1,10 @@
 package dbg.data.property;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
-import javax.swing.JOptionPane;
-
 import dbg.data.media.MediaSequence;
 import dbg.ui.LocalizedText;
+
+import javax.swing.*;
+import java.io.*;
 
 public class PropertyManager {
 
@@ -21,63 +14,71 @@ public class PropertyManager {
 	private static WeatherProperties weatherProperties;
 
 	private static String googlePlacesAPIKey;
-	
+
 	//Configuration file
 	private static File configFile = new File("config.bin");
 
 	/**
 	 * Loads the properties from the configuration file or creates new default properties if the file doesn't exist
-	 * @throws Exception 
+	 *
+	 * @throws Exception
 	 */
 	public static void loadFromFile() throws Exception {
-		if(configFile.exists()) {
+		ObjectInputStream input = null;
+
+		if (configFile.exists()) {
 			try {
-				ObjectInputStream input = new ObjectInputStream(new FileInputStream(configFile));
+				input = new ObjectInputStream(new FileInputStream(configFile));
 
 				Object o;
-				try {
-					while(true) {
-						o = input.readObject();
-						if(o instanceof MediaSequence)
-							sequence = (MediaSequence) o;
-						else if(o instanceof HoroscopeProperties)
-							horoscopeProperties = (HoroscopeProperties) o;
-						else if(o instanceof VideoOutputProperties)
-							videoOutputProperties = (VideoOutputProperties) o;
-						else if(o instanceof WeatherProperties)
-							weatherProperties = (WeatherProperties) o;
-						else if(o instanceof String)
-							googlePlacesAPIKey = (String) o;
-					}
-				} catch(EOFException e1) {}
+				boolean EOF = false;
 
-				input.close();
-			} catch (IOException | ClassNotFoundException e) {
-				e.printStackTrace();
+				while (!EOF) {
+					try {
+						o = input.readObject();
+						if (o instanceof MediaSequence)
+							sequence = (MediaSequence) o;
+						else if (o instanceof HoroscopeProperties)
+							horoscopeProperties = (HoroscopeProperties) o;
+						else if (o instanceof VideoOutputProperties)
+							videoOutputProperties = (VideoOutputProperties) o;
+						else if (o instanceof WeatherProperties)
+							weatherProperties = (WeatherProperties) o;
+						else if (o instanceof String)
+							googlePlacesAPIKey = (String) o;
+					} catch (EOFException e1) {
+						EOF = true;
+					}
+				}
+			} catch (IOException e) {
+				throw e;
+			} catch (ClassNotFoundException e) {
+			} finally {
+				if (input != null) input.close();
 			}
-		}
-		else {
+		} else {
 			sequence = new MediaSequence();
 			videoOutputProperties = new VideoOutputProperties();
 			horoscopeProperties = new HoroscopeProperties();
 			weatherProperties = new WeatherProperties();
 		}
-		
-		if(googlePlacesAPIKey == null || googlePlacesAPIKey.isEmpty()) {
+
+		if (googlePlacesAPIKey == null || googlePlacesAPIKey.isEmpty()) {
 			googlePlacesAPIKey = JOptionPane.showInputDialog(null, LocalizedText.enter_googleapikey, LocalizedText.missing_data, JOptionPane.QUESTION_MESSAGE);
-			
-			if(googlePlacesAPIKey == null || googlePlacesAPIKey.isEmpty()) {
-				throw new Exception(LocalizedText.missing_data+": "+LocalizedText.googleapikey_required);
+
+			if (googlePlacesAPIKey == null || googlePlacesAPIKey.isEmpty()) {
+				throw new Exception(LocalizedText.missing_data + ": " + LocalizedText.googleapikey_required);
 			}
 		}
 	}
 
-	/**	
+	/**
 	 * Saves all properties to the configuration file
 	 */
-	public static void saveToFile() {
+	public static void saveToFile() throws IOException {
+		ObjectOutputStream output = null;
 		try {
-			ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(configFile));
+			output = new ObjectOutputStream(new FileOutputStream(configFile));
 
 			output.writeObject(sequence);
 			output.writeObject(horoscopeProperties);
@@ -85,9 +86,10 @@ public class PropertyManager {
 			output.writeObject(weatherProperties);
 			output.writeObject(googlePlacesAPIKey);
 
-			output.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw e;
+		} finally {
+			if (output != null) output.close();
 		}
 	}
 
@@ -122,11 +124,11 @@ public class PropertyManager {
 	public static WeatherProperties getWeatherProperties() {
 		return weatherProperties;
 	}
-	
+
 	public static void setGooglePlacesAPIKey(String googlePlacesAPIKey) {
 		PropertyManager.googlePlacesAPIKey = googlePlacesAPIKey;
 	}
-	
+
 	public static String getGooglePlacesAPIKey() {
 		return googlePlacesAPIKey;
 	}

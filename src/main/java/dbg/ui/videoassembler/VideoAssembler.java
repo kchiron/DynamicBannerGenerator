@@ -5,6 +5,7 @@ import dbg.data.media.element.imported.ImageElement;
 import dbg.data.media.element.imported.VideoElement;
 import dbg.data.property.PropertyManager;
 import dbg.data.property.VideoOutputProperties;
+import dbg.exception.UnknownOperatingSystem;
 import dbg.ffmpeg.FFmpegConcat;
 import dbg.ffmpeg.FFmpegVideoData;
 import dbg.ui.LocalizedText;
@@ -16,8 +17,10 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class VideoAssembler extends SwingWorker<File, String> {
 
@@ -112,7 +115,7 @@ public class VideoAssembler extends SwingWorker<File, String> {
 	}
 
 	@Override
-	protected File doInBackground() {
+	protected File doInBackground() throws InterruptedException, ExecutionException, UnknownOperatingSystem, IOException {
 		try {
 			final Date date = new java.util.Date();
 			final File videoOutput = new File(videoOutputProperties.getOutputFolder().getAbsoluteFile(), "concat-" + date.getTime());
@@ -134,8 +137,8 @@ public class VideoAssembler extends SwingWorker<File, String> {
 			return concat.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
+			throw e;
 		}
-		return null;
 	}
 
 	@Override

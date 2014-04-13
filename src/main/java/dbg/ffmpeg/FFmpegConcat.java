@@ -10,10 +10,7 @@ import dbg.ffmpeg.FFmpeg.OutputProcessor;
 import dbg.ui.LocalizedText;
 import org.apache.commons.io.FilenameUtils;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,7 +40,7 @@ public abstract class FFmpegConcat {
 	 * @throws UnknownOperatingSystem
 	 * @throws ExecutionException
 	 */
-	public File execute() throws IOException, InterruptedException, UnknownOperatingSystem, ExecutionException {
+	public File execute() throws IOException, FileNotFoundException, InterruptedException, UnknownOperatingSystem, ExecutionException {
 		//final MediaSequence sequence = PropertyManager.getSequence();
 		//final String videoSize = PropertyManager.getVideoOutputProperties().getVideoSize();
 		final String videoBitRate =
@@ -69,145 +66,152 @@ public abstract class FFmpegConcat {
 		 * Part one: convert every media element to same video format
 		 */
 		final List<File> concatFiles = new ArrayList<>();
-		final List<File> temporaryGeneratedImages = new ArrayList<>();
-		final File videoList = File.createTempFile("DBG-video-list", ".txt");
+		final File videoListFile = File.createTempFile("DBG-video-list", ".txt");
+		final List<File> temporaryFiles = new ArrayList<>(Arrays.asList(videoListFile));
 		progressState.changeState(LocalizedText.converting_elements, 25);
 		progressState.setProgress(5);
 		{
 			final List<Future<Integer>> conversions = new ArrayList<>();
 			final ExecutorService executor = Executors.newFixedThreadPool(3);
 
-			FileWriter fs = new FileWriter(videoList);
-			for (final MediaElement element : mediaSequence) {
-				final List<String> ffArgs = new ArrayList<>();
-				File mediaFile = null;
-				FFmpegVideoData mediaFileMetaData = null;
+			FileWriter fs = null;
+			try {
+				fs = new FileWriter(videoListFile);
 
-				// If the media element is an image (or a soon generated image)
-				if (element instanceof ImageElement || element instanceof GeneratedMediaElement) {
-					if (element instanceof ImageElement)
-						mediaFile = ((ImageElement) element).getFile();
-					else {
-						try {
-							mediaFile = ((GeneratedMediaElement) element).generateImage();
-							temporaryGeneratedImages.add(mediaFile);
-						} catch (Exception e) {
-							e.printStackTrace();
-							//TODO : warn the user that the image could not be generated
+				for (final MediaElement element : mediaSequence) {
+					final List<String> ffArgs = new ArrayList<>();
+					File mediaFile = null;
+					FFmpegVideoData mediaFileMetaData = null;
+
+					// If the media element is an image (or a soon generated image)
+					if (element instanceof ImageElement || element instanceof GeneratedMediaElement) {
+						if (element instanceof ImageElement)
+							mediaFile = ((ImageElement) element).getFile();
+						else {
+							try {
+								mediaFile = ((GeneratedMediaElement) element).generateImage();
+								temporaryFiles.add(mediaFile);
+							} catch (Exception e) {
+								e.printStackTrace();
+								//TODO : warn the user that the image could not be generated
+							}
+						}
+						mediaFileMetaData = FFmpeg.getVideoData(mediaFile);
+
+						if (mediaFile != null) {
+							ffArgs.addAll(Arrays.asList(
+									"-loop", "1",
+									"-f", "image2",
+									"-i", mediaFile.getAbsolutePath(),
+									"-t", Integer.toString(element.getDuration()),
+									"-r", "1"
+							));
+
+							// If the image is not same size as asked => resize during conversion to video
+							if (!mediaFileMetaData.getSize().equals(videoSize)) {
+								ffArgs.add("-s");
+								ffArgs.add(videoSize);
+								//System.out.println("Resizing [" + element + "] from: " + mediaFileMetaData.getSize() + " to:" + videoSize);
+							}
+
+							ffArgs.add("-c:v");
+							ffArgs.add("mpeg2video");
 						}
 					}
-					mediaFileMetaData = FFmpeg.getVideoData(mediaFile);
+					// If the media element is a video
+					else if (element instanceof VideoElement) {
+						VideoElement video = ((VideoElement) element);
+						mediaFile = video.getFile();
+						mediaFileMetaData = FFmpeg.getVideoData(mediaFile);
 
-					if (mediaFile != null) {
 						ffArgs.addAll(Arrays.asList(
-								"-loop", "1",
-								"-f", "image2",
 								"-i", mediaFile.getAbsolutePath(),
-								"-t", Integer.toString(element.getDuration()),
-								"-r", "1"
+								"-an"
 						));
 
-						// If the image is not same size as asked => resize during conversion to video
+						// If the video is not same size as asked => resize during conversion
+						//  => If a video need to be resized it also have to be reencoded (no fast conversion)
+						boolean resized = false;
 						if (!mediaFileMetaData.getSize().equals(videoSize)) {
 							ffArgs.add("-s");
 							ffArgs.add(videoSize);
 							//System.out.println("Resizing [" + element + "] from: " + mediaFileMetaData.getSize() + " to:" + videoSize);
+							resized = true;
 						}
 
-						ffArgs.add("-c:v");
-						ffArgs.add("mpeg2video");
-					}
-				}
-				// If the media element is a video
-				else if (element instanceof VideoElement) {
-					VideoElement video = ((VideoElement) element);
-					mediaFile = video.getFile();
-					mediaFileMetaData = FFmpeg.getVideoData(mediaFile);
-
-					ffArgs.addAll(Arrays.asList(
-							"-i", mediaFile.getAbsolutePath(),
-							"-an"
-					));
-
-					// If the video is not same size as asked => resize during conversion
-					//  => If a video need to be resized it also have to be reencoded (no fast conversion)
-					boolean resized = false;
-					if (!mediaFileMetaData.getSize().equals(videoSize)) {
-						ffArgs.add("-s");
-						ffArgs.add(videoSize);
-						//System.out.println("Resizing [" + element + "] from: " + mediaFileMetaData.getSize() + " to:" + videoSize);
-						resized = true;
-					}
-
-					/*
-					* conversion options (with fast conversion if possible)
-					*/
-					// If the video is already in mpeg2video format => no encoding at all (fastest)
-					if (!resized && mediaFileMetaData.getCodec().contains("mpeg2video")) {
-						ffArgs.add("-c:v");
-						ffArgs.add("copy");
-					}
-					// If the video has mp4 codec => copy the video with few modification (faster)
-					else if (!resized && (mediaFileMetaData.getCodec().contains("mpeg4") || mediaFileMetaData.getCodec().contains("h264"))) {
-						ffArgs.addAll(Arrays.asList(
-								"-c:v", "copy",
-								"-bsf:v", "h264_mp4toannexb"
-						));
-					}
-					// Else encode the video to mpeg2video (slower)
-					else {
-						ffArgs.add("-c:v");
-						ffArgs.add("mpeg2video");
-					}
-
-				}
-
-				// Prepare FFmpeg conversion and launch
-				if (ffArgs.size() > 1) {
-					if (mediaFileMetaData == null)
-						if (!mediaFileMetaData.getSize().equals(videoSize)) {
-							ffArgs.add("-s");
-							ffArgs.add(videoSize);
-							System.out.println("Resizing [" + element + "]");
+						/*
+						* conversion options (with fast conversion if possible)
+						*/
+						// If the video is already in mpeg2video format => no encoding at all (fastest)
+						if (!resized && mediaFileMetaData.getCodec().contains("mpeg2video")) {
+							ffArgs.add("-c:v");
+							ffArgs.add("copy");
+						}
+						// If the video has mp4 codec => copy the video with few modification (faster)
+						else if (!resized && (mediaFileMetaData.getCodec().contains("mpeg4") || mediaFileMetaData.getCodec().contains("h264"))) {
+							ffArgs.addAll(Arrays.asList(
+									"-c:v", "copy",
+									"-bsf:v", "h264_mp4toannexb"
+							));
+						}
+						// Else encode the video to mpeg2video (slower)
+						else {
+							ffArgs.add("-c:v");
+							ffArgs.add("mpeg2video");
 						}
 
-					ffArgs.add("-f");
-					ffArgs.add("mpegts");
+					}
 
-					File outputFile = File.createTempFile("DBG-tmp-video", ".ts");
-					ffArgs.add(outputFile.getAbsolutePath());
-					ffArgs.add("-y");
-
-					concatFiles.add(outputFile);
-					fs.write("file '" + outputFile.getAbsolutePath() + "'\n");
-
-					// Launch FFmpeg conversion to video
-					final File finalMediaFile = mediaFile;
-					final OutputProcessor debugOutFile = new OutputProcessor() {
-						@Override
-						public Object call() throws Exception {
-							PrintWriter writer = new PrintWriter("log-"+finalMediaFile.getName()+".txt", "UTF-8");
-							String line;
-							try {
-								while ((line = processStdErr.readLine()) != null) {
-									writer.println(line);
-								}
-							} catch (IOException e) {
-								e.printStackTrace();
+					// Prepare FFmpeg conversion and launch
+					if (ffArgs.size() > 1) {
+						if (mediaFileMetaData == null)
+							if (!mediaFileMetaData.getSize().equals(videoSize)) {
+								ffArgs.add("-s");
+								ffArgs.add(videoSize);
+								System.out.println("Resizing [" + element + "]");
 							}
-							writer.close();
-							return null;
-						}
-					};
-					conversions.add(executor.submit(new Callable<Integer>() {
-						@Override
-						public Integer call() throws Exception {
-							return FFmpeg.execute(ffArgs, debugOutFile, null);
-						}
-					}));
+
+						ffArgs.add("-f");
+						ffArgs.add("mpegts");
+
+						File outputFile = File.createTempFile("DBG-tmp-video", ".ts");
+						ffArgs.add(outputFile.getAbsolutePath());
+						ffArgs.add("-y");
+
+						concatFiles.add(outputFile);
+						fs.write("file '" + outputFile.getAbsolutePath() + "'\n");
+
+						// Launch FFmpeg conversion to video
+						final File finalMediaFile = mediaFile;
+						final OutputProcessor debugOutFile = new OutputProcessor() {
+							@Override
+							public Object call() throws Exception {
+								PrintWriter writer = new PrintWriter("log-" + finalMediaFile.getName() + ".txt", "UTF-8");
+								String line;
+								try {
+									while ((line = processStdErr.readLine()) != null) {
+										writer.println(line);
+									}
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+								writer.close();
+								return null;
+							}
+						};
+						conversions.add(executor.submit(new Callable<Integer>() {
+							@Override
+							public Integer call() throws Exception {
+								return FFmpeg.execute(ffArgs, debugOutFile, null);
+							}
+						}));
+					}
 				}
+			} catch (IOException e) {
+				throw e;
+			} finally {
+				if (fs != null)	fs.close();
 			}
-			fs.close();
 
 			//Actions to do if the process is killed
 			actionAfterInteruption = new Thread() {
@@ -216,8 +220,8 @@ public abstract class FFmpegConcat {
 					// Delete temporary files and output file
 					deleteAllFile(new ArrayList<File>() {{
 						addAll(concatFiles);
-						addAll(temporaryGeneratedImages);
-						add(videoList);
+						addAll(temporaryFiles);
+						add(videoListFile);
 						add(outputFile);
 					}});
 				}
@@ -237,7 +241,7 @@ public abstract class FFmpegConcat {
 				if (res == null || res != 0) {
 					System.out.println("FFMPEG[" + conversions.indexOf(conversion) + "] exit code : " + res);
 					deleteAllFile(concatFiles);
-					deleteAllFile(temporaryGeneratedImages);
+					deleteAllFile(temporaryFiles);
 					return null;
 				}
 				i++;
@@ -253,7 +257,7 @@ public abstract class FFmpegConcat {
 			List<String> ffArgs = new ArrayList<>(Arrays.asList(
 					"-y",
 					"-f", "concat",
-					"-i", videoList.getAbsolutePath(),
+					"-i", videoListFile.getAbsolutePath(),
 					"-an",
 					"-c:v", videoCodec,
 					"-preset", "ultrafast",
@@ -287,7 +291,8 @@ public abstract class FFmpegConcat {
 								return null;
 							}
 						}
-					} catch (IOException e) {}
+					} catch (IOException e) {
+					}
 					return null;
 				}
 
@@ -304,8 +309,8 @@ public abstract class FFmpegConcat {
 			// Delete temporary files
 			deleteAllFile(new ArrayList<File>() {{
 				addAll(concatFiles);
-				addAll(temporaryGeneratedImages);
-				add(videoList);
+				addAll(temporaryFiles);
+				add(videoListFile);
 			}});
 		}
 
@@ -322,6 +327,7 @@ public abstract class FFmpegConcat {
 
 	/**
 	 * Deletes all files given in parameter
+	 *
 	 * @param filesToDelete
 	 */
 	private boolean deleteAllFile(List<File> filesToDelete) {
@@ -338,7 +344,7 @@ public abstract class FFmpegConcat {
 		State currentState;
 
 		void changeState(String description, int weight) {
-			if(currentState != null)
+			if (currentState != null)
 				progress = currentState.progress * currentState.weight / 100;
 			currentState = new State(description, weight);
 			FFmpegConcat.this.setProgress(currentState.description, progress);
