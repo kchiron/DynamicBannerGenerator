@@ -33,12 +33,12 @@ public class SequencePanel extends TabContentPanel {
 	private final JLabel sequenceInfo;
 
 	public SequencePanel(final JFrame parent) {
-		super(new MigLayout("ins 0, gap 0px 2px", "[][][grow][][]", "[][grow][]"), LocalizedText.sequence_settings);
+		super(new MigLayout("ins 0, gap 0px 2px", "[][][grow][][]", "[][grow][]"), LocalizedText.get("sequence_settings"));
 		setMinimumSize(new Dimension(170, (int)getMinimumSize().getHeight()));
 
 		this.parentFrame = parent;
 		
-		add(new JLabel(LocalizedText.playlist), "cell 0 0 5 1, grow");
+		add(new JLabel(LocalizedText.get("playlist")), "cell 0 0 5 1, grow");
 		
 		final Border fancy = new CompoundBorder(
 			// Outside border 1px bottom light color
@@ -140,7 +140,7 @@ public class SequencePanel extends TabContentPanel {
 	}
 	
 	private void updateSequenceInfo() {
-		sequenceInfo.setText(this.getSequence().size() + " " + LocalizedText.elements);
+		sequenceInfo.setText(this.getSequence().size() + " " + LocalizedText.get("elements"));
 	}
 	
 	/**

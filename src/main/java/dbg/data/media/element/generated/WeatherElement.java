@@ -25,13 +25,13 @@ public class WeatherElement extends GeneratedMediaElement {
 		
 		switch (type) {
 			case CITY:
-				setTitle(LocalizedText.city_weather);
+				setTitle(LocalizedText.get("city_weather"));
 				break;
 			case REGIONAL:
-				setTitle(LocalizedText.regional_weather);
+				setTitle(LocalizedText.get("regional_weather"));
 				break;
 			case NATIONAL:
-				setTitle(LocalizedText.national_weather);
+				setTitle(LocalizedText.get("national_weather"));
 				break;
 		}
 	}

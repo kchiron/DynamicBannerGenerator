@@ -1,11 +1,11 @@
 package dbg.data.property;
 
+import dbg.data.WeatherLocation;
+import dbg.ui.LocalizedText;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
-
-import dbg.data.WeatherLocation;
-import dbg.ui.LocalizedText;
 
 public class WeatherProperties implements Serializable {
 
@@ -77,9 +77,9 @@ public class WeatherProperties implements Serializable {
 	
 	/** Enums types of weather forcast (city, regional and national) */
 	public enum Type {
-		CITY(LocalizedText.city_weather), 
-		REGIONAL(LocalizedText.regional_weather), 
-		NATIONAL(LocalizedText.national_weather);
+		CITY(LocalizedText.get("city_weather")),
+		REGIONAL(LocalizedText.get("regional_weather")),
+		NATIONAL(LocalizedText.get("national_weather"));
 		
 		private String title;
 

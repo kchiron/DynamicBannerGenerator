@@ -21,12 +21,14 @@ public abstract class ImportedMediaElement extends MediaElement {
 	}
 
 	public File getFile() {
-		return new File(filePath);
+		return filePath != null ? new File(filePath) : null;
 	}
 	
 	public void setFile(File inportedFile) {
-		URI outputRelativeURI = new File("").toURI().relativize(inportedFile.toURI());
-		this.filePath = outputRelativeURI.getPath();
-		setSubTitle(inportedFile.getName());
+		if(inportedFile != null) {
+			URI outputRelativeURI = new File("").toURI().relativize(inportedFile.toURI());
+			this.filePath = outputRelativeURI.getPath();
+			setSubTitle(inportedFile.getName());
+		}
 	}
 }

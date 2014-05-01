@@ -1,23 +1,5 @@
 package dbg.ui.settings;
 
-import java.awt.Dialog;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.filechooser.FileSystemView;
-
-import org.apache.commons.io.FilenameUtils;
-
 import dbg.data.media.element.imported.ImageElement;
 import dbg.data.media.element.imported.ImportedMediaElement;
 import dbg.data.media.element.imported.VideoElement;
@@ -27,6 +9,16 @@ import dbg.ui.settings.form.UnitJSpinner;
 import dbg.ui.settings.form.filechooser.MediaFileChooser;
 import dbg.ui.settings.panel.SequencePanel;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.io.FilenameUtils;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Setting window used to edit or create an <code>ImportedMediaElement</code>
@@ -51,12 +43,12 @@ public class AddModifyMediaElementWindow extends JDialog {
 	public AddModifyMediaElementWindow(JFrame parent, final SequencePanel sequencePanel) {
 		super(parent, Dialog.ModalityType.DOCUMENT_MODAL);
 		
-		setTitle(LocalizedText.new_media);
+		setTitle(LocalizedText.get("new_media"));
 
 		getContentPane().setLayout(new MigLayout("ins 10, hidemode 2", "[130]10[250]", ""));
 
 		{//Element title
-			getContentPane().add(new JLabel(LocalizedText.title+" :"), "alignx right");
+			getContentPane().add(new JLabel(LocalizedText.get("title") + " :"), "alignx right");
 			
 			txtTitle = new JTextField();
 			getContentPane().add(txtTitle, "wrap, wmax 180, growx");
@@ -64,17 +56,17 @@ public class AddModifyMediaElementWindow extends JDialog {
 
 		JButton btnSelectInportedFile;
 		{//Element file
-			getContentPane().add(new JLabel(LocalizedText.video_or_image_file+" :"), "alignx right");
+			getContentPane().add(new JLabel(LocalizedText.get("video_or_image_file") + " :"), "alignx right");
 			
-			lblInportedFileName = new JLabel(LocalizedText.no_file_selected);
+			lblInportedFileName = new JLabel(LocalizedText.get("no_file_selected"));
 			getContentPane().add(lblInportedFileName, "wrap, growx, wmax 200, gap 10 10");
 
-			btnSelectInportedFile = new JButton(LocalizedText.choose_video_or_image_file);
+			btnSelectInportedFile = new JButton(LocalizedText.get("choose_video_or_image_file"));
 			getContentPane().add(btnSelectInportedFile, "skip 1, wrap");
 		}
 
 		{//Display time (for ImageElement only)
-			lblDisplayTime = new JLabel(LocalizedText.display_time+" :");
+			lblDisplayTime = new JLabel(LocalizedText.get("display_time") + " :");
 			lblDisplayTime.setVisible(false);
 			getContentPane().add(lblDisplayTime, "alignx right");
 			
@@ -88,10 +80,10 @@ public class AddModifyMediaElementWindow extends JDialog {
 		{//Cancel and OK buttons
 			getContentPane().add(new JLabel());
 			
-			btnCancel = new JButton(LocalizedText.cancel);
+			btnCancel = new JButton(LocalizedText.get("action.cancel"));
 			getContentPane().add(btnCancel, "alignx right, split");
 
-			btnOk = new JButton(LocalizedText.ok);
+			btnOk = new JButton(LocalizedText.get("action.ok"));
 			getContentPane().add(btnOk);
 		}
 		
@@ -102,7 +94,7 @@ public class AddModifyMediaElementWindow extends JDialog {
 		getRootPane().setDefaultButton(btnOk);
 		
 		//SelectInportedFile button listener
-		final MediaFileChooser fileChooser = new MediaFileChooser(LocalizedText.choose_video_or_image_file, MediaFileChooser.Type.IMAGE, MediaFileChooser.Type.VIDEO);
+		final MediaFileChooser fileChooser = new MediaFileChooser(LocalizedText.get("choose_video_or_image_file"), MediaFileChooser.Type.IMAGE, MediaFileChooser.Type.VIDEO);
 		btnSelectInportedFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -124,7 +116,7 @@ public class AddModifyMediaElementWindow extends JDialog {
 							swithToVideoElement();
 						}
 					} catch (IOException e1) {
-						JOptionPane.showMessageDialog(null, LocalizedText.error_file_not_found, LocalizedText.file_not_found, JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, LocalizedText.get("error.message.file_not_found"), LocalizedText.get("error.title.file_not_found"), JOptionPane.ERROR_MESSAGE);
 						e1.printStackTrace();
 					}
 				}
@@ -139,7 +131,7 @@ public class AddModifyMediaElementWindow extends JDialog {
 
 				String title = txtTitle.getText();
 				if (title.equals(""))
-					errors.add(LocalizedText.error_empty_title);
+					errors.add(LocalizedText.get("error.message.empty_title"));
 				else {
 					Class<? extends ImportedMediaElement> elementClass =
 							(importedMediaElement == null) ? VideoElement.class : importedMediaElement.getClass();
@@ -149,23 +141,23 @@ public class AddModifyMediaElementWindow extends JDialog {
 
 
 				if (importedMediaElement == null || importedMediaElement.getFile() == null)
-					errors.add(LocalizedText.error_no_file_selected);
+					errors.add(LocalizedText.get("error.message.no_file_selected"));
 
 				if (importedMediaElement != null && importedMediaElement instanceof ImageElement) {
 					int value = unitDisplayTime.getValue();
 					if (value <= 0)
-						errors.add(LocalizedText.error_display_time_zero);
+						errors.add(LocalizedText.get("error.message.display_time_zero"));
 					else
 						updateData(importedMediaElement.getClass(), null, null, value);
 				}
 
 				if (errors.size() > 0) {
-					String message = LocalizedText.error_please_correct + "\n";
+					String message = LocalizedText.get("error.message.please_correct") + "\n";
 
 					for (String error : errors)
 						message += "- " + error + "\n";
 
-					JOptionPane.showMessageDialog(dialog, message, LocalizedText.missing_information, JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(dialog, message, LocalizedText.get("missing_information"), JOptionPane.ERROR_MESSAGE);
 				} else {
 					if (oldInportedMediaElement != null)
 						sequencePanel.updateElement(oldInportedMediaElement, importedMediaElement);
@@ -186,7 +178,7 @@ public class AddModifyMediaElementWindow extends JDialog {
 
 	public AddModifyMediaElementWindow(JFrame parent, SequencePanel sequencePanel, ImportedMediaElement importedMediaElement) {
 		this(parent, sequencePanel);
-		setTitle(LocalizedText.modify_media);
+		setTitle(LocalizedText.get("modify_media"));
 		this.oldInportedMediaElement = importedMediaElement;
 		updateData(importedMediaElement);
 		
@@ -253,15 +245,15 @@ public class AddModifyMediaElementWindow extends JDialog {
 		if(displayTime > 0 && importedMediaElement instanceof ImageElement)
 			importedMediaElement.setDuration(displayTime);
 		
-		refreshUi();
+		refreshUI();
 	}
 
 	private void updateData(ImportedMediaElement importedMediaElement) {
 		this.importedMediaElement = importedMediaElement;
-		refreshUi();
+		refreshUI();
 	}
 	
-	private void refreshUi() {
+	private void refreshUI() {
 		try {
 			File file = importedMediaElement.getFile();
 			
@@ -270,7 +262,7 @@ public class AddModifyMediaElementWindow extends JDialog {
 			lblInportedFileName.setIcon(view.getSystemIcon(file)); 
 			lblInportedFileName.setToolTipText(file.getAbsolutePath());
 		} catch(NullPointerException e) {
-			lblInportedFileName.setText(LocalizedText.no_file_selected);
+			lblInportedFileName.setText(LocalizedText.get("no_file_selected"));
 			lblInportedFileName.setIcon(null);
 			lblInportedFileName.setToolTipText("");
 		}

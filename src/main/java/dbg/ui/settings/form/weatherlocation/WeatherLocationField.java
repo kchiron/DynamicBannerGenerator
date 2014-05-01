@@ -1,36 +1,23 @@
 package dbg.ui.settings.form.weatherlocation;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.ArrayList;
+import com.claygregory.api.google.places.*;
+import dbg.data.WeatherLocation;
+import dbg.data.property.PropertyManager;
+import dbg.ui.LocalizedText;
+import dbg.ui.settings.form.PlaceHolder;
 
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
-import com.claygregory.api.google.places.AddressComponent;
-import com.claygregory.api.google.places.AutocompleteQueryOptions;
-import com.claygregory.api.google.places.AutocompleteResult;
-import com.claygregory.api.google.places.GooglePlaces;
-import com.claygregory.api.google.places.PlaceDetail;
-import com.claygregory.api.google.places.PlaceDetailResult;
-import com.claygregory.api.google.places.Prediction;
-
-import dbg.data.WeatherLocation;
-import dbg.data.property.PropertyManager;
-import dbg.ui.LocalizedText;
-import dbg.ui.settings.form.PlaceHolder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
 /**
  * Weather location text field handling search and confirmation of the typed location (using Google APIs)
@@ -64,7 +51,7 @@ public class WeatherLocationField extends JPanel {
 
 		{ // Components
 			txtLocation = new JTextField();
-			PlaceHolder placeHolder = new PlaceHolder(LocalizedText.city_zip_code_state, txtLocation, 0.5f);
+			PlaceHolder placeHolder = new PlaceHolder(LocalizedText.get("city_zip_code_state"), txtLocation, 0.5f);
 			placeHolder.changeStyle(Font.ITALIC);
 			add(txtLocation, BorderLayout.CENTER);
 		}

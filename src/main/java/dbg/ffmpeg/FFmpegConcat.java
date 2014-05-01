@@ -68,7 +68,7 @@ public abstract class FFmpegConcat {
 		final List<File> concatFiles = new ArrayList<>();
 		final File videoListFile = File.createTempFile("DBG-video-list", ".txt");
 		final List<File> temporaryFiles = new ArrayList<>(Arrays.asList(videoListFile));
-		progressState.changeState(LocalizedText.converting_elements, 25);
+		progressState.changeState(LocalizedText.get("converting_elements"), 25);
 		progressState.setProgress(5);
 		{
 			final List<Future<Integer>> conversions = new ArrayList<>();
@@ -252,7 +252,7 @@ public abstract class FFmpegConcat {
 		 * Part two: concatenate video files
 		 */
 		int exitCode;
-		progressState.changeState(LocalizedText.concatenating_videos, 75);
+		progressState.changeState(LocalizedText.get("concatenating_videos"), 75);
 		{
 			List<String> ffArgs = new ArrayList<>(Arrays.asList(
 					"-y",

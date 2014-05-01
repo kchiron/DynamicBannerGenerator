@@ -1,18 +1,15 @@
 package dbg.ui.settings.listview.contextmenu;
 
-import java.awt.Desktop;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-
 import dbg.data.media.element.MediaElement;
 import dbg.data.media.element.imported.ImportedMediaElement;
 import dbg.ui.LocalizedText;
 import dbg.ui.settings.listview.ListViewCell;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class ListViewContextMenu extends JPopupMenu {
 
@@ -21,15 +18,15 @@ public class ListViewContextMenu extends JPopupMenu {
 	public ListViewContextMenu(final MediaElement element, final ListViewCell parent) {
 		if(element instanceof ImportedMediaElement) {
 			//Remove option
-			JMenuItem remove = new JMenuItem(LocalizedText.remove);
+			JMenuItem remove = new JMenuItem(LocalizedText.get("action.remove"));
 			add(remove);
 			
 			//Edit option
-			JMenuItem edit = new JMenuItem(LocalizedText.edit);
+			JMenuItem edit = new JMenuItem(LocalizedText.get("action.edit"));
 			add(edit);	
 			
 			//Show in Finder/explorer
-			JMenuItem show = new JMenuItem(LocalizedText.show);
+			JMenuItem show = new JMenuItem(LocalizedText.get("action.show"));
 			add(show);
 			
 			//Edit listener
@@ -52,9 +49,9 @@ public class ListViewContextMenu extends JPopupMenu {
 					try {
 						Desktop.getDesktop().open(((ImportedMediaElement) element).getFile());
 					} catch (IllegalArgumentException e1) {
-						JOptionPane.showMessageDialog(null, LocalizedText.error_file_not_found, LocalizedText.error, JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, LocalizedText.get("error.message.file_not_found"), LocalizedText.get("error.title.file_not_found"), JOptionPane.ERROR_MESSAGE);
 					} catch (IOException e1) {
-						JOptionPane.showMessageDialog(null, LocalizedText.error_cant_display, LocalizedText.error, JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, LocalizedText.get("error.message.cant_display"), LocalizedText.get("error"), JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			});

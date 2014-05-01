@@ -1,6 +1,7 @@
 package dbg.ui.settings;
 
 import com.ezware.dialog.task.TaskDialogs;
+import dbg.Application;
 import dbg.data.property.PropertyManager;
 import dbg.ui.LocalizedText;
 import dbg.ui.settings.panel.*;
@@ -10,14 +11,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class SettingsWindow extends JFrame {
 
-	private static final long serialVersionUID = 1L;
+	private static SettingsWindow instance;
 
-	public SettingsWindow() {
-		super(LocalizedText.settings);
+	public static SettingsWindow getInstance() {
+		if (instance == null)
+			instance = new SettingsWindow();
+		return instance;
+	}
+
+	private SettingsWindow() {
+		super(LocalizedText.get("settings"));
 		setLayout(new BorderLayout());
 
 		{//Top part
@@ -45,7 +53,7 @@ public class SettingsWindow extends JFrame {
 		{//Bottom part
 			final JPanel pnlBottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-			JButton btnLaunchVideoAssembler = new JButton(LocalizedText.assemble_video);
+			JButton btnLaunchVideoAssembler = new JButton(LocalizedText.get("assemble_video"));
 			btnLaunchVideoAssembler.setHorizontalAlignment(JButton.LEFT);
 			btnLaunchVideoAssembler.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -60,8 +68,8 @@ public class SettingsWindow extends JFrame {
 					try {
 						vaWindow.get();
 					} catch (Exception ex) {
-						TaskDialogs.build(SettingsWindow.this, LocalizedText.video_assembly_error, "")
-								.title(LocalizedText.error)
+						TaskDialogs.build(SettingsWindow.this, LocalizedText.get("video_assembly_error"), "")
+								.title(LocalizedText.get("error"))
 								.showException(ex);
 					}
 				}
@@ -69,11 +77,11 @@ public class SettingsWindow extends JFrame {
 			pnlBottom.add(btnLaunchVideoAssembler);
 
 			// Save button
-			JButton btnSave = new JButton(LocalizedText.save_settings);
+			JButton btnSave = new JButton(LocalizedText.get("action.save_settings"));
 			pnlBottom.add(btnSave);
 			btnSave.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent paramActionEvent) {
-					save();
+					Application.save();
 				}
 			});
 
@@ -88,25 +96,79 @@ public class SettingsWindow extends JFrame {
 		setMinimumSize(new Dimension(640, 420));
 		setBounds(100, 100, 673, 425);
 		setLocationRelativeTo(null);
-	}
 
-	public void save() {
+
+		final SystemTray tray = SystemTray.getSystemTray();
+		TrayIcon trayIcon = null;
+
+		//Initialize System tray menu
+		if (SystemTray.isSupported()) {
+			final PopupMenu minimizedPopupMenu;
+			minimizedPopupMenu = new PopupMenu();
+			MenuItem maximize = new MenuItem(LocalizedText.get("open_setting_window"));
+			maximize.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					maximize();
+				}
+			});
+			minimizedPopupMenu.add(maximize);
+			MenuItem quit = new MenuItem(LocalizedText.get("action.quit"));
+			quit.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					Application.exit();
+				}
+			});
+			minimizedPopupMenu.add(quit);
+
+			trayIcon = new TrayIcon(new ImageIcon(Application.class.getResource("icon.png")).getImage());
+			trayIcon.setPopupMenu(minimizedPopupMenu);
+		}
+
+		//Add System stray menu
 		try {
-			PropertyManager.saveToFile();
-			JOptionPane.showMessageDialog(SettingsWindow.this, LocalizedText.configuration_saved_success, LocalizedText.saving, JOptionPane.INFORMATION_MESSAGE);
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(SettingsWindow.this, LocalizedText.configuration_saved_failed, LocalizedText.saving, JOptionPane.ERROR_MESSAGE);
+			if(trayIcon == null) throw new NullPointerException();
+
+			tray.add(trayIcon);
+			addWindowListener(new WindowAdapter() {
+				public void windowClosing(WindowEvent paramWindowEvent) {
+					minimize();
+					Application.save();
+				}
+			});
+		} catch (Exception e) {
+			addWindowListener(new WindowAdapter() {
+				public void windowClosing(WindowEvent paramWindowEvent) {
+					toFront();
+					requestFocus();
+					switch (
+							JOptionPane.showOptionDialog(
+									SettingsWindow.this,
+									LocalizedText.get("confirm_close"),
+									"",
+									JOptionPane.YES_NO_CANCEL_OPTION,
+									JOptionPane.WARNING_MESSAGE,
+									null,
+									new String[]{LocalizedText.get("action.save_n_quit"), LocalizedText.get("action.quit"), LocalizedText.get("action.cancel")},
+									LocalizedText.get("action.save"))
+							) {
+						case 1:
+							Application.exit();
+						case 0:
+							Application.saveAndExit();
+						default:
+							return;
+					}
+				}
+			});
 		}
 	}
 
-	public void saveAndExit() {
-		save();
-		dispose();
+	public void maximize() {
+		this.setVisible(true);
 	}
 
-	@Override
-	public void dispose() {
-		super.dispose();
-		System.exit(0);
+	public void minimize() {
+		this.setVisible(false);
 	}
+
 }

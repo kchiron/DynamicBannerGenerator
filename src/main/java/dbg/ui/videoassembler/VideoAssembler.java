@@ -41,7 +41,7 @@ public class VideoAssembler extends SwingWorker<File, String> {
 		// Initialize window
 		{
 			window = new JDialog(parent, true);
-			window.setTitle(LocalizedText.video_assembler);
+			window.setTitle(LocalizedText.get("video_assembler"));
 			window.setUndecorated(true);
 
 			((JComponent)window.getContentPane()).setBorder(
@@ -59,7 +59,7 @@ public class VideoAssembler extends SwingWorker<File, String> {
 			// Window components
 			{
 				// Dialog title label
-				JLabel lblTilte = new JLabel(LocalizedText.video_assembler);
+				JLabel lblTilte = new JLabel(LocalizedText.get("video_assembler"));
 				Font custom = lblTilte.getFont().deriveFont(15f).deriveFont(Font.BOLD);
 				lblTilte.setFont(custom);
 				lblTilte.setHorizontalAlignment(SwingConstants.CENTER);
@@ -76,7 +76,7 @@ public class VideoAssembler extends SwingWorker<File, String> {
 				window.add(lblCurrentTaskName, "cell 0 2 2 1,grow");
 
 				// Cancel button
-				JButton btnCancel = new JButton(LocalizedText.cancel);
+				JButton btnCancel = new JButton(LocalizedText.get("action.cancel"));
 				window.add(btnCancel, "cell 1 3, alignx right, aligny bottom");
 
 				btnCancel.addActionListener(new AbstractAction() {

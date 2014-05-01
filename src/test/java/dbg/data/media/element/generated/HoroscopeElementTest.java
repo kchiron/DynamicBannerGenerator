@@ -43,7 +43,7 @@ public class HoroscopeElementTest {
 		System.out.println("getContent");
 		HoroscopeElement instance = new HoroscopeElement(12);
 		String expResult = "";
-		String result = instance.getContent(LocalizedText.aries);
+		String result = instance.getContent(LocalizedText.get("aries"));
 		//assertEquals(expResult, result);
 		// TODO review the generated test code and remove the default call to fail.
 		System.out.println("Result : " + result);

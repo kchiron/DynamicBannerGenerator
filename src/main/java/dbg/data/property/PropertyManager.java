@@ -64,10 +64,10 @@ public class PropertyManager {
 		}
 
 		if (googlePlacesAPIKey == null || googlePlacesAPIKey.isEmpty()) {
-			googlePlacesAPIKey = JOptionPane.showInputDialog(null, LocalizedText.enter_googleapikey, LocalizedText.missing_data, JOptionPane.QUESTION_MESSAGE);
+			googlePlacesAPIKey = JOptionPane.showInputDialog(null, LocalizedText.get("enter_googleapikey"), LocalizedText.get("missing_data"), JOptionPane.QUESTION_MESSAGE);
 
 			if (googlePlacesAPIKey == null || googlePlacesAPIKey.isEmpty()) {
-				throw new Exception(LocalizedText.missing_data + ": " + LocalizedText.googleapikey_required);
+				throw new Exception(LocalizedText.get("missing_data") + ": " + LocalizedText.get("googleapikey_required"));
 			}
 		}
 	}
