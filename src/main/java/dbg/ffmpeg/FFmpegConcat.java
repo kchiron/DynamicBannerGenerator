@@ -8,9 +8,13 @@ import dbg.data.media.element.imported.VideoElement;
 import dbg.exception.UnknownOperatingSystem;
 import dbg.ffmpeg.FFmpeg.OutputProcessor;
 import dbg.ui.LocalizedText;
+import dbg.ui.util.Logger;
 import org.apache.commons.io.FilenameUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,6 +47,9 @@ public abstract class FFmpegConcat {
 	public File execute() throws IOException, FileNotFoundException, InterruptedException, UnknownOperatingSystem, ExecutionException {
 		//final MediaSequence sequence = PropertyManager.getSequence();
 		//final String videoSize = PropertyManager.getVideoOutputProperties().getVideoSize();
+		final String assemblyID = String.valueOf(System.currentTimeMillis() / 1000);
+		final Logger logger = new Logger(assemblyID + "-video-assembly");
+
 		final String videoBitRate =
 				(outputVideoOptions != null && outputVideoOptions.getBitRate() != null) ?
 						outputVideoOptions.getBitRate() : "450k";
@@ -62,6 +69,7 @@ public abstract class FFmpegConcat {
 		//Start
 		final ProgressState progressState = new ProgressState();
 
+		logger.info("Preparing media elements");
 		/*
 		 * Part one: convert every media element to same video format
 		 */
@@ -85,20 +93,20 @@ public abstract class FFmpegConcat {
 
 					// If the media element is an image (or a soon generated image)
 					if (element instanceof ImageElement || element instanceof GeneratedMediaElement) {
-						if (element instanceof ImageElement)
+						if (element instanceof ImageElement) {
 							mediaFile = ((ImageElement) element).getFile();
-						else {
+						} else {
 							try {
 								mediaFile = ((GeneratedMediaElement) element).generateImage();
 								temporaryFiles.add(mediaFile);
 							} catch (Exception e) {
-								e.printStackTrace();
-								//TODO : warn the user that the image could not be generated
+								logger.error("Error while generating element : " + element.getTitle() + " [" + element.getSubTitle() + "] ");
+								logger.error(e);
 							}
 						}
-						mediaFileMetaData = FFmpeg.getVideoData(mediaFile);
 
 						if (mediaFile != null) {
+							mediaFileMetaData = FFmpeg.getVideoData(mediaFile);
 							ffArgs.addAll(Arrays.asList(
 									"-loop", "1",
 									"-f", "image2",
@@ -159,7 +167,15 @@ public abstract class FFmpegConcat {
 							ffArgs.add("-c:v");
 							ffArgs.add("mpeg2video");
 						}
+					}
 
+					if (mediaFile == null) {
+						logger.error("Could not prepare media file for element : " + element.getTitle() + "[" + element.getSubTitle() + "]");
+						continue;
+					}
+					if (!mediaFile.exists()) {
+						logger.error("File not found => " + mediaFile.getAbsolutePath());
+						continue;
 					}
 
 					// Prepare FFmpeg conversion and launch
@@ -186,16 +202,17 @@ public abstract class FFmpegConcat {
 						final OutputProcessor debugOutFile = new OutputProcessor() {
 							@Override
 							public Object call() throws Exception {
-								PrintWriter writer = new PrintWriter("log-" + finalMediaFile.getName() + ".txt", "UTF-8");
+								FileWriter writer = new Logger(assemblyID + "-" + finalMediaFile.getName()).getWriter();
 								String line;
 								try {
 									while ((line = processStdErr.readLine()) != null) {
-										writer.println(line);
+										writer.append(line);
 									}
 								} catch (IOException e) {
 									e.printStackTrace();
+								} finally {
+									writer.close();
 								}
-								writer.close();
 								return null;
 							}
 						};
@@ -210,7 +227,7 @@ public abstract class FFmpegConcat {
 			} catch (IOException e) {
 				throw e;
 			} finally {
-				if (fs != null)	fs.close();
+				if (fs != null) fs.close();
 			}
 
 			//Actions to do if the process is killed
@@ -248,6 +265,7 @@ public abstract class FFmpegConcat {
 			}
 		}
 
+		logger.info("Concatenating all elements");
 		/*
 		 * Part two: concatenate video files
 		 */
@@ -322,6 +340,7 @@ public abstract class FFmpegConcat {
 			System.out.println("FFmpeg exit code : " + exitCode);
 
 		deleteAllFile(Arrays.asList(outputFile));
+		logger.info("Done");
 		return null;
 	}
 
@@ -339,6 +358,9 @@ public abstract class FFmpegConcat {
 
 	public abstract void setProgress(String message, int progress);
 
+	/**
+	 * Keeps track of progress during assembly
+	 */
 	class ProgressState {
 		int progress = 0;
 		State currentState;
