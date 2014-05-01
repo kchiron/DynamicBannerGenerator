@@ -1,16 +1,9 @@
 package dbg.ui.util;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Font;
-import java.awt.Rectangle;
-
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-import javax.swing.UIManager;
-
 import dbg.ui.LocalizedText;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Class regrouping swing UI utilities 
@@ -27,18 +20,18 @@ public class UiUtils {
 			e1.printStackTrace();
 		}
 
-		UIManager.put("FileChooser.saveButtonText", LocalizedText.save);
-		UIManager.put("FileChooser.openButtonText", LocalizedText.open);
-		UIManager.put("FileChooser.cancelButtonText", LocalizedText.cancel);
-		UIManager.put("FileChooser.updateButtonText", LocalizedText.reload);
-		UIManager.put("FileChooser.helpButtonText", LocalizedText.help);
-		UIManager.put("FileChooser.saveButtonToolTipText", LocalizedText.save_the_file);
-		UIManager.put("FileChooser.filesOfTypeLabelText", LocalizedText.file_format);
+		UIManager.put("FileChooser.saveButtonText", LocalizedText.get("action.save"));
+		UIManager.put("FileChooser.openButtonText", LocalizedText.get("action.open"));
+		UIManager.put("FileChooser.cancelButtonText", LocalizedText.get("action.cancel"));
+		UIManager.put("FileChooser.updateButtonText", LocalizedText.get("action.reload"));
+		UIManager.put("FileChooser.helpButtonText", LocalizedText.get("action.help"));
+		UIManager.put("FileChooser.saveButtonToolTipText", LocalizedText.get("action.save_the_file"));
+		UIManager.put("FileChooser.filesOfTypeLabelText", LocalizedText.get("file_format"));
 
-		UIManager.put("OptionPane.cancelButtonText", LocalizedText.cancel);
-		UIManager.put("OptionPane.noButtonText", LocalizedText.no);
-		UIManager.put("OptionPane.okButtonText", LocalizedText.ok);
-		UIManager.put("OptionPane.yesButtonText", LocalizedText.yes);
+		UIManager.put("OptionPane.cancelButtonText", LocalizedText.get("action.cancel"));
+		UIManager.put("OptionPane.noButtonText", LocalizedText.get("action.no"));
+		UIManager.put("OptionPane.okButtonText", LocalizedText.get("action.ok"));
+		UIManager.put("OptionPane.yesButtonText", LocalizedText.get("action.yes"));
 	}
 
 	/**

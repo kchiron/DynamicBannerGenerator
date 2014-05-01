@@ -1,17 +1,15 @@
 package dbg.ui.settings.panel;
 
-import java.io.File;
-import java.io.IOException;
-
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-
 import dbg.control.VideoOutputControl;
 import dbg.data.property.VideoOutputProperties;
 import dbg.ui.LocalizedText;
 import dbg.ui.settings.form.filechooser.FileChooserField;
 import dbg.ui.settings.form.filechooser.FolderChooser;
 import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Setting panel for the video output
@@ -25,17 +23,17 @@ public class VideoOutputPanel extends TabContentPanel {
 	private final FileChooserField fileChooser;
 
 	public VideoOutputPanel() {
-		super(new MigLayout("ins 10", "[150:150:150]10[]", ""), LocalizedText.video_output_settings);
+		super(new MigLayout("ins 10", "[150:150:150]10[]", ""), LocalizedText.get("video_output_settings"));
 
 		{//Video size select
-			add(new JLabel(LocalizedText.video_size+" :"), "alignx right");
+			add(new JLabel(LocalizedText.get("video_size") + " :"), "alignx right");
 
 			cbVideoSize = new JComboBox<>(VideoOutputProperties.getStandardVideoSize());
 			add(cbVideoSize, "wrap");	
 		}
 
 		{//Video output folder select
-			add(new JLabel(LocalizedText.video_output_folder+" :"), "align right top");
+			add(new JLabel(LocalizedText.get("video_output_folder") + " :"), "align right top");
 
 			File currentDirectory = null;
 			try {
@@ -44,9 +42,9 @@ public class VideoOutputPanel extends TabContentPanel {
 			
 			fileChooser = new FileChooserField(
 				currentDirectory,
-				new FolderChooser(LocalizedText.choose_a_folder), 
-				LocalizedText.choose_a_folder,
-				LocalizedText.no_folder_selected
+				new FolderChooser(LocalizedText.get("choose_a_folder")),
+				LocalizedText.get("choose_a_folder"),
+				LocalizedText.get("no_folder_selected")
 			);
 			add(fileChooser);
 		}

@@ -1,12 +1,13 @@
 package dbg;
+
 import dbg.data.property.PropertyManager;
 import dbg.ui.LocalizedText;
 import dbg.ui.settings.SettingsWindow;
 import dbg.ui.util.UiUtils;
 
 import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.io.IOException;
 
 public class Application {
 
@@ -22,39 +23,34 @@ public class Application {
 					UiUtils.initUIManager();
 					
 					//Creating and running setting window
-					final SettingsWindow window = new SettingsWindow();
-					window.setVisible(true);
-					
-					//Prevent window closing 
-					window.addWindowListener(new WindowAdapter() {
-						public void windowClosing(WindowEvent paramWindowEvent) {
-							window.requestFocus();
-							window.toFront();
-							
-							switch (
-								JOptionPane.showOptionDialog(
-									window, 
-									LocalizedText.confirm_close, 
-									"", 
-									JOptionPane.YES_NO_CANCEL_OPTION, 
-									JOptionPane.WARNING_MESSAGE,
-									null, 
-									new String[]{LocalizedText.save_n_quit, LocalizedText.quit, LocalizedText.cancel},
-									LocalizedText.save)
-							) {
-								case 1: window.dispose();
-								case 0: window.saveAndExit();
-								default: return;
-							}
-						}
-					});
+					final SettingsWindow window = SettingsWindow.getInstance();
+					SettingsWindow.getInstance().setVisible(true);
 				}
 			});
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(), LocalizedText.error, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, e.getMessage(), LocalizedText.get("error"), JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
+	}
 
+	public static void exit() {
+		System.exit(0);
+	}
 
+	public static void save() {
+		Component activeWindow = SettingsWindow.getInstance();
+		if(!activeWindow.isVisible()) activeWindow = null;
+
+		try {
+			PropertyManager.saveToFile();
+			//JOptionPane.showMessageDialog(activeWindow, LocalizedText.configuration_saved_success, LocalizedText.saving, JOptionPane.INFORMATION_MESSAGE);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(activeWindow, LocalizedText.get("configuration_saved_failed"), LocalizedText.get("saving"), JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	public static void saveAndExit() {
+		save();
+		exit();
 	}
 }

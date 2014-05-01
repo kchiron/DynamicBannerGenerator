@@ -19,28 +19,28 @@ public class HoroscopePanel extends TabContentPanel {
 	private final UnitJSpinner signsPerPage;
 
 	public HoroscopePanel(SequencePanel sequencePanel) {
-		super(new MigLayout("ins 10", "[right,180:180:180]10[]", ""), LocalizedText.horoscope_settings);
+		super(new MigLayout("ins 10", "[right,180:180:180]10[]", ""), LocalizedText.get("horoscope_settings"));
 
 		{//Number of signs per page
-			add(new JLabel(LocalizedText.sign_per_page+" :"));
+			add(new JLabel(LocalizedText.get("sign_per_page") + " :"));
 			signsPerPage = new UnitJSpinner(2, 3);
 			add(signsPerPage, "wrap");
 		}
 
 		{//Display time
-			add(new JLabel(LocalizedText.display_time+" :"));
+			add(new JLabel(LocalizedText.get("display_time") + " :"));
 			displayTime = new UnitJSpinner("sec", 0, null);
 			add(displayTime, "wrap");
 		}
 
 		{//Background image select
-			add(new JLabel(LocalizedText.background_image+" :"), "ay top");
+			add(new JLabel(LocalizedText.get("background_image") + " :"), "ay top");
 
 			fileChooser = new FileChooserField(
 				null, 
-				new MediaFileChooser(LocalizedText.choose_an_image, MediaFileChooser.Type.IMAGE), 
-				LocalizedText.choose_an_image, 
-				LocalizedText.no_file_selected
+				new MediaFileChooser(LocalizedText.get("choose_an_image"), MediaFileChooser.Type.IMAGE),
+				LocalizedText.get("choose_an_image"),
+				LocalizedText.get("no_file_selected")
 			);
 			add(fileChooser);
 		}

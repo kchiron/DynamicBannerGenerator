@@ -33,7 +33,7 @@ public class HoroscopeElement extends GeneratedMediaElement {
 	private final ArrayList<HoroscopeControl.Signs> signs;
 
 	public HoroscopeElement(int duration) {
-		super(LocalizedText.horoscope, "", duration);
+		super(LocalizedText.get("horoscope"), "", duration);
 		this.signs = new ArrayList<HoroscopeControl.Signs>();
 	}
 

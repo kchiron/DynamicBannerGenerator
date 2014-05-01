@@ -42,7 +42,7 @@ public class HoroscopeElementTest {
 	public void testGetContent() throws Exception {
 		HoroscopeElement instance = new HoroscopeElement(12);
 		String expResult = "";
-		String result = instance.getContent(LocalizedText.aries);
+		String result = instance.getContent(LocalizedText.get("aries"));
 		//assertEquals(expResult, result);
 		// TODO review the generated test code and remove the default call to fail.
 		//fail("The test case is a prototype.");
