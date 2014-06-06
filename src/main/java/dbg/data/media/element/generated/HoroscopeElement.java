@@ -17,8 +17,15 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.text.DateFormat;
 import java.text.Normalizer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JPanel;
 
 public class HoroscopeElement extends GeneratedMediaElement {
 
@@ -48,22 +55,19 @@ public class HoroscopeElement extends GeneratedMediaElement {
 	 * Retourne tout le contenu d'un seul signe
 	 */
 	public String getContent(String sign) throws IOException {
-
-		//TODO: change this HTML parse (the web site changed :( )
-
 		String text;
 		sign = Normalizer.normalize(sign, Normalizer.Form.NFD);
 		sign = sign.replaceAll("[^\\p{ASCII}]", "");
-		String url = "http://www.marieclaire.fr/astro/horoscope-du-jour/" + sign + "/";
+		String url = "http://www.marieclaire.fr/astro/horoscope-du-jour/" + sign.toLowerCase() + "/";
 		System.out.println(url);
 		Document dec = Jsoup.connect(url).get();
-		Elements content = dec.select("p.texte_paragraphe");
+		Elements content = dec.select("div.text");
 		text = "";
 
 		for (Element e : content) {
 			text = e.text();
 		}
-
+		System.out.println(text);
 		return text;
 	}
 
@@ -82,77 +86,127 @@ public class HoroscopeElement extends GeneratedMediaElement {
 
 		//Getting the size of the image (=panel size)
 		final Dimension d = panel.getPreferredSize();
-		//1920X1080
-		System.out.println("d : " + d.width + "x" + d.height);
+		
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM");
+		Date date = new Date();
 
 		//title Horoscope
 		ImagePanel imgTitle = new ImagePanel(ImageIO.read(getClass().getResource("title.png")));
-		imgTitle.setBounds(((d.width - imgTitle.getWidth()) / 2 - 25), 25, 800, 200);
-		System.out.println("imgTitle.getWIdth() : " + imgTitle.getWidth());
-		System.out.println("d.width - imgTitle.getWidth() : " + (d.width - imgTitle.getWidth()));
-		System.out.println("(d.width - imgTitle.getWidth())/2 : " + ((d.width - imgTitle.getWidth()) / 2));
+		imgTitle.setBounds((((d.width - imgTitle.getWidth())/2)-100), 25, 800, 200);
+		
+		InputStream is = this.getClass().getResourceAsStream("cambriai.ttf");
+			
+		Font ttfBase = null;
+		Font ttfReal = null;
+			
+		try {
+		    ttfBase = Font.createFont(Font.TRUETYPE_FONT, is);
+		    ttfReal = ttfBase.deriveFont(Font.BOLD, 48);
+		} catch (FontFormatException ex) {
+		    System.out.println("ERREUR : " + ex);
+		}
+		   
+		MultiLineLabel titre = new MultiLineLabel("", MultiLineLabel.TextAlign.CENTER, ttfReal);
+		MultiLineLabel textSign01 = new MultiLineLabel("", MultiLineLabel.TextAlign.JUSTIFY, ttfReal);
+		MultiLineLabel textSign02 = new MultiLineLabel("", MultiLineLabel.TextAlign.JUSTIFY, ttfReal);
+		MultiLineLabel textSign03 = new MultiLineLabel("", MultiLineLabel.TextAlign.JUSTIFY, ttfReal);
+		MultiLineLabel signe01 = new MultiLineLabel("", MultiLineLabel.TextAlign.CENTER);
+		MultiLineLabel signe02 = new MultiLineLabel("", MultiLineLabel.TextAlign.CENTER);
+		MultiLineLabel signe03 = new MultiLineLabel("", MultiLineLabel.TextAlign.CENTER);
+		
+		signe01.setFont(ttfReal.deriveFont(Font.BOLD, 38));
+		signe02.setFont(ttfReal.deriveFont(Font.BOLD, 38));
+		signe03.setFont(ttfReal.deriveFont(Font.BOLD, 38));
+		
+		ImagePanel logo = new ImagePanel(ImageIO.read(getClass().getResource("logo.png")));
+		logo.setBounds(1725, 1150, 175, 30);
+		titre.setText("Horoscope du " + dateFormat.format(date));
+		titre.setBounds(600, 25, 800, 200);
+		titre.setFont(ttfReal.deriveFont(Font.BOLD, 90));
+		titre.setForeground(Color.WHITE);
+		
+		ImagePanel leftLogo = new ImagePanel(ImageIO.read(getClass().getResource("quille_l.png")));
+		leftLogo.setBounds(25, 25, 200, 235);
+		ImagePanel rightLogo = new ImagePanel(ImageIO.read(getClass().getResource("quille_r.png")));
+		rightLogo.setBounds(1695, 25, 200, 235);
 
-		MultiLineLabel textSign01 = new MultiLineLabel("", MultiLineLabel.TextAlign.JUSTIFY);
-		MultiLineLabel textSign02 = new MultiLineLabel("", MultiLineLabel.TextAlign.JUSTIFY);
-		MultiLineLabel textSign03 = new MultiLineLabel("", MultiLineLabel.TextAlign.JUSTIFY);
-
-		//System.out.println("/"+getContent(signs.get(0).toString()) +"/");
 		panel.setLayout(null);
 
 		if (signs.size() == 2) {
-			System.out.println("sign : " + signs.get(0).name().toLowerCase());
-			textSign01.setText(getContent(signs.get(0).toString()));
-			textSign01.setForeground(Color.white);
-			textSign01.setBounds(550, 380, 1270, 415);
-			textSign01.setFont(new Font("Cambria", Font.BOLD, 50));
-			System.out.println("image : " + signs.get(0).name().toLowerCase() + ".png");
-			ImagePanel iconeSign01 = new ImagePanel(ImageIO.read(getClass().getResource(signs.get(0).name().toLowerCase() + ".png")));
-			iconeSign01.setBounds(100, 300, 400, 415);
+		    textSign01.setText(getContent(signs.get(0).toString()));
+		    textSign01.setForeground(Color.white);
+		    textSign01.setBounds(550, 380, 1270, 415);
+		    textSign01.setFont(ttfReal);
+		    ImagePanel iconeSign01 = new ImagePanel(ImageIO.read(getClass().getResource(signs.get(0).name().toLowerCase() + ".png")));
+		    iconeSign01.setBounds(125, 375, 300, 270);
+		    signe01.setText("(" + signs.get(0) + ")");
+		    signe01.setBounds(190, 625, 300, 50);
+		    signe01.setForeground(Color.white);
 
-			textSign02.setText(getContent(signs.get(1).toString()));
-			textSign02.setForeground(Color.white);
-			textSign02.setBounds(100, 775, 1270, 415);
-			textSign02.setFont(new Font("Cambria", Font.BOLD, 50));
-			ImagePanel iconeSign02 = new ImagePanel(ImageIO.read(getClass().getResource(signs.get(1).name().toLowerCase() + ".png")));
-			iconeSign02.setBounds(1420, 715, 400, 415);
+		    textSign02.setText(getContent(signs.get(1).toString()));
+		    textSign02.setForeground(Color.white);
+		    textSign02.setBounds(100, 775, 1270, 415);
+		    textSign02.setFont(ttfReal);
+		    ImagePanel iconeSign02 = new ImagePanel(ImageIO.read(getClass().getResource(signs.get(1).name().toLowerCase() + ".png")));
+		    iconeSign02.setBounds(1420, 715, 300, 270);
+		    signe02.setText("(" + signs.get(1) + ")");
+		    signe02.setBounds(1495,1015,300, 50);
+		    signe02.setForeground(Color.white);
 
-			panel.add(iconeSign01);
-			panel.add(textSign01);
-			panel.add(textSign02);
-			panel.add(iconeSign02);
+		    panel.add(iconeSign01);
+		    panel.add(textSign01);
+		    panel.add(signe01);
+		    panel.add(textSign02);
+		    panel.add(iconeSign02);
+		    panel.add(signe02);
 		} else if (signs.size() == 3) {
-			textSign01.setText(getContent(signs.get(0).toString()));
-			textSign01.setForeground(Color.white);
-			textSign01.setFont(new Font("Cambria", Font.BOLD, 42));
-			ImagePanel iconeSign01 = new ImagePanel(ImageIO.read(getClass().getResource(signs.get(0).name().toLowerCase() + ".png")));
-			iconeSign01.setBounds(100, 275, 325, 275);
-			textSign01.setBounds(475, 300, 1270, 275);
-			System.out.println(textSign01.getText());
+		    textSign01.setText(getContent(signs.get(0).toString()));
+		    textSign01.setForeground(Color.white);
+		    textSign01.setFont(new Font("Cambria", Font.BOLD, 42));
+		    ImagePanel iconeSign01 = new ImagePanel(ImageIO.read(getClass().getResource(signs.get(0).name().toLowerCase() + ".png")));
+		    iconeSign01.setBounds(125, 275, 300, 270);
+		    textSign01.setBounds(500, 275, 1300, 250);
+		    signe01.setText("(" + signs.get(0) + ")");
+		    signe01.setBounds(180, 525, 300, 50);
+		    signe01.setForeground(Color.white);
 
-			textSign02.setText(getContent(signs.get(1).toString()));
-			textSign02.setForeground(Color.white);
-			textSign02.setFont(new Font("Cambria", Font.BOLD, 42));
-			textSign02.setBounds(100, 600, 1270, 275);
-			ImagePanel iconeSign02 = new ImagePanel(ImageIO.read(getClass().getResource(signs.get(1).name().toLowerCase() + ".png")));
-			iconeSign02.setBounds(1495, 550, 325, 275);
+		    textSign02.setText(getContent(signs.get(1).toString()));
+		    textSign02.setForeground(Color.white);
+		    textSign02.setFont(new Font("Cambria", Font.BOLD, 42));
+		    textSign02.setBounds(100, 625, 1300, 275);
+		    ImagePanel iconeSign02 = new ImagePanel(ImageIO.read(getClass().getResource(signs.get(1).name().toLowerCase() + ".png")));
+		    iconeSign02.setBounds(1495, 575, 325, 275);
+		    signe02.setText("(" + signs.get(1) + ")");
+		    signe02.setBounds(1540,825,300, 50);
+		    signe02.setForeground(Color.white);
 
-			textSign03.setText(getContent(signs.get(2).toString()));
-			textSign03.setForeground(Color.white);
-			textSign03.setFont(new Font("Cambria", Font.BOLD, 42));
-			ImagePanel iconeSign03 = new ImagePanel(ImageIO.read(getClass().getResource(signs.get(2).name().toLowerCase() + ".png")));
-			iconeSign03.setBounds(100, 875, 325, 275);
-			textSign03.setBounds(475, 950, 1270, 275);
+		    textSign03.setText(getContent(signs.get(2).toString()));
+		    textSign03.setForeground(Color.white);
+		    textSign03.setFont(new Font("Cambria", Font.BOLD, 42));
+		    ImagePanel iconeSign03 = new ImagePanel(ImageIO.read(getClass().getResource(signs.get(2).name().toLowerCase() + ".png")));
+		    iconeSign03.setBounds(100, 875, 325, 275);
+		    textSign03.setBounds(500, 950, 1300, 250);
+		    signe03.setText("(" + signs.get(2) + ")");
+		    signe03.setBounds(180, 1140, 300, 50);
+		    signe03.setForeground(Color.white);
 
-			panel.add(iconeSign01);
-			panel.add(textSign01);
-			panel.add(textSign02);
-			panel.add(iconeSign02);
-			panel.add(iconeSign03);
-			panel.add(textSign03);
+		    panel.add(iconeSign01);
+		    panel.add(textSign01);
+		    panel.add(signe01);
+		    panel.add(textSign02);
+		    panel.add(iconeSign02);
+		    panel.add(signe02);
+		    panel.add(iconeSign03);
+		    panel.add(textSign03);
+		    panel.add(signe03);
 		}
 
-		panel.add(imgTitle);
-
+		//panel.add(imgTitle);
+		panel.add(titre);
+		panel.add(logo);
+		panel.add(leftLogo);
+		panel.add(rightLogo);
+		
 		double scaleX = d.width / 1920.0; //<taille du layout>;
 		double scaleY = d.width / 1080.0; //<taille du layout>;
 		double scale = Math.min(scaleX, scaleY);

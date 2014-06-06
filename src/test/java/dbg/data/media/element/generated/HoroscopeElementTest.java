@@ -40,13 +40,11 @@ public class HoroscopeElementTest {
 	 */
 	@Test
 	public void testGetContent() throws Exception {
-		System.out.println("getContent");
 		HoroscopeElement instance = new HoroscopeElement(12);
 		String expResult = "";
 		String result = instance.getContent(LocalizedText.aries);
 		//assertEquals(expResult, result);
 		// TODO review the generated test code and remove the default call to fail.
-		System.out.println("Result : " + result);
 		//fail("The test case is a prototype.");
 	}
 
@@ -55,12 +53,11 @@ public class HoroscopeElementTest {
 	 */
 	@Test
 	public void testImageGeneration() throws ImageGenerationException, Exception {
-		System.out.println("imageGeneration");
 		HoroscopeElement instance = new HoroscopeElement(12);
 		PropertyManager.loadFromFile();
 		PropertyManager.getHoroscopeProperties().setBackgroundImage(new File(HoroscopeElementTest.class.getResource("soft.png").getPath()));
 		//TestUtils.getTestFile("horoscope.jpg")
-		instance.setSigns(new HoroscopeControl.Signs[]{HoroscopeControl.Signs.AQUARIUS, HoroscopeControl.Signs.ARIES});
+		instance.setSigns(new HoroscopeControl.Signs[]{HoroscopeControl.Signs.SAGITTARIUS, HoroscopeControl.Signs.LEO, HoroscopeControl.Signs.CANCER});
 		File result = instance.generateImage();
 		result.renameTo(new File(".", result.getName()));
 		assertNotNull(result);
