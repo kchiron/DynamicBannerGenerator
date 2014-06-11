@@ -5,7 +5,7 @@ import dbg.Application;
 import dbg.data.property.PropertyManager;
 import dbg.ui.LocalizedText;
 import dbg.ui.settings.panel.*;
-import dbg.ui.videoassembler.VideoAssembler;
+import dbg.ui.videoassembler.VideoAssemblerWorker;
 
 import javax.swing.*;
 import java.awt.*;
@@ -57,7 +57,7 @@ public class SettingsWindow extends JFrame {
 			btnLaunchVideoAssembler.setHorizontalAlignment(JButton.LEFT);
 			btnLaunchVideoAssembler.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					final VideoAssembler vaWindow = new VideoAssembler(PropertyManager.getSequence(), PropertyManager.getVideoOutputProperties(), SettingsWindow.this);
+					final VideoAssemblerWorker vaWindow = new VideoAssemblerWorker(PropertyManager.getSequence(), PropertyManager.getVideoOutputProperties(), SettingsWindow.this);
 					//Launching the video assembler in a separated thread so that it won't be blocked by the modal that will open
 					new Thread() {
 						public void run() {
