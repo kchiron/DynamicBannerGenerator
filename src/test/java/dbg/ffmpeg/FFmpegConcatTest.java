@@ -1,14 +1,13 @@
 package dbg.ffmpeg;
 
-import java.io.File;
-
-import dbg.util.TestUtils;
-import org.junit.BeforeClass;
-
 import dbg.data.media.MediaSequence;
 import dbg.data.media.element.imported.ImageElement;
 import dbg.data.media.element.imported.VideoElement;
+import dbg.util.TestUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.File;
 
 public class FFmpegConcatTest {
 	
@@ -45,6 +44,6 @@ public class FFmpegConcatTest {
 			}
 		};
 		
-		concat.execute();
+		concat.execute(null);
 	}
 }
