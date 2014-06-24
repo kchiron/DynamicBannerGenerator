@@ -57,7 +57,7 @@ public class HoroscopeElementTest {
 		PropertyManager.loadFromFile();
 		PropertyManager.getHoroscopeProperties().setBackgroundImage(new File(HoroscopeElementTest.class.getResource("soft.png").getPath()));
 		//TestUtils.getTestFile("horoscope.jpg")
-		instance.setSigns(new HoroscopeControl.Signs[]{HoroscopeControl.Signs.SAGITTARIUS, HoroscopeControl.Signs.LEO, HoroscopeControl.Signs.CANCER});
+		instance.setSigns(new HoroscopeControl.Signs[]{HoroscopeControl.Signs.TAURUS, HoroscopeControl.Signs.CANCER});
 		File result = instance.generateImage();
 		result.renameTo(new File(".", result.getName()));
 		assertNotNull(result);

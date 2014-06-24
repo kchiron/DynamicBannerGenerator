@@ -58,16 +58,11 @@ public class HoroscopeElement extends GeneratedMediaElement {
 		String text;
 		sign = Normalizer.normalize(sign, Normalizer.Form.NFD);
 		sign = sign.replaceAll("[^\\p{ASCII}]", "");
-		String url = "http://www.marieclaire.fr/astro/horoscope-du-jour/" + sign.toLowerCase() + "/";
+		String url = "http://www.mon-horoscope-du-jour.com/horoscopes/quotidien/" + sign.toLowerCase() + ".htm";
 		System.out.println(url);
-		Document dec = Jsoup.connect(url).get();
-		Elements content = dec.select("div.text");
-		text = "";
-
-		for (Element e : content) {
-			text = e.text();
-		}
-		System.out.println(text);
+		Document doc = Jsoup.connect(url).get();
+		Elements content = doc.select("p[class=sp_left sp_right]");
+		text = content.get(0).text();		
 		return text;
 	}
 
@@ -119,7 +114,7 @@ public class HoroscopeElement extends GeneratedMediaElement {
 		signe03.setFont(ttfReal.deriveFont(Font.BOLD, 38));
 		
 		ImagePanel logo = new ImagePanel(ImageIO.read(getClass().getResource("logo.png")));
-		logo.setBounds(1725, 1150, 175, 30);
+		logo.setBounds(1675, 1075, 225, 104); //1725, 1100, 175, 85  
 		titre.setText("Horoscope du " + dateFormat.format(date));
 		titre.setBounds(600, 25, 800, 200);
 		titre.setFont(ttfReal.deriveFont(Font.BOLD, 90));
