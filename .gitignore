@@ -27,3 +27,6 @@ nbactions.xml
 *.ts
 *.avi
 
+# Others
+native
+logs

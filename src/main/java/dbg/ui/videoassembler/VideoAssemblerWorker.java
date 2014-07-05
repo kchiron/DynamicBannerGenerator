@@ -1,9 +1,6 @@
 package dbg.ui.videoassembler;
 
 import dbg.data.media.MediaSequence;
-import dbg.data.media.element.imported.ImageElement;
-import dbg.data.media.element.imported.VideoElement;
-import dbg.data.property.PropertyManager;
 import dbg.data.property.VideoOutputProperties;
 import dbg.util.ActivityMonitor;
 
@@ -74,29 +71,4 @@ public class VideoAssemblerWorker extends SwingWorker<File, String> {
 		close();
 	}
 
-	/*
-	* Main method: Testing purpose only
-	*/
-	public static void main(String[] args) {
-		PropertyManager.setSequence(new MediaSequence() {{
-			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.mts")));
-			add(new ImageElement("Moon", new File("src/test/resources/media-samples/moon.jpg"), 5));
-			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.mts")));
-			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.mts")));
-			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.mts")));
-			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.mts")));
-			add(new VideoElement("Earth", new File("src/test/resources/media-samples/earth.mts")));
-		}});
-		PropertyManager.setVideoOutputProperties(new VideoOutputProperties() {{
-			setOutputFolder(new File(""));
-			setIndexOfVideoSize(3);
-		}});
-
-		System.out.println(PropertyManager.getVideoOutputProperties().getOutputFolder().getAbsolutePath());
-
-		final VideoAssemblerWorker a = new VideoAssemblerWorker(PropertyManager.getSequence(), PropertyManager.getVideoOutputProperties(), null);
-		new Thread() {public void run(){a.setVisible(true);}}.start();
-		System.out.println(1);
-		a.execute();
-	}
 }
