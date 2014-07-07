@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class HoroscopeElement extends GeneratedMediaElement {
@@ -108,13 +109,13 @@ public class HoroscopeElement extends GeneratedMediaElement {
 		MultiLineLabel signe01 = new MultiLineLabel("", MultiLineLabel.TextAlign.CENTER);
 		MultiLineLabel signe02 = new MultiLineLabel("", MultiLineLabel.TextAlign.CENTER);
 		MultiLineLabel signe03 = new MultiLineLabel("", MultiLineLabel.TextAlign.CENTER);
-		
+				
 		signe01.setFont(ttfReal.deriveFont(Font.BOLD, 38));
 		signe02.setFont(ttfReal.deriveFont(Font.BOLD, 38));
 		signe03.setFont(ttfReal.deriveFont(Font.BOLD, 38));
 		
 		ImagePanel logo = new ImagePanel(ImageIO.read(getClass().getResource("logo.png")));
-		logo.setBounds(1675, 1075, 225, 104); //1725, 1100, 175, 85  
+		logo.setBounds(1675, 1075, 225, 104);
 		titre.setText("Horoscope du " + dateFormat.format(date));
 		titre.setBounds(600, 25, 800, 200);
 		titre.setFont(ttfReal.deriveFont(Font.BOLD, 90));
@@ -132,6 +133,7 @@ public class HoroscopeElement extends GeneratedMediaElement {
 		    textSign01.setForeground(Color.white);
 		    textSign01.setBounds(550, 380, 1270, 415);
 		    textSign01.setFont(ttfReal);
+		    textSign01.setBackground(Color.white);
 		    ImagePanel iconeSign01 = new ImagePanel(ImageIO.read(getClass().getResource(signs.get(0).name().toLowerCase() + ".png")));
 		    iconeSign01.setBounds(125, 375, 300, 270);
 		    signe01.setText("(" + signs.get(0) + ")");
@@ -195,8 +197,7 @@ public class HoroscopeElement extends GeneratedMediaElement {
 		    panel.add(textSign03);
 		    panel.add(signe03);
 		}
-
-		//panel.add(imgTitle);
+		
 		panel.add(titre);
 		panel.add(logo);
 		panel.add(leftLogo);

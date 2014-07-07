@@ -17,7 +17,7 @@ public class HoroscopePanel extends TabContentPanel {
 	private final FileChooserField fileChooser;
 	private final UnitJSpinner displayTime;
 	private final UnitJSpinner signsPerPage;
-
+	
 	public HoroscopePanel(SequencePanel sequencePanel) {
 		super(new MigLayout("ins 10", "[right,180:180:180]10[]", ""), LocalizedText.get("horoscope_settings"));
 
