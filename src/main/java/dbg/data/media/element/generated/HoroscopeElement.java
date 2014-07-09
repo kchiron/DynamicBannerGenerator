@@ -23,10 +23,13 @@ import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+<<<<<<< HEAD
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+=======
+>>>>>>> 5f1e3297dd092c39568d8820fb799f72fe02a582
 
 public class HoroscopeElement extends GeneratedMediaElement {
 

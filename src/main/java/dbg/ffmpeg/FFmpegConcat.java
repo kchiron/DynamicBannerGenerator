@@ -103,6 +103,7 @@ public class FFmpegConcat {
                             } catch (Exception e) {
                                 logger.error("Error while generating element : " + element.getTitle() + " [" + element.getSubTitle() + "] ");
                                 logger.error(e);
+	                            mediaFile = null;
                             }
                         }
 
@@ -117,7 +118,12 @@ public class FFmpegConcat {
                             ));
 
                             // If the image is not same size as asked => resize during conversion to video
-                            if (!mediaFileMetaData.getSize().equals(videoSize)) {
+	                        String size = mediaFileMetaData.getSize();
+	                        if(size == null) {
+		                        logger.error("Error while retrieving size of image : " + mediaFile.getAbsolutePath());
+		                        continue;
+	                        }
+	                        if (size != null && !size.equals(videoSize)) {
                                 ffArgs.add("-s");
                                 ffArgs.add(videoSize);
                                 //System.out.println("Resizing [" + element + "] from: " + mediaFileMetaData.getSize() + " to:" + videoSize);
@@ -236,12 +242,12 @@ public class FFmpegConcat {
                 @Override
                 public void run() {
                     // Delete temporary files and output file
-                    deleteAllFile(new ArrayList<File>() {{
-                        addAll(concatFiles);
-                        addAll(temporaryFiles);
-                        add(videoListFile);
-                        add(outputFile);
-                    }});
+	                List<File> files = new ArrayList<File>();
+                    files.addAll(concatFiles);
+                    files.addAll(temporaryFiles);
+                    files.add(videoListFile);
+                    files.add(outputFile);
+                    deleteAllFile(files);
                 }
             };
             Runtime.getRuntime().addShutdownHook(actionAfterInteruption);

@@ -7,7 +7,7 @@ package dbg.data.media.element.generated;
 import dbg.control.HoroscopeControl;
 import dbg.data.property.PropertyManager;
 import dbg.exception.ImageGenerationException;
-import dbg.ui.LocalizedText;
+import junit.framework.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -41,11 +41,13 @@ public class HoroscopeElementTest {
 	@Test
 	public void testGetContent() throws Exception {
 		HoroscopeElement instance = new HoroscopeElement(12);
-		String expResult = "";
-		String result = instance.getContent(LocalizedText.get("aries"));
-		//assertEquals(expResult, result);
-		// TODO review the generated test code and remove the default call to fail.
-		//fail("The test case is a prototype.");
+
+		for (HoroscopeControl.Signs sign : HoroscopeControl.Signs.values()) {
+			String result = instance.getContent(sign.toString());
+			System.out.println("Result length : " + result.length());
+			Assert.assertNotNull(result);
+			Assert.assertNotSame(result.length(), 0);
+		}
 	}
 
 	/**
@@ -55,13 +57,14 @@ public class HoroscopeElementTest {
 	public void testImageGeneration() throws ImageGenerationException, Exception {
 		HoroscopeElement instance = new HoroscopeElement(12);
 		PropertyManager.loadFromFile();
+
 		PropertyManager.getHoroscopeProperties().setBackgroundImage(new File(HoroscopeElementTest.class.getResource("soft.png").getPath()));
 		//TestUtils.getTestFile("horoscope.jpg")
 		instance.setSigns(new HoroscopeControl.Signs[]{HoroscopeControl.Signs.TAURUS, HoroscopeControl.Signs.CANCER});
+
 		File result = instance.generateImage();
 		result.renameTo(new File(".", result.getName()));
+
 		assertNotNull(result);
-		// TODO review the generated test code and remove the default call to fail.
-		//fail("The test case is a prototype.");
 	}
 }

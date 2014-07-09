@@ -1,22 +1,13 @@
 package dbg.image;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Paint;
-import java.awt.Rectangle;
+import dbg.ui.util.UiUtils;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
-import javax.imageio.ImageIO;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-
-import dbg.ui.util.UiUtils;
 
 /*
  *  Support custom painting on a panel in the form of
@@ -32,9 +23,9 @@ import dbg.ui.util.UiUtils;
  *  	-http://tips4java.wordpress.com/2008/10/12/background-panel/
  */
 public class ImagePanel extends JPanel {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	public enum Scaling {SCALED, TILED, ACTUAL}
 
 	private Paint painter;
@@ -167,20 +158,24 @@ public class ImagePanel extends JPanel {
 			Dimension d = getSize();
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setPaint(painter);
-			g2.fill( new Rectangle(0, 0, d.width, d.height) );
+			g2.fill(new Rectangle(0, 0, d.width, d.height));
 		}
 
 		//  Draw the image
-		if (image == null ) return;
+		if (image == null) return;
 
 		switch (style) {
-			case SCALED :	drawScaled(g);
+			case SCALED:
+				drawScaled(g);
 				break;
-			case TILED  :	drawTiled(g);
+			case TILED:
+				drawTiled(g);
 				break;
-			case ACTUAL :	drawActual(g);
+			case ACTUAL:
+				drawActual(g);
 				break;
-			default:	drawScaled(g);
+			default:
+				drawScaled(g);
 		}
 	}
 
@@ -219,7 +214,7 @@ public class ImagePanel extends JPanel {
 		int height = d.height - insets.top - insets.left;
 		float x = (width - image.getWidth(null)) * alignmentX;
 		float y = (height - image.getHeight(null)) * alignmentY;
-		g.drawImage(image, (int)x + insets.left, (int)y + insets.top, this);
+		g.drawImage(image, (int) x + insets.left, (int) y + insets.top, this);
 	}
 
 
@@ -229,7 +224,7 @@ public class ImagePanel extends JPanel {
 	public BufferedImage asImage() {
 		Dimension d = getSize();
 
-		if(d.width == 0 || d.height == 0) {
+		if (d.width == 0 || d.height == 0) {
 			d = this.getPreferredSize();
 			setSize(d);
 		}
@@ -240,7 +235,7 @@ public class ImagePanel extends JPanel {
 		BufferedImage export = new BufferedImage(region.width, region.height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2 = export.createGraphics();
 
-		if(!isOpaque()) {
+		if (!isOpaque()) {
 			g2.setColor(getBackground());
 			g2.fillRect(region.x, region.y, region.width, region.height);
 		}
@@ -250,9 +245,10 @@ public class ImagePanel extends JPanel {
 		g2.dispose();
 		return export;
 	}
-	
+
 	/**
 	 * Export and save the panel as an image file
+	 *
 	 * @param exportImage
 	 * @param format
 	 * @throws IOException if an error occurs during writing.

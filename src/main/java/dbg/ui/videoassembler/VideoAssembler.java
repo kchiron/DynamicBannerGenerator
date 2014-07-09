@@ -31,6 +31,10 @@ public class VideoAssembler implements Callable<File> {
 			final FFmpegVideoData options = new FFmpegVideoData();
 			options.setSize(videoOutputProperties.getVideoSize());
 
+
+
+
+
 			final FFmpegConcat concat = new FFmpegConcat(mediaSequence, videoOutput, options);
 
 			//Done

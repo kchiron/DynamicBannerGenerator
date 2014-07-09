@@ -52,7 +52,7 @@ public class MultiLineLabel extends JLabel {
 		String style = "";
 		if (font != null) {
 			style = "<head><style type=\"text/css\">\n" +
-					"body { font-family: " + font.getFontName() + "; } </head><body>";
+					"body { padding: 0; margin: 0; font-family: " + font.getFontName() + "; } </head><body>";
 		}
 
 		return "<html>" + style + "<p align=" + align.toString().toLowerCase() + ">" + text;
