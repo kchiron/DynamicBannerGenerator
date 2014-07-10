@@ -51,8 +51,7 @@ public class WeatherElementTest {
 	System.out.println("generateImage");
 	WeatherElement element = new WeatherElement(new WeatherLocation("France", "Auvergne", "Chappes", 45.86, 3.21), 10);
 	//element.setType(Type.CITY);
-        System.out.println("ELEMENT : " + element.getDuration() + " & " + element.getType());
-	File result = element.generateImage();
+        File result = element.generateImage();
         result.renameTo(new File(".", result.getName()));
         assertNotNull(result);
     }

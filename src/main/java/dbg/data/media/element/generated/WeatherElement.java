@@ -82,17 +82,17 @@ public class WeatherElement extends GeneratedMediaElement {
                 
             MultiLineLabel titre = new MultiLineLabel("SNOOK-BOWL\nPALACE", MultiLineLabel.TextAlign.CENTER, ttfReal);
             titre.setBounds(600, 25, 800, 200);
-            titre.setFont(ttfReal.deriveFont(Font.BOLD, 90));
+            titre.setFont(ttfReal.deriveFont(Font.BOLD, 95));
             titre.setForeground(Color.WHITE);
             ImagePanel leftLogo = new ImagePanel(ImageIO.read(getClass().getResource("quille_l.png")));
             leftLogo.setBounds(25, 25, 200, 235);
             ImagePanel textArea = new ImagePanel(ImageIO.read(getClass().getResource("textArea.PNG")));
             textArea.setBounds(150, 500, 1625, 550);
             ImagePanel globalWeather = new ImagePanel(ImageIO.read(getClass().getResource("globalWeather.png")));
-            globalWeather.setBounds((textArea.getWidth()-(500/2)), 250, 500, 500);
-            JLabel town = new JLabel("Périgueux", JLabel.CENTER);
-            town.setBounds((globalWeather.getWidth() - globalWeather.getWidth()/2) - 515, 515, (globalWeather.getWidth()/2), 50);
-            town.setFont(ttfReal.deriveFont(Font.BOLD, 60));
+            globalWeather.setBounds((textArea.getWidth()-(600/2)), 175, 600, 600);
+            JLabel town = new JLabel("Clermont-Ferrand", JLabel.LEFT);
+            town.setBounds(175, 425, textArea.getWidth(), 150);
+            town.setFont(ttfReal.deriveFont(Font.BOLD, 110));
             town.setForeground(Color.WHITE);
             
             panel.setLayout(null);       
