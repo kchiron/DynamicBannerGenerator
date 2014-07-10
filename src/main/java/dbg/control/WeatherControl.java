@@ -3,10 +3,8 @@ package dbg.control;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-
 import javax.swing.JCheckBox;
 import javax.swing.JSpinner;
-
 import dbg.data.WeatherLocation;
 import dbg.data.media.element.MediaElement;
 import dbg.data.media.element.generated.WeatherElement;

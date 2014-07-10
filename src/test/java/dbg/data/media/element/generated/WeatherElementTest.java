@@ -4,7 +4,9 @@
  */
 package dbg.data.media.element.generated;
 
+import dbg.control.HoroscopeControl;
 import dbg.data.WeatherLocation;
+import dbg.data.property.PropertyManager;
 import dbg.data.property.WeatherProperties.Type;
 import dbg.exception.ImageGenerationException;
 import java.io.File;
@@ -48,12 +50,11 @@ public class WeatherElementTest {
     public void testGenerateImage() throws ImageGenerationException, IOException {
 	System.out.println("generateImage");
 	WeatherElement element = new WeatherElement(new WeatherLocation("France", "Auvergne", "Chappes", 45.86, 3.21), 10);
-	element.setType(Type.CITY);	
-	File expResult = null;
+	//element.setType(Type.CITY);
+        System.out.println("ELEMENT : " + element.getDuration() + " & " + element.getType());
 	File result = element.generateImage();
-	assertEquals(expResult, result);
-	// TODO review the generated test code and remove the default call to fail.
-	fail("The test case is a prototype.");
+        result.renameTo(new File(".", result.getName()));
+        assertNotNull(result);
     }
 }
 
