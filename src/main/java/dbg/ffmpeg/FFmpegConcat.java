@@ -8,7 +8,7 @@ import dbg.data.media.element.imported.VideoElement;
 import dbg.exception.UnknownOperatingSystem;
 import dbg.ffmpeg.FFmpeg.OutputProcessor;
 import dbg.ui.LocalizedText;
-import dbg.ui.util.Logger;
+import dbg.util.Logger;
 import dbg.util.ActivityMonitor;
 import org.apache.commons.io.FilenameUtils;
 
@@ -49,7 +49,7 @@ public class FFmpegConcat {
         //final MediaSequence sequence = PropertyManager.getSequence();
         //final String videoSize = PropertyManager.getVideoOutputProperties().getVideoSize();
         final String assemblyID = String.valueOf(System.currentTimeMillis() / 1000);
-        final Logger logger = new Logger(assemblyID + "-video-assembly");
+        final Logger logger = new Logger(assemblyID, "Video-assembly");
 
         final String videoBitRate =
                 (outputVideoOptions != null && outputVideoOptions.getBitRate() != null) ?
@@ -80,7 +80,7 @@ public class FFmpegConcat {
         progressState.changeState(LocalizedText.get("converting_elements"), 25);
         progressState.setProgress(5);
         {
-            final List<Future<Integer>> conversions = new ArrayList<>();
+            final List<Future<Conversion>> conversions = new ArrayList<>();
             final ExecutorService executor = Executors.newFixedThreadPool(3);
 
             FileWriter fs = null;
@@ -154,21 +154,18 @@ public class FFmpegConcat {
                             resized = true;
                         }
 
-						/*
-						* conversion options (with fast conversion if possible)
-						*/
                         // If the video is already in mpeg2video format => no encoding at all (fastest)
                         if (!resized && mediaFileMetaData.getCodec().contains("mpeg2video")) {
                             ffArgs.add("-c:v");
                             ffArgs.add("copy");
                         }
                         // If the video has mp4 codec => copy the video with few modification (faster)
-                        else if (!resized && (mediaFileMetaData.getCodec().contains("mpeg4") || mediaFileMetaData.getCodec().contains("h264"))) {
+                        /*else if (!resized && (mediaFileMetaData.getCodec().contains("mpeg4") || mediaFileMetaData.getCodec().contains("h264"))) {
                             ffArgs.addAll(Arrays.asList(
                                     "-c:v", "copy",
                                     "-bsf:v", "h264_mp4toannexb"
                             ));
-                        }
+                        }*/
                         // Else encode the video to mpeg2video (slower)
                         else {
                             ffArgs.add("-c:v");
@@ -209,11 +206,11 @@ public class FFmpegConcat {
                         final OutputProcessor debugOutFile = new OutputProcessor() {
                             @Override
                             public Object call() throws Exception {
-                                FileWriter writer = new Logger(assemblyID + "-" + finalMediaFile.getName()).getWriter();
+                                FileWriter writer = new Logger(assemblyID, finalMediaFile.getName()+"-"+finalMediaFile.getAbsolutePath().hashCode()).getWriter();
                                 String line;
                                 try {
                                     while ((line = processStdErr.readLine()) != null) {
-                                        writer.append(line);
+                                        writer.append(line+"\n");
                                     }
                                 } catch (IOException e) {
                                     e.printStackTrace();
@@ -223,12 +220,8 @@ public class FFmpegConcat {
                                 return null;
                             }
                         };
-                        conversions.add(executor.submit(new Callable<Integer>() {
-                            @Override
-                            public Integer call() throws Exception {
-                                return FFmpeg.execute(ffArgs, debugOutFile, null);
-                            }
-                        }));
+	                    logger.info(mediaFile.getName() + " conversion starts");
+                        conversions.add(executor.submit(new Conversion(ffArgs, debugOutFile, mediaFile.getName())));
                     }
                 }
             } catch (IOException e) {
@@ -254,16 +247,17 @@ public class FFmpegConcat {
 
             //Ensure that every media element were correctly converted to video
             int i = 1;
-            for (Future<Integer> conversion : conversions) {
+            for (Future<Conversion> conversion : conversions) {
                 progressState.setProgress(i * 100 / conversions.size());
-                Integer res = null;
+	            Conversion res = null;
                 try {
                     res = conversion.get();
+	                logger.info(res.name + " conversion finished");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (res == null || res != 0) {
-                    System.out.println("FFMPEG[" + conversions.indexOf(conversion) + "] exit code : " + res);
+                if (res == null || res.returnCode != 0) {
+                    System.out.println("FFMPEG[" + conversions.indexOf(conversion) + "] exit code : " + res.returnCode);
                     deleteAllFile(concatFiles);
                     deleteAllFile(temporaryFiles);
                     return null;
@@ -272,11 +266,11 @@ public class FFmpegConcat {
             }
         }
 
-        logger.info("Concatenating all elements");
 		/*
 		 * Part two: concatenate video files
 		 */
         int exitCode;
+        logger.info("Concatenating all elements");
         progressState.changeState(LocalizedText.get("concatenating_videos"), 75);
         {
             List<String> ffArgs = new ArrayList<>(Arrays.asList(
@@ -363,7 +357,6 @@ public class FFmpegConcat {
         return worked;
     }
 
-
     /**
      * Keeps track of progress during assembly
      */
@@ -403,5 +396,29 @@ public class FFmpegConcat {
             }
         }
     }
+
+	/**
+	 * Keeps track of sequence element conversion
+	 */
+	private static class Conversion implements Callable<Conversion> {
+
+		final List<String> ffArgs;
+		final OutputProcessor debugOutFile;
+		final String name;
+
+		int returnCode;
+
+		private Conversion(List<String> ffArgs, OutputProcessor debugOutFile, String name) {
+			this.ffArgs = ffArgs;
+			this.debugOutFile = debugOutFile;
+			this.name = name;
+		}
+
+		@Override
+		public Conversion call() throws Exception {
+			returnCode = FFmpeg.execute(ffArgs, debugOutFile, null);
+			return this;
+		}
+	}
 
 }

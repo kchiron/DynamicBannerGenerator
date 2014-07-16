@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.concurrent.Callable;
 
-public class VideoAssembler implements Callable<File> {
+class VideoAssembler implements Callable<File> {
 
 	private final MediaSequence mediaSequence;
 	private final VideoOutputProperties videoOutputProperties;
@@ -30,9 +30,6 @@ public class VideoAssembler implements Callable<File> {
 
 			final FFmpegVideoData options = new FFmpegVideoData();
 			options.setSize(videoOutputProperties.getVideoSize());
-
-
-
 
 
 			final FFmpegConcat concat = new FFmpegConcat(mediaSequence, videoOutput, options);

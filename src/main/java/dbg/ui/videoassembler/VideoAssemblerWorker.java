@@ -17,7 +17,7 @@ public class VideoAssemblerWorker extends SwingWorker<File, String> {
 
 	private final VideoAssembler videoAssembler;
 
-	private final VideoAssemblerWindow window;
+	private final VideoAssemblerWindowMonitor window;
 
 	public VideoAssemblerWorker(MediaSequence mediaSequence, VideoOutputProperties videoOutputProperties, Frame parent) {
 		this.parent = parent;
@@ -31,7 +31,7 @@ public class VideoAssemblerWorker extends SwingWorker<File, String> {
 			}
 		});
 
-		window = new VideoAssemblerWindow(parent, this);
+		window = new VideoAssemblerWindowMonitor(parent, this);
 
 		addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
@@ -63,7 +63,7 @@ public class VideoAssemblerWorker extends SwingWorker<File, String> {
 
 	@Override
 	protected void process(List<String> chunks) {
-		window.updateText(chunks.get(chunks.size() - 1));
+		window.updateMessage(chunks.get(chunks.size() - 1));
 	}
 
 	@Override
