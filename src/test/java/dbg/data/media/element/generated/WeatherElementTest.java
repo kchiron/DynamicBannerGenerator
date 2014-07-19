@@ -4,13 +4,9 @@
  */
 package dbg.data.media.element.generated;
 
-import dbg.control.HoroscopeControl;
 import dbg.data.WeatherLocation;
-import dbg.data.property.PropertyManager;
 import dbg.data.property.WeatherProperties.Type;
-import dbg.exception.ImageGenerationException;
 import java.io.File;
-import java.io.IOException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -44,16 +40,16 @@ public class WeatherElementTest {
     }
 
     /**
-     * Test of generateImage method, of class WeatherElement.
+     * Test of getWeather method, of class WeatherElement.
      */
     @Test
-    public void testGenerateImage() throws ImageGenerationException, IOException {
-	System.out.println("generateImage");
-	WeatherElement element = new WeatherElement(new WeatherLocation("France", "Auvergne", "Chappes", 45.86, 3.21), 10);
-	//element.setType(Type.CITY);
-        File result = element.generateImage();
-        result.renameTo(new File(".", result.getName()));
-        assertNotNull(result);
+    public void testGetWeather() {
+	System.out.println("getWeather");
+	WeatherLocation loc = new WeatherLocation("France", "Auvergne", "Clermont-Ferrand", 3.08, 45.78);
+	WeatherElement instance = new WeatherElement(loc, 10);
+	instance.getWeather();
+	// TODO review the generated test code and remove the default call to fail.
     }
-}
 
+    //COPY PASTE TEST GETGENERATEDIMAGE
+}
