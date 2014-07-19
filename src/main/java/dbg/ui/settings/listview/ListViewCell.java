@@ -100,6 +100,7 @@ public class ListViewCell extends AbstractCellEditor implements TableCellEditor,
 		} else {
 
 			panel.setBackground(Color.WHITE);
+			panel.setToolTipText("");
 			lblTitle.setForeground(titleColor);
 			lblSubTitle.setForeground(lightGrayColor);
 			lblDuration.setForeground(lightGrayColor);
