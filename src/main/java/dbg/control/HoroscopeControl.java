@@ -72,9 +72,9 @@ public class HoroscopeControl implements ActionListener {
 	}
 
 	/** Updates the media sequence with the correct number of horoscope pages to display depending on the number of signs per page */
-	private void updateSequenceHoroscopeElement() {
+	public void updateSequenceHoroscopeElement() {
 
-		if(properties.getDisplayTime() > 0) {
+		if(properties.getDisplayTime() > 0 && properties.getBackgroundImage() != null && properties.getBackgroundImage().exists()) {
 			ArrayList<HoroscopeElement> horoscopeElements = sequencePanel.getSequence().getElementsByClass(HoroscopeElement.class);
 
 			int nbHoroscopeElement = (int) Math.ceil((double)Signs.values().length/(double)properties.getSignPerPage());
@@ -111,6 +111,10 @@ public class HoroscopeControl implements ActionListener {
 				element.setSigns(elementSigns);
 			}
 
+			sequencePanel.refreshList();
+		}
+		else {
+			sequencePanel.getSequence().removeAllElementsByClass(HoroscopeElement.class);
 			sequencePanel.refreshList();
 		}
 	}

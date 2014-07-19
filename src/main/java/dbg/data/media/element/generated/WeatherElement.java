@@ -3,6 +3,7 @@ package dbg.data.media.element.generated;
 import dbg.data.WeatherLocation;
 import dbg.data.property.WeatherProperties;
 import dbg.ui.LocalizedText;
+import dbg.util.TemporaryFileHandler;
 
 import java.io.File;
 
@@ -41,7 +42,7 @@ public class WeatherElement extends GeneratedMediaElement {
 	}
 
 	@Override
-	public File generateImage() {
+	public File generateImage(TemporaryFileHandler temporaryFileHandler) {
 		return null;
 	}
 }

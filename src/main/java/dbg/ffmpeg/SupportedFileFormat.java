@@ -10,7 +10,7 @@ import java.util.List;
 public class SupportedFileFormat {
 
 	private static String[] imageFormats = {"jpg", "jpeg", "png"};
-	private static String[] videoFormats = {"mp4", "wmv", "mpeg4", "avi", "mts"};
+	private static String[] videoFormats = {"mp4", "wmv", "mpeg4", "avi", "mov", "mts"};
 	
 	public static String[] getImageFormats() {
 		return imageFormats;

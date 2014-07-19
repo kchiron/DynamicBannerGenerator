@@ -1,10 +1,15 @@
 package dbg.ui.videoassembler;
 
 import dbg.data.media.MediaSequence;
+import dbg.data.media.MediaSequenceImagesGenerator;
 import dbg.data.property.VideoOutputProperties;
+import dbg.ffmpeg.FFmpeg;
 import dbg.ffmpeg.FFmpegConcat;
 import dbg.ffmpeg.FFmpegVideoData;
 import dbg.util.ActivityMonitor;
+import dbg.util.Logger;
+import dbg.util.ProgressState;
+import dbg.util.TemporaryFileHandler;
 
 import java.io.File;
 import java.util.Date;
@@ -15,11 +20,13 @@ class VideoAssembler implements Callable<File> {
 	private final MediaSequence mediaSequence;
 	private final VideoOutputProperties videoOutputProperties;
 	private final ActivityMonitor monitor;
+	private final TemporaryFileHandler temporaryFileHandler;
 
 	public VideoAssembler(MediaSequence mediaSequence, VideoOutputProperties videoOutputProperties, ActivityMonitor monitor) {
 		this.mediaSequence = mediaSequence;
 		this.videoOutputProperties = videoOutputProperties;
 		this.monitor = monitor;
+		this.temporaryFileHandler = new TemporaryFileHandler();
 	}
 
 	@Override
@@ -31,14 +38,28 @@ class VideoAssembler implements Callable<File> {
 			final FFmpegVideoData options = new FFmpegVideoData();
 			options.setSize(videoOutputProperties.getVideoSize());
 
+			FFmpeg.initialize();
 
-			final FFmpegConcat concat = new FFmpegConcat(mediaSequence, videoOutput, options);
+			ProgressState state = new ProgressState(monitor);
 
-			//Done
-			return concat.execute(monitor);
+			final String assemblyID = String.valueOf(System.currentTimeMillis() / 1000);
+			final Logger logger = new Logger(assemblyID, "Video-assembly");
+
+			final MediaSequenceImagesGenerator imagesGenerator =
+					new MediaSequenceImagesGenerator(temporaryFileHandler, mediaSequence, logger);
+
+			return new FFmpegConcat(
+					imagesGenerator.generate(new ProgressState(state.newState(null, 25))),
+					videoOutput,
+					options,
+					temporaryFileHandler,
+					logger
+			).execute(new ProgressState(state.newState(null, 75)));
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
+		} finally {
+			temporaryFileHandler.clearAllFiles();
 		}
 	}
 }

@@ -7,26 +7,44 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Logger {
-	private static File logFolder;
+	private static File standardLogFolder;
+	private final File logFolder;
 	private final File logFile;
 
+	public Logger(File logFolder, String name) {
+		this.logFolder = logFolder;
+		this.logFile = new File(logFolder, name + ".log");
+	}
+
 	public Logger(String subFolder, String name) {
-		if (logFolder == null) {
+		this(
+			subFolder == null ?
+					getStandardLogFolder() :
+					newFolder(getStandardLogFolder(), subFolder),
+			name
+		);
+	}
 
-			if(subFolder != null)
-				logFolder = new File("logs", subFolder);
-			else
-				logFolder = new File("logs");
+	public Logger newLogger(String name) {
+		return new Logger(this.logFolder, name);
+	}
 
-			if (!logFolder.exists())
-				logFolder.mkdirs();
+	private static File newFolder(File parent, String name) {
+		File folder = new File(parent, name);
+		folder.mkdirs();
+		return folder;
+	}
+
+	private static File getStandardLogFolder() {
+		if (standardLogFolder == null) {
+			standardLogFolder = new File("logs");
+			standardLogFolder.mkdirs();
 		}
-
-		logFile = new File(logFolder, name + ".log");
+		return standardLogFolder;
 	}
 
 	public Logger(String name) {
-		this(null, name);
+		this((String)null, name);
 	}
 
 	public FileWriter getWriter() {
@@ -46,7 +64,7 @@ public class Logger {
 		}
 	}
 
-	public void print(String message) {
+	 synchronized public void print(String message) {
 		FileWriter writer = null;
 		try {
 			writer = getWriter();
@@ -74,8 +92,8 @@ public class Logger {
 		println("ERROR : " + message);
 	}
 
-	public void error(Exception e) {
-		error(e.getClass().getName());
+	public void error(Throwable e) {
+		error(e.getClass().getName()+": "+e.getMessage());
 		for (StackTraceElement t : e.getStackTrace()) {
 			error("\t" + t.toString());
 		}
