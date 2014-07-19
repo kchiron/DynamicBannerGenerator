@@ -6,9 +6,9 @@ import dbg.data.media.element.imported.ImportedMediaElement;
 import dbg.data.property.PropertyManager;
 import dbg.ui.LocalizedText;
 import dbg.ui.settings.AddModifyMediaElementWindow;
-import dbg.ui.settings.form.IconButton;
 import dbg.ui.settings.listview.ListView;
 import dbg.ui.settings.listview.ListViewModel;
+import dbg.ui.util.UiUtils;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -130,8 +130,8 @@ public class SequencePanel extends TabContentPanel {
 	}
 
 	private JButton createMiniIconButton(String pathIcon, String textFallback, Dimension size) {
-		Font f = new Font("Lucida Grande", Font.BOLD, 10);
-		IconButton button = new IconButton(getClass().getResource(pathIcon), textFallback, f);
+		JButton button = UiUtils.createJButtonIcon(getClass().getResource(pathIcon), textFallback);
+		button.setFont(new Font("Lucida Grande", Font.BOLD, 10));
 		button.setMaximumSize(size);
 		button.setHorizontalTextPosition(SwingConstants.CENTER);
 		button.setVerticalAlignment(SwingConstants.CENTER);

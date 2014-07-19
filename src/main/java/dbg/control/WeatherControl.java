@@ -15,6 +15,11 @@ import dbg.ui.settings.form.weatherlocation.WeatherLocationField;
 import dbg.ui.settings.panel.SequencePanel;
 import dbg.ui.settings.panel.WeatherPanel;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
 /**
  * Class handling all user action on the weather panel and loading saved properties to the weather panel
  */
@@ -91,6 +96,7 @@ public class WeatherControl implements ActionListener {
 			updateLocationCheckbox();
 			
 			updateLocation();
+			updateSequenceWeatherElement();
 		}
 		else if(source.equals(weatherPanel.getSpinNbDays())) {
 			JSpinner spinner = (JSpinner) source;
@@ -107,6 +113,7 @@ public class WeatherControl implements ActionListener {
 		else if(source.equals(weatherPanel.getFileChooser())) {
 			FileChooserField field = (FileChooserField) source;
 			properties.setBackgroundImage(field.getFile());
+			updateSequenceWeatherElement();
 		}
 	}
 	
@@ -121,13 +128,13 @@ public class WeatherControl implements ActionListener {
 				
 				switch(type) {
 					case CITY: 
-						enable = !(location.getCity() == null);
+						enable = location != null && location.getCity() != null;
 						break;
 					case REGIONAL: 
-						enable = !(location.getRegion() == null);
+						enable = location != null && location.getRegion() != null;
 						break;
 					case NATIONAL: 
-						enable = !(location.getCountry() == null);
+						enable = location != null &&  location.getCountry() != null;
 						break;
 				}
 				
@@ -144,9 +151,9 @@ public class WeatherControl implements ActionListener {
 	}
 
 	/**  */
-	private void updateSequenceWeatherElement() {
+	public void updateSequenceWeatherElement() {
 		
-		if(properties.getDisplayTime() > 0) { 
+		if(properties.getDisplayTime() > 0 && properties.getLocation() != null && properties.getBackgroundImage() != null && properties.getBackgroundImage().exists()) {
 			
 			ArrayList<WeatherElement> weatherElements = sequencePanel.getSequence().getElementsByClass(WeatherElement.class);
 			

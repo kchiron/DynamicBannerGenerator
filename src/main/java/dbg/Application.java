@@ -3,6 +3,7 @@ package dbg;
 import dbg.data.property.PropertyManager;
 import dbg.ui.LocalizedText;
 import dbg.ui.settings.SettingsWindow;
+import dbg.ui.systemtraymenu.SystemTrayMenu;
 import dbg.ui.util.UiUtils;
 
 import javax.swing.*;
@@ -11,35 +12,45 @@ import java.io.IOException;
 
 public class Application {
 
-	public static void main(String[] args) {
+	private static Application _instance;
+	private final SettingsWindow settingsWindow;
+	private final SystemTrayMenu systemTrayMenu;
+
+	public static Application getInstance() {
+		if (_instance == null)
+			_instance = new Application();
+		return _instance;
+	}
+
+	private Application() {
+		//Loads application properties
 		try {
-			//Loads application properties
 			PropertyManager.loadFromFile();
-			
-			SwingUtilities.invokeLater(new Thread() {
-				@Override
-				public void run() {
-					//Initializes the UI with some basic settings
-					UiUtils.initUIManager();
-					
-					//Creating and running setting window
-					final SettingsWindow window = SettingsWindow.getInstance();
-					SettingsWindow.getInstance().setVisible(true);
-				}
-			});
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.getMessage(), LocalizedText.get("error"), JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
+
+		UiUtils.initUIManager();
+
+		settingsWindow = new SettingsWindow();
+		settingsWindow.setVisible(true);
+
+		systemTrayMenu = SystemTray.isSupported() ? new SystemTrayMenu() : null;
 	}
 
-	public static void exit() {
+	public static void main(String[] args) {
+		Application.getInstance();
+	}
+
+	public void exit() {
 		System.exit(0);
 	}
 
-	public static void save() {
-		Component activeWindow = SettingsWindow.getInstance();
-		if(!activeWindow.isVisible()) activeWindow = null;
+	public void save() {
+		Component activeWindow = settingsWindow;
+		if (!activeWindow.isVisible())
+			activeWindow = null;
 
 		try {
 			PropertyManager.saveToFile();
@@ -49,9 +60,16 @@ public class Application {
 		}
 	}
 
-	public static void saveAndExit() {
+	public void saveAndExit() {
 		save();
 		exit();
 	}
 
+	public SettingsWindow getSettingWindows() {
+		return settingsWindow;
+	}
+
+	public SystemTrayMenu getSystemTrayMenu() {
+		return systemTrayMenu;
+	}
 }

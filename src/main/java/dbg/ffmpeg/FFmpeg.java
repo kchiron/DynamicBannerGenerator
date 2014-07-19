@@ -42,7 +42,10 @@ public class FFmpeg {
 	 * @throws IOException            if the ffmpeg executable is not found
 	 * @throws UnknownOperatingSystem if no ffmpeg executable is available for the detected operating system
 	 */
-	private synchronized static void initialize() throws UnknownOperatingSystem, IOException {
+	public synchronized static void initialize() throws UnknownOperatingSystem, IOException {
+		if(ffmpegProgram != null)
+			return;
+
 		String programName = "ffmpeg-" + detectOS();
 
 		File nativeFolder = new File("native");
@@ -244,7 +247,7 @@ public class FFmpeg {
 			return future;
 		}
 
-		public void setFuture(Future<T> future) {
+		private void setFuture(Future<T> future) {
 			this.future = future;
 		}
 	}

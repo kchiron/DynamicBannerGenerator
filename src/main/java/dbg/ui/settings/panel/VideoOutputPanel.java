@@ -62,4 +62,9 @@ public class VideoOutputPanel extends TabContentPanel {
 		return fileChooser;
 	}
 
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		if(visible) fileChooser.checkError();
+	}
 }

@@ -16,15 +16,7 @@ import java.awt.event.WindowEvent;
 
 public class SettingsWindow extends JFrame {
 
-	private static SettingsWindow instance;
-
-	public static SettingsWindow getInstance() {
-		if (instance == null)
-			instance = new SettingsWindow();
-		return instance;
-	}
-
-	private SettingsWindow() {
+	public SettingsWindow() {
 		super(LocalizedText.get("settings"));
 		setLayout(new BorderLayout());
 
@@ -81,7 +73,7 @@ public class SettingsWindow extends JFrame {
 			pnlBottom.add(btnSave);
 			btnSave.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent paramActionEvent) {
-					Application.save();
+					Application.getInstance().save();
 				}
 			});
 
@@ -97,45 +89,16 @@ public class SettingsWindow extends JFrame {
 		setBounds(100, 100, 673, 425);
 		setLocationRelativeTo(null);
 
-
-		final SystemTray tray = SystemTray.getSystemTray();
-		TrayIcon trayIcon = null;
-
-		//Initialize System tray menu
-		if (SystemTray.isSupported()) {
-			final PopupMenu minimizedPopupMenu;
-			minimizedPopupMenu = new PopupMenu();
-			MenuItem maximize = new MenuItem(LocalizedText.get("open_setting_window"));
-			maximize.addActionListener(new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					maximize();
-				}
-			});
-			minimizedPopupMenu.add(maximize);
-			MenuItem quit = new MenuItem(LocalizedText.get("action.quit"));
-			quit.addActionListener(new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					Application.exit();
-				}
-			});
-			minimizedPopupMenu.add(quit);
-
-			trayIcon = new TrayIcon(new ImageIcon(Application.class.getResource("icon.png")).getImage());
-			trayIcon.setPopupMenu(minimizedPopupMenu);
-		}
-
-		//Add System stray menu
-		try {
-			if(trayIcon == null) throw new NullPointerException();
-
-			tray.add(trayIcon);
+		if(SystemTray.isSupported()) {
+			//Behavior if the system tray icon is active
 			addWindowListener(new WindowAdapter() {
 				public void windowClosing(WindowEvent paramWindowEvent) {
 					minimize();
-					Application.save();
+					Application.getInstance().save();
 				}
 			});
-		} catch (Exception e) {
+		} else {
+			//Behavior if the system tray icon is not supported
 			addWindowListener(new WindowAdapter() {
 				public void windowClosing(WindowEvent paramWindowEvent) {
 					toFront();
@@ -152,9 +115,9 @@ public class SettingsWindow extends JFrame {
 									LocalizedText.get("action.save"))
 							) {
 						case 1:
-							Application.exit();
+							Application.getInstance().exit();
 						case 0:
-							Application.saveAndExit();
+							Application.getInstance().saveAndExit();
 						default:
 							return;
 					}

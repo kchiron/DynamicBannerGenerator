@@ -1,18 +1,14 @@
 package dbg.ui.settings.form.weatherlocation;
 
-import java.awt.Component;
+import com.claygregory.api.google.places.Prediction;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.MenuElement;
-import javax.swing.MenuSelectionManager;
-
-import com.claygregory.api.google.places.Prediction;
-
-public class WeatherLocationDropDown extends JPopupMenu {
+class WeatherLocationDropDown extends JPopupMenu {
 
 	private static final long serialVersionUID = 1L;
 	private final ActionListener menuAction;

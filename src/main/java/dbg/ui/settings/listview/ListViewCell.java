@@ -2,6 +2,7 @@ package dbg.ui.settings.listview;
 
 import dbg.data.media.element.MediaElement;
 import dbg.data.media.element.imported.ImportedMediaElement;
+import dbg.ui.LocalizedText;
 import dbg.ui.settings.listview.contextmenu.ListViewListener;
 
 import javax.swing.*;
@@ -97,10 +98,19 @@ public class ListViewCell extends AbstractCellEditor implements TableCellEditor,
 			lblSubTitle.setForeground(textSelected);
 			lblDuration.setForeground(textSelected);
 		} else {
+
 			panel.setBackground(Color.WHITE);
 			lblTitle.setForeground(titleColor);
 			lblSubTitle.setForeground(lightGrayColor);
 			lblDuration.setForeground(lightGrayColor);
+
+			if(element instanceof  ImportedMediaElement) {
+				ImportedMediaElement importedMediaElement = (ImportedMediaElement) element;
+				if(!importedMediaElement.getFile().exists()) {
+					panel.setToolTipText(LocalizedText.get("error.message.file_not_found"));
+					panel.setBackground(new Color(255, 166, 166));
+				}
+			}
 		}
 	}
 

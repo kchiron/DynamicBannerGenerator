@@ -62,7 +62,7 @@ public class HoroscopeElementTest {
 		//TestUtils.getTestFile("horoscope.jpg")
 		instance.setSigns(new HoroscopeControl.Signs[]{HoroscopeControl.Signs.TAURUS, HoroscopeControl.Signs.CANCER});
 
-		File result = instance.generateImage();
+		File result = instance.generateImage(null);
 		result.renameTo(new File(".", result.getName()));
 
 		assertNotNull(result);

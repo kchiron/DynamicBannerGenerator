@@ -4,9 +4,11 @@ import dbg.ui.LocalizedText;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 
 /**
- * Class regrouping swing UI utilities 
+ * Class regrouping swing UI utilities
+ *
  * @author gcornut
  */
 public class UiUtils {
@@ -36,13 +38,14 @@ public class UiUtils {
 
 	/**
 	 * Forces relayout of a component and its child
+	 *
 	 * @param c a Component
 	 */
 	public static void layoutComponent(Component c) {
 		synchronized (c.getTreeLock()) {
 			c.doLayout();
-			if(c instanceof Container) {
-				for(Component child: ((Container)c).getComponents())
+			if (c instanceof Container) {
+				for (Component child : ((Container) c).getComponents())
 					layoutComponent(child);
 			}
 		}
@@ -57,40 +60,65 @@ public class UiUtils {
 	public static void makeComponentTransparent(JComponent component) {
 		component.setOpaque(false);
 
-		if(component instanceof JScrollPane) {
+		if (component instanceof JScrollPane) {
 			JScrollPane scrollPane = (JScrollPane) component;
 			JViewport viewport = scrollPane.getViewport();
 			viewport.setOpaque(false);
 			Component c = viewport.getView();
 
-			if(c instanceof JComponent)
-				((JComponent)c).setOpaque(false);
+			if (c instanceof JComponent)
+				((JComponent) c).setOpaque(false);
 		}
 	}
 
 	/**
 	 * This method scales and shift components that are contained in a parent element having an absolute layout
+	 *
 	 * @param parent the parent container component having child component to be scaled and shifted
-	 * @param scale the scale factor applied on the parent's child(s)
+	 * @param scale  the scale factor applied on the parent's child(s)
 	 * @param shiftX the shift value on X axis
 	 * @param shiftY the shift value on Y axis
 	 */
 	public static void scaleAndShiftComponents(Container parent, double scale, int shiftX, int shiftY) {
 		//Apply scale and shift on all component in the container
-		for(Component child: parent.getComponents()) {
+		for (Component child : parent.getComponents()) {
 			//Scaling and shifting the component position and size
 			Rectangle r = child.getBounds();
 			r.setBounds(
-					(int)(r.getX()*scale+shiftX),	//X scaled and shifted
-					(int)(r.getY()*scale+shiftY),	//Y scaled and shifted
-					(int)(r.getWidth()*scale),		//Width scaled
-					(int)(r.getHeight()*scale)		//Height scaled
-					);
+					(int) (r.getX() * scale + shiftX),    //X scaled and shifted
+					(int) (r.getY() * scale + shiftY),    //Y scaled and shifted
+					(int) (r.getWidth() * scale),        //Width scaled
+					(int) (r.getHeight() * scale)        //Height scaled
+			);
 			child.setBounds(r);
 
 			// Scaling text size
 			Font f = child.getFont();
-			child.setFont(new Font(f.getFamily(), f.getStyle(), (int)(f.getSize()*scale)));
+			child.setFont(new Font(f.getFamily(), f.getStyle(), (int) (f.getSize() * scale)));
 		}
 	}
+
+	public static JButton createJButtonIcon(URL icon, String altName) {
+		try {
+			return new JButton(new ImageIcon(icon));
+		} catch (Throwable t) {
+			return new JButton(altName);
+		}
+	}
+
+	public static JLabel createJLabelIcon(URL icon, String altName) {
+		try {
+			return new JLabel(new ImageIcon(icon));
+		} catch (Throwable t) {
+			return new JLabel(altName);
+		}
+	}
+
+	public static JLabel createErrorIcon() {
+		return createJLabelIcon(UiUtils.class.getResource("error.png"), "!");
+	}
+	public static JButton createDeleteButton() {
+		return createJButtonIcon(UiUtils.class.getResource("delete.png"), "X");
+	}
+
 }

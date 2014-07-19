@@ -1,17 +1,13 @@
 package dbg.image;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Image;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-
 import dbg.ui.util.MultiLineLabel;
 import dbg.ui.util.UiUtils;
 import dbg.util.TestUtils;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
 
 /**
  * Test class used to demonstrate ImagePanel 
@@ -23,7 +19,7 @@ public class ExampleImagePanel extends ImagePanel {
 
 	public ExampleImagePanel() throws IOException {
 		//Sunset background
-		super(ImageIO.read(TestUtils.getTestFile("sun.jpg")));
+		super(ImageIO.read(TestUtils.getMediaSample("sun.jpg")));
 		
 		//Add text, images...
 		initContent();

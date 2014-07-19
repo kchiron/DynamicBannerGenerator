@@ -3,6 +3,9 @@ package dbg.ffmpeg;
 import dbg.data.media.MediaSequence;
 import dbg.data.media.element.imported.ImageElement;
 import dbg.data.media.element.imported.VideoElement;
+import dbg.util.Logger;
+import dbg.util.ProgressState;
+import dbg.util.TemporaryFileHandler;
 import dbg.util.TestUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -14,6 +17,9 @@ public class FFmpegConcatTest {
 	private static MediaSequence sequence;
 	private static File outputFile;
 	private static FFmpegVideoData outputOptions;
+
+	private static TemporaryFileHandler temporaryFileHandler;
+	private static Logger logger;
 
 	@SuppressWarnings("serial")
 	@BeforeClass
@@ -34,16 +40,20 @@ public class FFmpegConcatTest {
 		outputOptions = new FFmpegVideoData();
 		outputOptions.setBitRate("500k");
 		outputOptions.setSize("1440x900");
+
+
+		temporaryFileHandler = new TemporaryFileHandler();
+		logger = new Logger("test-logs", FFmpegConcatTest.class.getSimpleName());
 	}
 	
 	@Test
 	public void test() throws Exception {
-		FFmpegConcat concat = new FFmpegConcat(sequence, outputFile, outputOptions){
+		FFmpegConcat concat = new FFmpegConcat(sequence, outputFile, outputOptions, temporaryFileHandler, logger){
 			public void setProgress(String message, int progress) {
 				System.err.println(String.format("%02d", progress) + "% [" + (message != null ? message : "") + "]");
 			}
 		};
 		
-		concat.execute(null);
+		concat.execute(new ProgressState(null));
 	}
 }

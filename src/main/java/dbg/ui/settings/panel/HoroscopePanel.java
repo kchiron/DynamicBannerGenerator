@@ -8,7 +8,6 @@ import dbg.ui.settings.form.filechooser.MediaFileChooser;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
 
 public class HoroscopePanel extends TabContentPanel {
 
@@ -17,7 +16,9 @@ public class HoroscopePanel extends TabContentPanel {
 	private final FileChooserField fileChooser;
 	private final UnitJSpinner displayTime;
 	private final UnitJSpinner signsPerPage;
-	
+
+	private final HoroscopeControl horoscopeControl;
+
 	public HoroscopePanel(SequencePanel sequencePanel) {
 		super(new MigLayout("ins 10", "[right,180:180:180]10[]", ""), LocalizedText.get("horoscope_settings"));
 
@@ -44,8 +45,8 @@ public class HoroscopePanel extends TabContentPanel {
 			);
 			add(fileChooser);
 		}
-		
-		ActionListener horoscopeControl = new HoroscopeControl(sequencePanel, this);
+
+		this.horoscopeControl = new HoroscopeControl(sequencePanel, this);
 		displayTime.addActionListener(horoscopeControl);
 		signsPerPage.addActionListener(horoscopeControl);
 		fileChooser.addActionListener(horoscopeControl);
@@ -61,5 +62,14 @@ public class HoroscopePanel extends TabContentPanel {
 
 	public JSpinner getSignsPerPage() {
 		return signsPerPage.getSpinner();
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		if(visible) {
+			fileChooser.checkError();
+			horoscopeControl.updateSequenceHoroscopeElement();
+		}
 	}
 }

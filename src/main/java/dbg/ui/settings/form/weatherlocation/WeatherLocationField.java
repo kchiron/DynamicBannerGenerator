@@ -5,11 +5,9 @@ import dbg.data.WeatherLocation;
 import dbg.data.property.PropertyManager;
 import dbg.ui.LocalizedText;
 import dbg.ui.settings.form.PlaceHolder;
+import dbg.ui.util.UiUtils;
 
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
@@ -30,36 +28,54 @@ public class WeatherLocationField extends JPanel {
 	private final GooglePlaces places;
 	
 	//Components
+	private final BorderLayout layout;
 	private final JTextField txtLocation;
 	private final WeatherLocationDropDown dropDown;
+	private final JButton deleteBtn;
+	private final JLabel errorIcon;
 
 	//Weather weatherLocation
 	private WeatherLocation weatherLocation;
 
-	private final CompoundBorder defaultBorder;
-	private final CompoundBorder errorBorder;
+	//private final CompoundBorder defaultBorder;
+	//private final CompoundBorder errorBorder;
 	
 	public WeatherLocationField() {
-		super(new BorderLayout());
+		super();
+		setLayout(layout = new BorderLayout());
 
 		places = new GooglePlaces(PropertyManager.getGooglePlacesAPIKey());
 		customListeners = new ArrayList<>(1);
 		dropDown = new WeatherLocationDropDown(this);
-		
-		defaultBorder = new CompoundBorder(new LineBorder(new Color(0, 0, 0, 70)), new EmptyBorder(2, 5, 2, 5));
-		errorBorder = new CompoundBorder(new LineBorder(new Color(255, 0 , 0, 150)), new EmptyBorder(2, 5, 2, 5));
+
+		//defaultBorder = new CompoundBorder(new LineBorder(new Color(0, 0, 0, 70)), new EmptyBorder(2, 5, 2, 5));
+		//errorBorder = new CompoundBorder(new LineBorder(new Color(255, 0 , 0, 150)), new EmptyBorder(2, 5, 2, 5));
 
 		{ // Components
 			txtLocation = new JTextField();
 			PlaceHolder placeHolder = new PlaceHolder(LocalizedText.get("city_zip_code_state"), txtLocation, 0.5f);
 			placeHolder.changeStyle(Font.ITALIC);
 			add(txtLocation, BorderLayout.CENTER);
+
+			errorIcon = UiUtils.createErrorIcon();
+			errorIcon.setToolTipText(LocalizedText.get("please_choose_weather_location"));
+
+			deleteBtn = UiUtils.createDeleteButton();
+			deleteBtn.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+			deleteBtn.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					setWeatherLocation(null);
+					checkValidLocation();
+				}
+			});
 		}
 		
 		// Catch text entering
 		txtLocation.getDocument().addDocumentListener(new DocumentListener() {
 			public void removeUpdate(DocumentEvent e) {
 				showDropDown(e);
+
 			}
 			
 			public void insertUpdate(DocumentEvent e) {
@@ -101,12 +117,18 @@ public class WeatherLocationField extends JPanel {
 
 	private void checkValidLocation() {
 		if(weatherLocation == null) {
-			txtLocation.setBorder(errorBorder);
+			//txtLocation.setBorder(errorBorder);
+			//Component component = layout.getLayoutComponent(BorderLayout.EAST);
+			//if(component != null)
+			//	remove(component);
+			add(errorIcon, BorderLayout.EAST);
 			txtLocation.revalidate();
 		} else {
-			txtLocation.setBorder(defaultBorder);
+			//txtLocation.setBorder(defaultBorder);
+			add(deleteBtn, BorderLayout.EAST);
 			txtLocation.revalidate();
 		}
+		repaint();
 	}
 	
 	private void showDropDown(final DocumentEvent e) {
@@ -229,11 +251,11 @@ public class WeatherLocationField extends JPanel {
 	public void setWeatherLocation(WeatherLocation weatherLocation) {
 		this.weatherLocation = weatherLocation;
 
-		checkValidLocation();
 		for(ActionListener listener: customListeners)
 			listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "weatherLocation validation"));
-		
-		txtLocation.setText(weatherLocation.toString());
+
+		txtLocation.setText(weatherLocation == null ? "" : weatherLocation.toString());
+		checkValidLocation();
 		dropDown.setVisible(false);
 	}
 }

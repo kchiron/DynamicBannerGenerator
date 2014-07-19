@@ -7,9 +7,9 @@ import dbg.image.ImagePanel;
 import dbg.ui.LocalizedText;
 import dbg.ui.util.MultiLineLabel;
 import dbg.ui.util.UiUtils;
+import dbg.util.TemporaryFileHandler;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import javax.imageio.ImageIO;
@@ -64,7 +64,7 @@ public class HoroscopeElement extends GeneratedMediaElement {
 	}
 
 	@Override
-	public File generateImage() throws ImageGenerationException, IOException {
+	public File generateImage(TemporaryFileHandler temporaryFileHandler) throws ImageGenerationException, IOException {
 
 		BufferedImage img = null;
 		try {
@@ -209,7 +209,10 @@ public class HoroscopeElement extends GeneratedMediaElement {
 		UiUtils.scaleAndShiftComponents(panel, scale, shiftX, shiftY);
 
 		// Create a temporary file (in tmp folder of the current OS) and export image to this file
-		File out = File.createTempFile("DBG-horoscopePage-", ".png");
+
+		File out = temporaryFileHandler == null ?
+				File.createTempFile("DBG-horoscopePage-", ".png") :
+				temporaryFileHandler.createTempFile("-DBG-horoscopePage.png");
 		panel.exportToImage(out, "png");
 
 		return out;
