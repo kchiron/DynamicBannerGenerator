@@ -4,15 +4,16 @@
  */
 package dbg.data.media.element.generated;
 
-import dbg.data.WeatherLocation;
+import dbg.data.*;
+import dbg.data.property.*;
 import dbg.data.property.WeatherProperties.Type;
+import dbg.exception.ImageGenerationException;
+import dbg.util.TemporaryFileHandler;
 import java.io.File;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import java.io.IOException;
+import org.junit.*;
+
+
 
 /**
  *
@@ -43,13 +44,31 @@ public class WeatherElementTest {
      * Test of getWeather method, of class WeatherElement.
      */
     @Test
-    public void testGetWeather() {
+    public void testGetWeather() throws Exception {
 	System.out.println("getWeather");
 	WeatherLocation loc = new WeatherLocation("France", "Auvergne", "Clermont-Ferrand", 3.08, 45.78);
+	PropertyManager.loadFromFile();
+	PropertyManager.getWeatherProperties().setLocation(loc);
+	PropertyManager.getWeatherProperties().setBackgroundImage( new File(getClass().getResource("bckgndWeather.jpg").getPath()));
 	WeatherElement instance = new WeatherElement(loc, 10);
+	instance.setType(Type.CITY);
 	instance.getWeather();
 	// TODO review the generated test code and remove the default call to fail.
     }
 
-    //COPY PASTE TEST GETGENERATEDIMAGE
+    @Test
+    public void testGenerateImage() throws IOException, ImageGenerationException, Exception {
+	System.out.println("generateImage");
+	WeatherLocation loc = new WeatherLocation("France", "Auvergne", "Clermont-Ferrand", 3.08, 45.78);
+	PropertyManager.loadFromFile();
+	PropertyManager.getWeatherProperties().setNbDays(2);
+	PropertyManager.getWeatherProperties().setLocation(loc);
+	PropertyManager.getWeatherProperties().setBackgroundImage( new File(getClass().getResource("bckgndWeather.jpg").getPath()));
+	WeatherElement instance = new WeatherElement(loc, 10);
+	instance.setType(Type.CITY);	
+	instance.getWeather();
+	File result = instance.generateImage(new TemporaryFileHandler());
+	result.renameTo(new File(".", result.getName()));
+	Assert.assertNotNull(result);
+    }
 }

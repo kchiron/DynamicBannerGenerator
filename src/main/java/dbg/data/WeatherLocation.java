@@ -13,14 +13,14 @@ public class WeatherLocation implements Serializable{
 	private final String country;
 	private final String region;
 	private final String city;
-	private final double longitute;
+	private final double longitude;
 	private final double latitude;
 	
 	public WeatherLocation(String country, String region, String city, double longitute, double latitude) {
 		this.country = country;
 		this.region = region;
 		this.city = city;
-		this.longitute = longitute;
+		this.longitude = longitute;
 		this.latitude = latitude;
 	}
 
@@ -40,8 +40,8 @@ public class WeatherLocation implements Serializable{
 		return latitude;
 	}
 	
-	public double getLongitute() {
-		return longitute;
+	public double getLongitude() {
+		return longitude;
 	}
 	
 	@Override
