@@ -129,7 +129,7 @@ public class WeatherElement extends GeneratedMediaElement {
 	    globalWeather.setBounds((textArea.getX() + 150), 550, 600, 600);
 	    /* MORNING */
 	    JLabel morningTemperature = new JLabel(this.low + "° C", JLabel.CENTER);
-	    morningTemperature.setBounds((textArea.getX() + textArea.getWidth() / 2 - 50), 600, textArea.getWidth() / 2, 308);
+	    morningTemperature.setBounds((textArea.getBounds().x + textArea.getBounds().width / 2 - 50), (globalWeather.getBounds().y + globalWeather.getBounds().height), textArea.getBounds().width / 2, 308);
 	    morningTemperature.setFont(ttfReal.deriveFont(Font.BOLD, 80));
 	    morningTemperature.setForeground(Color.WHITE);
 	    JLabel morning = new JLabel("Matin", JLabel.CENTER);
@@ -165,10 +165,9 @@ public class WeatherElement extends GeneratedMediaElement {
 	    globalWeatherDay2.setBounds((textArea.getX() + textArea.getWidth() - 400 - 200), 600, 400, 400);
 	    /* MORNING */
 	    JLabel morningTemperatureDay1 = new JLabel(this.low + "° C", JLabel.CENTER);
-	    morningTemperatureDay1.setBounds((textArea.getX()), (globalWeatherDay1.getY() + globalWeatherDay1.getHeight() + 25), textArea.getWidth() / 2, 100);
+	    morningTemperatureDay1.setBounds((textArea.getX()), (globalWeatherDay1.getY()), textArea.getWidth() / 2, 100);
 	    morningTemperatureDay1.setFont(ttfReal.deriveFont(Font.BOLD, 60));
 	    morningTemperatureDay1.setForeground(Color.WHITE);
-	    System.out.println("Y : " + morningTemperatureDay1.getY() + " ou " + morningTemperatureDay1.getBounds().getY());
 	    JLabel morningTemperatureDay2 = new JLabel(this.low + "° C", JLabel.CENTER);
 	    morningTemperatureDay2.setBounds((textArea.getX() + textArea.getWidth() / 2), 775, textArea.getWidth() / 2, 25);
 	    morningTemperatureDay2.setFont(ttfReal.deriveFont(Font.BOLD, 60));
@@ -182,7 +181,7 @@ public class WeatherElement extends GeneratedMediaElement {
 	    separateHorizontalDay2.setBounds((2*(textArea.getWidth() / 4) + (600/2) + 15), 837, 400, 5);
 	    /* AFTERNOON */
 	    JLabel afternoonTemperatureDay1 = new JLabel(this.high + "° C", JLabel.CENTER);
-	    afternoonTemperatureDay1.setBounds((textArea.getX()), morningTemperatureDay1.getY() + 100, textArea.getWidth() / 2, 308);
+	    afternoonTemperatureDay1.setBounds((textArea.getX()), (separateHorizontalDay1.getY() + separateHorizontalDay1.getHeight()), textArea.getWidth() / 2, 308);
 	    afternoonTemperatureDay1.setFont(ttfReal.deriveFont(Font.BOLD, 60));
 	    afternoonTemperatureDay1.setForeground(Color.WHITE);
 	    
