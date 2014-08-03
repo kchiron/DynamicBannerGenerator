@@ -4,14 +4,15 @@
  */
 package dbg.data.media.element.generated;
 
-import dbg.data.*;
-import dbg.data.property.*;
+import dbg.data.WeatherLocation;
+import dbg.data.property.PropertyManager;
 import dbg.data.property.WeatherProperties.Type;
 import dbg.exception.ImageGenerationException;
 import dbg.util.TemporaryFileHandler;
+import org.junit.*;
+
 import java.io.File;
 import java.io.IOException;
-import org.junit.*;
 
 
 
@@ -48,7 +49,6 @@ public class WeatherElementTest {
 	System.out.println("getWeather");
 	WeatherLocation loc = new WeatherLocation("France", "Auvergne", "Clermont-Ferrand", 3.08, 45.78);
 	PropertyManager.loadFromFile();
-	PropertyManager.getWeatherProperties().setLocation(loc);
 	PropertyManager.getWeatherProperties().setBackgroundImage( new File(getClass().getResource("bckgndWeather.jpg").getPath()));
 	WeatherElement instance = new WeatherElement(loc, 10);
 	instance.setType(Type.CITY);
@@ -62,7 +62,6 @@ public class WeatherElementTest {
 	WeatherLocation loc = new WeatherLocation("France", "Auvergne", "Clermont-Ferrand", 3.08, 45.78);
 	PropertyManager.loadFromFile();
 	PropertyManager.getWeatherProperties().setNbDays(2);
-	PropertyManager.getWeatherProperties().setLocation(loc);
 	PropertyManager.getWeatherProperties().setBackgroundImage( new File(getClass().getResource("bckgndWeather.jpg").getPath()));
 	WeatherElement instance = new WeatherElement(loc, 10);
 	instance.setType(Type.CITY);	

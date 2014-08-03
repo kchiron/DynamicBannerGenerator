@@ -233,10 +233,12 @@ public class FFmpegConcat {
 				@Override
 				public Object call() throws Exception {
 					String line;
+					FileWriter writer = logger.newLogger("Video-assembly-ffmpeg").getWriter();
 					try {
 						Pattern p = Pattern.compile("\\s*frame=.*time=(\\d+):(\\d+):(\\d+.?\\d*)\\s.*");
 						boolean in = false;
 						while ((line = processStdErr.readLine()) != null) {
+							if(writer != null) writer.append(line).append('\n');
 							//System.err.println(line);
 							Matcher m = p.matcher(line);
 							if (m.find()) {
@@ -254,6 +256,7 @@ public class FFmpegConcat {
 						}
 					} catch (IOException e) {
 					}
+					if(writer != null) writer.close();
 					return null;
 				}
 

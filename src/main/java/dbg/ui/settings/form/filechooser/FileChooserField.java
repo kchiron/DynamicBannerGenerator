@@ -60,22 +60,28 @@ public class FileChooserField extends JPanel {
 		btnChooseFile.addActionListener(new FileChooserListener(this));
 	}
 
-	private void updateFile(File selectedFile) {
+	private void updateFile(File selectedFile, boolean externalModification) {
 		if (selectedFile == null) {
 			lblFileName.setText(noSelectionMessage);
 			lblFileName.setIcon(null);
 			lblFileName.setToolTipText(null);
 
 		} else {
-			if (selectedFile.getName().equals(""))
+			boolean adapted = false;
+			if (selectedFile.isDirectory() && selectedFile.getName().equals("")) {
+				adapted = true;
 				selectedFile = new File(selectedFile.getAbsolutePath());
+			}
 
 			FileSystemView view = FileSystemView.getFileSystemView();
 			lblFileName.setText(selectedFile.getName());
 			lblFileName.setIcon(view.getSystemIcon(selectedFile));
 			lblFileName.setToolTipText(selectedFile.getAbsolutePath());
-			fileChooser.setSelectedFile(selectedFile);
-			fileChooser.setCurrentDirectory(selectedFile);
+
+			if(externalModification || adapted) {
+				fileChooser.setSelectedFile(selectedFile);
+				fileChooser.setCurrentDirectory(selectedFile);
+			}
 		}
 		checkError();
 	}
@@ -119,7 +125,7 @@ public class FileChooserField extends JPanel {
 	 */
 	public void setFile(File file) {
 		fileChooser.setSelectedFile(file);
-		updateFile(file);
+		updateFile(file, true);
 	}
 
 	private class FileChooserListener implements ActionListener {
@@ -132,7 +138,7 @@ public class FileChooserField extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent paramActionEvent) {
 			if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-				updateFile(fileChooser.getSelectedFile());
+				updateFile(fileChooser.getSelectedFile(), false);
 
 				for (ActionListener listener : customListeners)
 					listener.actionPerformed(new ActionEvent(parent, ActionEvent.ACTION_PERFORMED, "file changed"));

@@ -6,6 +6,7 @@ import dbg.ui.LocalizedText;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class WeatherProperties implements Serializable {
 
@@ -13,21 +14,21 @@ public class WeatherProperties implements Serializable {
 
 	private final ArrayList<Type> activeTypes;
 	private int nbDays;
-	private WeatherLocation location;
+	private ArrayList<WeatherLocation> locations;
 	private int displayTime;
 	private File backgroundImage;
 	
-	public WeatherProperties( ArrayList<Type> activeTypes, int nbDays, WeatherLocation location,
+	public WeatherProperties(ArrayList<Type> activeTypes, int nbDays, ArrayList<WeatherLocation> locations,
 			int displayTime, File backgroundImage) {
 		this.activeTypes = activeTypes;
 		this.nbDays = nbDays;
-		this.location = location;
+		this.locations = locations;
 		this.displayTime = displayTime;
 		this.backgroundImage = backgroundImage;
 	}
 	
 	public WeatherProperties() {
-		this(new ArrayList<Type>(), 0, null, 0, null);
+		this(new ArrayList<Type>(), 0, new ArrayList<WeatherLocation>(), 0, null);
 	}
 
 	public ArrayList<Type> getActiveTypes() {
@@ -51,12 +52,16 @@ public class WeatherProperties implements Serializable {
 		this.nbDays = nbDays;
 	}
 
-	public WeatherLocation getLocation() {
-		return location;
+	public List<WeatherLocation> getLocations() {
+		return locations;
 	}
 
-	public void setLocation(WeatherLocation location) {
-		this.location = location;
+	public void setLocations(ArrayList<WeatherLocation> locations) {
+		this.locations = locations;
+	}
+
+	public boolean addLocation(WeatherLocation location) {
+		return locations.add(location);
 	}
 
 	public int getDisplayTime() {

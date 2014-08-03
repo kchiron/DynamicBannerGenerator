@@ -1,10 +1,5 @@
 package dbg.control;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import javax.swing.JCheckBox;
-import javax.swing.JSpinner;
 import dbg.data.WeatherLocation;
 import dbg.data.media.element.MediaElement;
 import dbg.data.media.element.generated.WeatherElement;
@@ -19,6 +14,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class handling all user action on the weather panel and loading saved properties to the weather panel
@@ -35,24 +31,25 @@ public class WeatherControl implements ActionListener {
 		this.weatherPanel = weatherPanel;
 
 		properties = PropertyManager.getWeatherProperties();
+	}
 
+	public void refreshUI() {
 		//Update the weather type check boxes on the weather panel
-		if(properties.getActiveTypes() != null) {
-			for(WeatherProperties.Type type: properties.getActiveTypes()) {
-				weatherPanel.getWeatherTypeCheckBox(type).setSelected(true);
-			}
-		}
+		//if(properties.getActiveTypes() != null) {
+		//	for(WeatherProperties.Type type: properties.getActiveTypes()) {
+		//		weatherPanel.getWeatherTypeCheckBox(type).setSelected(true);
+		//	}
+		//}
 
 		//Update the weather location field on the weather panel
-		if(properties.getLocation() != null) {
-			weatherPanel.getLocationField().setWeatherLocation(properties.getLocation());
-			
-			updateLocationCheckbox();
+		if(properties.getLocations() != null) {
+			weatherPanel.setWeatherLocations(properties.getLocations());
+			//updateLocationCheckbox();
 		}
-		else {
-			for(WeatherProperties.Type type : WeatherProperties.Type.values())
-				weatherPanel.getWeatherTypeCheckBox(type).setEnabled(false);
-		}
+		//else {
+		//		for(WeatherProperties.Type type : WeatherProperties.Type.values())
+		//		weatherPanel.getWeatherTypeCheckBox(type).setEnabled(false);
+		//}
 
 		//Update the number of day spinner
 		weatherPanel.getSpinNbDays().setValue(properties.getNbDays());
@@ -62,11 +59,10 @@ public class WeatherControl implements ActionListener {
 
 		//Update the background image chooser on the weather panel
 		weatherPanel.getFileChooser().setFile(properties.getBackgroundImage());
-		
+
 		// Updates the weather elements in the sequence in case some properties changed
 		updateSequenceWeatherElement();
 		updateTime();
-		updateLocation();
 	}
 
 	/** Handles all user actions on the weather panel */
@@ -74,7 +70,7 @@ public class WeatherControl implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		final Object source = e.getSource();
 		
-		if(source instanceof JCheckBox) {
+		/*if(source instanceof JCheckBox) {
 			JCheckBox checkBox = (JCheckBox) source;
 			
 			for(WeatherProperties.Type type: WeatherProperties.Type.values()) {
@@ -88,14 +84,10 @@ public class WeatherControl implements ActionListener {
 			}
 			updateSequenceWeatherElement();
 		}
-		else if(source.equals(weatherPanel.getLocationField())) {
-			WeatherLocationField field = (WeatherLocationField) e.getSource();
-			WeatherLocation location = field.getWeatherLocation();
-			properties.setLocation(location);
-			
-			updateLocationCheckbox();
-			
-			updateLocation();
+		else */
+		if(source instanceof WeatherLocationField) {
+			properties.setLocations(weatherPanel.getWeatherLocations());
+			weatherPanel.refresh();
 			updateSequenceWeatherElement();
 		}
 		else if(source.equals(weatherPanel.getSpinNbDays())) {
@@ -116,48 +108,19 @@ public class WeatherControl implements ActionListener {
 			updateSequenceWeatherElement();
 		}
 	}
-	
-	/** Update location check box depending on the weather location */
-	private void updateLocationCheckbox() {
-		WeatherLocation location = properties.getLocation();
-		
-		try {
-			boolean enable = false;
-			for(WeatherProperties.Type type: WeatherProperties.Type.values()) {
-				final JCheckBox cb = weatherPanel.getWeatherTypeCheckBox(type);
-				
-				switch(type) {
-					case CITY: 
-						enable = location != null && location.getCity() != null;
-						break;
-					case REGIONAL: 
-						enable = location != null && location.getRegion() != null;
-						break;
-					case NATIONAL: 
-						enable = location != null &&  location.getCountry() != null;
-						break;
-				}
-				
-				cb.setSelected(enable);
-				cb.setEnabled(enable);
-				
-				if(enable) properties.addActiveType(type);
-				else properties.removeActiveType(type);
-				
-				actionPerformed(new ActionEvent(cb, ActionEvent.ACTION_PERFORMED, "auto update"));
-				
-			}
-		} catch(NullPointerException e){}
-	}
 
 	/**  */
 	public void updateSequenceWeatherElement() {
-		
-		if(properties.getDisplayTime() > 0 && properties.getLocation() != null && properties.getBackgroundImage() != null && properties.getBackgroundImage().exists()) {
-			
+		if(
+				properties.getDisplayTime() > 0 &&
+				properties.getLocations() != null && properties.getLocations().size() > 0 &&
+				properties.getBackgroundImage() != null &&
+				properties.getBackgroundImage().exists()
+		) {
+			List<WeatherLocation> locations = properties.getLocations();
 			ArrayList<WeatherElement> weatherElements = sequencePanel.getSequence().getElementsByClass(WeatherElement.class);
 			
-			int nbWeatherElements = properties.getActiveTypes().size();
+			int nbWeatherElements = locations.size();
 			int diff = weatherElements.size() - nbWeatherElements;
 			
 			// Update the number of weather elements in the 
@@ -170,7 +133,7 @@ public class WeatherControl implements ActionListener {
 			}
 			else if(diff < 0) {
 				for(int i = 0; i < Math.abs(diff); i++) {
-					WeatherElement element = new WeatherElement(properties.getLocation(), properties.getDisplayTime());
+					WeatherElement element = new WeatherElement(null, properties.getDisplayTime());
 					sequencePanel.getSequence().add(element);
 					weatherElements.add(element);
 				}
@@ -178,8 +141,8 @@ public class WeatherControl implements ActionListener {
 			
 			for(int i = 0; i < weatherElements.size(); i++) {
 				WeatherElement element = weatherElements.get(i);
-				
-				element.setType(properties.getActiveTypes().get(i));
+				element.setType(WeatherProperties.Type.CITY);
+				element.setLocation(locations.get(i));
 			}
 			
 			sequencePanel.refreshList();
@@ -202,7 +165,7 @@ public class WeatherControl implements ActionListener {
 		}
 	}
 	
-	/** Updates the displayed location for each weather elements in the MediaSequence */
+	/* Updates the displayed location for each weather elements in the MediaSequence
 	private void updateLocation() {
 		if(properties.getDisplayTime() > 0) {
 			ArrayList<WeatherElement> weatherElements = sequencePanel.getSequence().getElementsByClass(WeatherElement.class);
@@ -212,6 +175,41 @@ public class WeatherControl implements ActionListener {
 			
 			sequencePanel.refreshList();
 		}
-	}	
+	}*/
+
+
+	/* Update location check box depending on the weather location
+	private void updateLocationCheckbox() {
+		WeatherLocation location = properties.getLocation();
+
+		try {
+			boolean enable = false;
+			for(WeatherProperties.Type type: WeatherProperties.Type.values()) {
+				final JCheckBox cb = weatherPanel.getWeatherTypeCheckBox(type);
+
+				switch(type) {
+					case CITY:
+						enable = location != null && location.getCity() != null;
+						break;
+					case REGIONAL:
+						enable = location != null && location.getRegion() != null;
+						break;
+					case NATIONAL:
+						enable = location != null &&  location.getCountry() != null;
+						break;
+				}
+
+				cb.setSelected(enable);
+				cb.setEnabled(enable);
+
+				if(enable) properties.addActiveType(type);
+				else properties.removeActiveType(type);
+
+				actionPerformed(new ActionEvent(cb, ActionEvent.ACTION_PERFORMED, "auto update"));
+
+			}
+		} catch(NullPointerException e){}
+	}*/
+
 
 }

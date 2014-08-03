@@ -1,15 +1,14 @@
 package dbg.control;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-
-import javax.swing.JComboBox;
-
 import dbg.data.property.PropertyManager;
 import dbg.data.property.VideoOutputProperties;
 import dbg.ui.settings.form.filechooser.FileChooserField;
 import dbg.ui.settings.panel.VideoOutputPanel;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 public class VideoOutputControl implements ActionListener {
 
