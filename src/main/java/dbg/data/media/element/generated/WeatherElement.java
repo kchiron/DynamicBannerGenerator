@@ -14,10 +14,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class WeatherElement extends GeneratedMediaElement {
@@ -25,9 +27,12 @@ public class WeatherElement extends GeneratedMediaElement {
     private static final long serialVersionUID = 1L;
     private WeatherProperties.Type type;
     private String key;
-    private String low;
-    private String high;
-    private String icon;
+    private String lowDay1;
+    private String highDay1;
+    private String iconDay1;
+    private String lowDay2;
+    private String highDay2;
+    private String iconDay2;
     private String city;
     private int nbDays;
 
@@ -68,15 +73,33 @@ public class WeatherElement extends GeneratedMediaElement {
 	System.out.println("URL: " + url);
 	this.city = loc.getCity();
 	
-	Document doc = Jsoup.connect(url).get();
-	Elements forecast = doc.select("simpleforecast forecastdays forecastday high celsius");
-	this.high = forecast.get(0).text();
-	forecast = doc.select("simpleforecast forecastdays forecastday low celsius");
-	this.low = forecast.get(0).text();	
-	forecast = doc.select("icon");
-	this.icon = forecast.get(0).text();
-	
-	System.out.println(this.high + " " + this.low + " " + this.icon);
+	/*if (nbDays == 1) {
+	    Document doc = Jsoup.connect(url).get();
+	    Elements forecast = doc.select("simpleforecast forecastdays forecastday high celsius");
+	    this.highDay1 = forecast.get(0).text();
+	    forecast = doc.select("simpleforecast forecastdays forecastday low celsius");
+	    this.lowDay1 = forecast.get(0).text();	
+	    forecast = doc.select("icon");
+	    this.iconDay1 = forecast.get(0).text();
+	    
+	    System.out.println(this.highDay1 + " " + this.lowDay1 + " " + this.iconDay1);
+	}
+	else if (nbDays ==2)	{*/
+	    Document doc = Jsoup.connect(url).get();
+	    Elements content = doc.select("simpleforecast forecastdays forecastday");
+	    for (Element link : content) {
+	      System.out.println("link : " + link);
+	    //}
+	    
+	    /*Elements forecast = doc.select("simpleforecast forecastdays forecastday high celsius");
+	    this.highDay1 = forecast.get(0).text();
+	    forecast = doc.select("simpleforecast forecastdays forecastday low celsius");
+	    this.lowDay1 = forecast.get(0).text();	
+	    forecast = doc.select("icon");
+	    this.iconDay1 = forecast.get(0).text();
+	    
+	    System.out.println(this.highDay1 + " " + this.lowDay1 + " " + this.iconDay1);*/	    
+	}
     }
 
     @Override
@@ -128,7 +151,7 @@ public class WeatherElement extends GeneratedMediaElement {
 	    ImagePanel globalWeather = new ImagePanel(ImageIO.read(getClass().getResource("globalWeather.png")));
 	    globalWeather.setBounds((textArea.getX() + 150), 550, 600, 600);
 	    /* MORNING */
-	    JLabel morningTemperature = new JLabel(this.low + "° C", JLabel.CENTER);
+	    JLabel morningTemperature = new JLabel(this.lowDay1 + "° C", JLabel.CENTER);
 	    morningTemperature.setBounds((textArea.getBounds().x + textArea.getBounds().width / 2 - 50), (globalWeather.getBounds().y + globalWeather.getBounds().height), textArea.getBounds().width / 2, 308);
 	    morningTemperature.setFont(ttfReal.deriveFont(Font.BOLD, 80));
 	    morningTemperature.setForeground(Color.WHITE);
@@ -140,7 +163,7 @@ public class WeatherElement extends GeneratedMediaElement {
 	    ImagePanel separate = new ImagePanel(ImageIO.read(getClass().getResource("separate_h.png")));
 	    separate.setBounds((2*(textArea.getWidth() / 4) + (600/2) + 15), 837, 400, 5);
 	    /* AFTERNOON */
-	    JLabel afternoonTemperature = new JLabel(this.high + "° C", JLabel.CENTER);
+	    JLabel afternoonTemperature = new JLabel(this.highDay1 + "° C", JLabel.CENTER);
 	    afternoonTemperature.setBounds((textArea.getX() + textArea.getWidth() / 2 - 50), 775, textArea.getWidth() / 2, 308);
 	    afternoonTemperature.setFont(ttfReal.deriveFont(Font.BOLD, 80));
 	    afternoonTemperature.setForeground(Color.WHITE);
@@ -158,40 +181,50 @@ public class WeatherElement extends GeneratedMediaElement {
 	    panel.add(globalWeather);
 	}
 	else if (this.nbDays == 2)   {
+	    /* DATE */
+	    Calendar cal = Calendar.getInstance();
+	    String currentDay  = String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
+	    String nextDay  = String.valueOf(cal.get(Calendar.DAY_OF_MONTH ));
+	    System.out.println(currentDay + " - " + nextDay);
 	    /* ICONS */
 	    ImagePanel globalWeatherDay1 = new ImagePanel(ImageIO.read(getClass().getResource("globalWeather.png")));
 	    globalWeatherDay1.setBounds((textArea.getX() + 200 + 25), 575, 400, 400);
 	    ImagePanel globalWeatherDay2 = new ImagePanel(ImageIO.read(getClass().getResource("globalWeather.png")));
 	    globalWeatherDay2.setBounds((textArea.getX() + textArea.getWidth() - 400 - 200), 600, 400, 400);
 	    /* MORNING */
-	    JLabel morningTemperatureDay1 = new JLabel(this.low + "° C", JLabel.CENTER);
-	    morningTemperatureDay1.setBounds((textArea.getX()), (globalWeatherDay1.getY()), textArea.getWidth() / 2, 100);
+	    JLabel morningTemperatureDay1 = new JLabel(this.lowDay1 + "° C", JLabel.CENTER);
+	    morningTemperatureDay1.setBounds((textArea.getX()), (globalWeatherDay1.getY() + globalWeatherDay1.getHeight() - 100), textArea.getWidth() / 2, 100);
 	    morningTemperatureDay1.setFont(ttfReal.deriveFont(Font.BOLD, 60));
 	    morningTemperatureDay1.setForeground(Color.WHITE);
-	    JLabel morningTemperatureDay2 = new JLabel(this.low + "° C", JLabel.CENTER);
-	    morningTemperatureDay2.setBounds((textArea.getX() + textArea.getWidth() / 2), 775, textArea.getWidth() / 2, 25);
+	    JLabel morningTemperatureDay2 = new JLabel(this.lowDay1 + "° C", JLabel.CENTER);
+	    morningTemperatureDay2.setBounds((textArea.getX() + textArea.getWidth() / 2), (globalWeatherDay1.getY() + globalWeatherDay1.getHeight() - 100), textArea.getWidth() / 2, 100);
 	    morningTemperatureDay2.setFont(ttfReal.deriveFont(Font.BOLD, 60));
 	    morningTemperatureDay2.setForeground(Color.WHITE);
 	    /* SEPARATIONS */
 	    ImagePanel separateVertical = new ImagePanel(ImageIO.read(getClass().getResource("separate_v.png")));
 	    separateVertical.setBounds((textArea.getX() + (textArea.getWidth() / 2)), 650, 5, 400);
 	    ImagePanel separateHorizontalDay1 = new ImagePanel(ImageIO.read(getClass().getResource("separate_h.png")));
-	    separateHorizontalDay1.setBounds((textArea.getX() + textArea.getWidth()/4 - 100), morningTemperatureDay1.getY() + morningTemperatureDay1.getHeight() + 25, 200, 3);
+	    separateHorizontalDay1.setBounds((textArea.getX() + textArea.getWidth()/4 - 100), morningTemperatureDay1.getY() + morningTemperatureDay1.getHeight(), 200, 3);
 	    ImagePanel separateHorizontalDay2 = new ImagePanel(ImageIO.read(getClass().getResource("separate_h.png")));
-	    separateHorizontalDay2.setBounds((2*(textArea.getWidth() / 4) + (600/2) + 15), 837, 400, 5);
+	    separateHorizontalDay2.setBounds((textArea.getX() + 3*(textArea.getWidth()/4) - 100), morningTemperatureDay1.getY() + morningTemperatureDay1.getHeight(), 200, 3);
 	    /* AFTERNOON */
-	    JLabel afternoonTemperatureDay1 = new JLabel(this.high + "° C", JLabel.CENTER);
-	    afternoonTemperatureDay1.setBounds((textArea.getX()), (separateHorizontalDay1.getY() + separateHorizontalDay1.getHeight()), textArea.getWidth() / 2, 308);
+	    JLabel afternoonTemperatureDay1 = new JLabel(this.highDay1 + "° C", JLabel.CENTER);
+	    afternoonTemperatureDay1.setBounds((textArea.getX()), (separateHorizontalDay1.getY()), textArea.getWidth() / 2, 100);
 	    afternoonTemperatureDay1.setFont(ttfReal.deriveFont(Font.BOLD, 60));
 	    afternoonTemperatureDay1.setForeground(Color.WHITE);
+	    JLabel afternoonTemperatureDay2 = new JLabel(this.highDay1 + "° C", JLabel.CENTER);
+	    afternoonTemperatureDay2.setBounds((textArea.getX() + 2*(textArea.getWidth()/4)), separateHorizontalDay2.getY(), textArea.getWidth() / 2, 100);
+	    afternoonTemperatureDay2.setFont(ttfReal.deriveFont(Font.BOLD, 60));
+	    afternoonTemperatureDay2.setForeground(Color.WHITE);
 	    
 	    /* ADD ELEMENT TO PANEL */
 	    panel.add(separateVertical);
 	    panel.add(morningTemperatureDay1);
 	    panel.add(morningTemperatureDay2);
 	    panel.add(separateHorizontalDay1);
+	    panel.add(separateHorizontalDay2);
 	    panel.add(afternoonTemperatureDay1);
-	    //panel.add(afternoon);
+	    panel.add(afternoonTemperatureDay2);
 	    panel.add(globalWeatherDay1);
 	    panel.add(globalWeatherDay2);
 	}
