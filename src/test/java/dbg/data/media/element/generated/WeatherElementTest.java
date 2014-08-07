@@ -43,18 +43,19 @@ public class WeatherElementTest {
     /**
      * Test of getWeather method, of class WeatherElement.
      */
-    @Test
+    /*@Test
     public void testGetWeather() throws Exception {
 	System.out.println("getWeather");
 	WeatherLocation loc = new WeatherLocation("France", "Auvergne", "Clermont-Ferrand", 3.08, 45.78);
 	PropertyManager.loadFromFile();
+	PropertyManager.getWeatherProperties().setNbDays(2);
 	PropertyManager.getWeatherProperties().setLocation(loc);
 	PropertyManager.getWeatherProperties().setBackgroundImage( new File(getClass().getResource("bckgndWeather.jpg").getPath()));
 	WeatherElement instance = new WeatherElement(loc, 10);
 	instance.setType(Type.CITY);
 	instance.getWeather();
 	// TODO review the generated test code and remove the default call to fail.
-    }
+    }*/
 
     @Test
     public void testGenerateImage() throws IOException, ImageGenerationException, Exception {

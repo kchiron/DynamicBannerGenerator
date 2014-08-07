@@ -68,37 +68,44 @@ public class WeatherElement extends GeneratedMediaElement {
 
     public void getWeather() throws IOException {
 	WeatherLocation loc = PropertyManager.getWeatherProperties().getLocation();
+	/* DATE */
+	Calendar cal = Calendar.getInstance();
+	String currentDay  = String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
+	String nextDay  = String.valueOf(cal.get(Calendar.DAY_OF_MONTH) + 1);
 	
 	String url = "http://api.wunderground.com/api/" + key + "/forecast/lang:FR/q/" + loc.getLatitude() + "," + loc.getLongitude() + ".xml";
 	System.out.println("URL: " + url);
 	this.city = loc.getCity();
 	
-	/*if (nbDays == 1) {
+	if (nbDays == 1) {
 	    Document doc = Jsoup.connect(url).get();
-	    Elements forecast = doc.select("simpleforecast forecastdays forecastday high celsius");
-	    this.highDay1 = forecast.get(0).text();
-	    forecast = doc.select("simpleforecast forecastdays forecastday low celsius");
-	    this.lowDay1 = forecast.get(0).text();	
-	    forecast = doc.select("icon");
-	    this.iconDay1 = forecast.get(0).text();
-	    
+	    Elements forecastdays = doc.select("simpleforecast forecastdays forecastday");
+	    for (Element forecastday : forecastdays) {
+		this.highDay1 = forecastday.select("high celsius").text();
+		this.lowDay1 = forecastday.select("low celsius").text();
+		this.iconDay1 = forecastday.select("icon").text();
+	    }
 	    System.out.println(this.highDay1 + " " + this.lowDay1 + " " + this.iconDay1);
 	}
-	else if (nbDays ==2)	{*/
+	else if (nbDays ==2)	{
 	    Document doc = Jsoup.connect(url).get();
-	    Elements content = doc.select("simpleforecast forecastdays forecastday");
-	    for (Element link : content) {
-	      System.out.println("link : " + link);
-	    //}
-	    
-	    /*Elements forecast = doc.select("simpleforecast forecastdays forecastday high celsius");
-	    this.highDay1 = forecast.get(0).text();
-	    forecast = doc.select("simpleforecast forecastdays forecastday low celsius");
-	    this.lowDay1 = forecast.get(0).text();	
-	    forecast = doc.select("icon");
-	    this.iconDay1 = forecast.get(0).text();
-	    
-	    System.out.println(this.highDay1 + " " + this.lowDay1 + " " + this.iconDay1);*/	    
+	    Elements forecastdays = doc.select("simpleforecast forecastdays forecastday");
+	    String day;
+	    for (Element forecastday : forecastdays) {
+		day = forecastday.select("date day").text();
+		if (day.equals(currentDay)) {
+		    this.highDay1 = forecastday.select("high celsius").text();
+		    this.lowDay1 = forecastday.select("low celsius").text();
+		    this.iconDay1 = forecastday.select("icon").text();
+		}
+		else if (day.equals(nextDay)) {
+		    this.highDay2 = forecastday.select("high celsius").text();
+		    this.lowDay2 = forecastday.select("low celsius").text();
+		    this.iconDay2 = forecastday.select("icon").text();
+		}
+	    }
+	    System.out.println(this.highDay1 + " " + this.lowDay1 + " " + this.iconDay1);
+	    System.out.println(this.highDay2 + " " + this.lowDay2 + " " + this.iconDay2);
 	}
     }
 
@@ -181,11 +188,6 @@ public class WeatherElement extends GeneratedMediaElement {
 	    panel.add(globalWeather);
 	}
 	else if (this.nbDays == 2)   {
-	    /* DATE */
-	    Calendar cal = Calendar.getInstance();
-	    String currentDay  = String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
-	    String nextDay  = String.valueOf(cal.get(Calendar.DAY_OF_MONTH ));
-	    System.out.println(currentDay + " - " + nextDay);
 	    /* ICONS */
 	    ImagePanel globalWeatherDay1 = new ImagePanel(ImageIO.read(getClass().getResource("globalWeather.png")));
 	    globalWeatherDay1.setBounds((textArea.getX() + 200 + 25), 575, 400, 400);
@@ -196,7 +198,7 @@ public class WeatherElement extends GeneratedMediaElement {
 	    morningTemperatureDay1.setBounds((textArea.getX()), (globalWeatherDay1.getY() + globalWeatherDay1.getHeight() - 100), textArea.getWidth() / 2, 100);
 	    morningTemperatureDay1.setFont(ttfReal.deriveFont(Font.BOLD, 60));
 	    morningTemperatureDay1.setForeground(Color.WHITE);
-	    JLabel morningTemperatureDay2 = new JLabel(this.lowDay1 + "° C", JLabel.CENTER);
+	    JLabel morningTemperatureDay2 = new JLabel(this.lowDay2 + "° C", JLabel.CENTER);
 	    morningTemperatureDay2.setBounds((textArea.getX() + textArea.getWidth() / 2), (globalWeatherDay1.getY() + globalWeatherDay1.getHeight() - 100), textArea.getWidth() / 2, 100);
 	    morningTemperatureDay2.setFont(ttfReal.deriveFont(Font.BOLD, 60));
 	    morningTemperatureDay2.setForeground(Color.WHITE);
@@ -212,7 +214,7 @@ public class WeatherElement extends GeneratedMediaElement {
 	    afternoonTemperatureDay1.setBounds((textArea.getX()), (separateHorizontalDay1.getY()), textArea.getWidth() / 2, 100);
 	    afternoonTemperatureDay1.setFont(ttfReal.deriveFont(Font.BOLD, 60));
 	    afternoonTemperatureDay1.setForeground(Color.WHITE);
-	    JLabel afternoonTemperatureDay2 = new JLabel(this.highDay1 + "° C", JLabel.CENTER);
+	    JLabel afternoonTemperatureDay2 = new JLabel(this.highDay2 + "° C", JLabel.CENTER);
 	    afternoonTemperatureDay2.setBounds((textArea.getX() + 2*(textArea.getWidth()/4)), separateHorizontalDay2.getY(), textArea.getWidth() / 2, 100);
 	    afternoonTemperatureDay2.setFont(ttfReal.deriveFont(Font.BOLD, 60));
 	    afternoonTemperatureDay2.setForeground(Color.WHITE);
