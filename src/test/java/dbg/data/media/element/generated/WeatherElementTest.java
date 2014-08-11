@@ -60,9 +60,9 @@ public class WeatherElementTest {
     @Test
     public void testGenerateImage() throws IOException, ImageGenerationException, Exception {
 	System.out.println("generateImage");
-	WeatherLocation loc = new WeatherLocation("France", "Auvergne", "Clermont-Ferrand", 3.08, 45.78);
+	WeatherLocation loc = new WeatherLocation("France", "Dordogne", "Périgueux", 0.71, 45.18);
 	PropertyManager.loadFromFile();
-	PropertyManager.getWeatherProperties().setNbDays(2);
+	PropertyManager.getWeatherProperties().setNbDays(1);
 	PropertyManager.getWeatherProperties().setLocation(loc);
 	PropertyManager.getWeatherProperties().setBackgroundImage( new File(getClass().getResource("bckgndWeather.jpg").getPath()));
 	WeatherElement instance = new WeatherElement(loc, 10);
