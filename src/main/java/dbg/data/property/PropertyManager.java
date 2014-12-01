@@ -14,6 +14,7 @@ public class PropertyManager {
 	private static WeatherProperties weatherProperties;
 
 	private static String googlePlacesAPIKey;
+	private static String wunderGroundAPIKey;
 
 	//Configuration file
 	private static File configFile = new File("config.bin");
@@ -26,6 +27,7 @@ public class PropertyManager {
 	public static void loadFromFile() throws Exception {
 		ObjectInputStream input = null;
 
+		Exception error = null;
 		if (configFile.exists()) {
 			try {
 				input = new ObjectInputStream(new FileInputStream(configFile));
@@ -44,24 +46,40 @@ public class PropertyManager {
 							videoOutputProperties = (VideoOutputProperties) o;
 						else if (o instanceof WeatherProperties)
 							weatherProperties = (WeatherProperties) o;
-						else if (o instanceof String)
+						else if (o instanceof String && googlePlacesAPIKey == null)
 							googlePlacesAPIKey = (String) o;
+						else if (o instanceof String)
+							wunderGroundAPIKey = (String) o;
 					} catch (EOFException e1) {
 						EOF = true;
-					}
+					} catch (Exception ignored) {}
 				}
 			} catch (IOException e) {
-				throw e;
-			} catch (ClassNotFoundException e) {
+				error = e;
 			} finally {
 				if (input != null) input.close();
 			}
-		} else {
+		}
+		boolean newProp = false;
+		if(sequence == null) {
+			newProp = true;
 			sequence = new MediaSequence();
+		}
+		if(videoOutputProperties == null) {
+			newProp = true;
 			videoOutputProperties = new VideoOutputProperties();
+		}
+		if(horoscopeProperties == null) {
+			newProp = true;
 			horoscopeProperties = new HoroscopeProperties();
+		}
+		if(weatherProperties == null) {
+			newProp = true;
 			weatherProperties = new WeatherProperties();
 		}
+
+		if(error != null)
+			throw error;
 
 		if (googlePlacesAPIKey == null || googlePlacesAPIKey.isEmpty()) {
 			googlePlacesAPIKey = JOptionPane.showInputDialog(null, LocalizedText.get("enter_googleapikey"), LocalizedText.get("missing_data"), JOptionPane.QUESTION_MESSAGE);
@@ -69,7 +87,20 @@ public class PropertyManager {
 			if (googlePlacesAPIKey == null || googlePlacesAPIKey.isEmpty()) {
 				throw new Exception(LocalizedText.get("missing_data") + ": " + LocalizedText.get("googleapikey_required"));
 			}
+			newProp = true;
 		}
+		if (wunderGroundAPIKey == null || wunderGroundAPIKey.isEmpty()) {
+			wunderGroundAPIKey = JOptionPane.showInputDialog(null, LocalizedText.get("enter_wundergroundapikey"), LocalizedText.get("missing_data"), JOptionPane.QUESTION_MESSAGE);
+
+			if (wunderGroundAPIKey == null || wunderGroundAPIKey.isEmpty()) {
+				throw new Exception(LocalizedText.get("missing_data") + ": " + LocalizedText.get("wundergroundapikey_required"));
+			}
+			newProp = true;
+		}
+
+
+		if(newProp)
+			saveToFile();
 	}
 
 	/**
@@ -85,7 +116,7 @@ public class PropertyManager {
 			output.writeObject(videoOutputProperties);
 			output.writeObject(weatherProperties);
 			output.writeObject(googlePlacesAPIKey);
-
+			output.writeObject(wunderGroundAPIKey);
 		} catch (IOException e) {
 			throw e;
 		} finally {
@@ -131,5 +162,13 @@ public class PropertyManager {
 
 	public static String getGooglePlacesAPIKey() {
 		return googlePlacesAPIKey;
+	}
+
+	public static void setWunderGroundAPIKey(String wunderGroundAPIKey) {
+		PropertyManager.wunderGroundAPIKey = wunderGroundAPIKey;
+	}
+
+	public static String getWunderGroundAPIKey() {
+		return wunderGroundAPIKey;
 	}
 }

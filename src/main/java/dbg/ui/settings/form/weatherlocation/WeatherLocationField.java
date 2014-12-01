@@ -23,10 +23,10 @@ import java.util.ArrayList;
 public class WeatherLocationField extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private final ArrayList<ActionListener> customListeners;
 	private final GooglePlaces places;
-	
+
 	//Components
 	private final BorderLayout layout;
 	private final JTextField txtLocation;
@@ -39,10 +39,11 @@ public class WeatherLocationField extends JPanel {
 
 	//private final CompoundBorder defaultBorder;
 	//private final CompoundBorder errorBorder;
-	
+
 	public WeatherLocationField() {
 		super();
 		setLayout(layout = new BorderLayout());
+		setOpaque(false);
 
 		places = new GooglePlaces(PropertyManager.getGooglePlacesAPIKey());
 		customListeners = new ArrayList<>(1);
@@ -70,24 +71,24 @@ public class WeatherLocationField extends JPanel {
 				}
 			});
 		}
-		
+
 		// Catch text entering
 		txtLocation.getDocument().addDocumentListener(new DocumentListener() {
 			public void removeUpdate(DocumentEvent e) {
 				showDropDown(e);
 
 			}
-			
+
 			public void insertUpdate(DocumentEvent e) {
-				if(e.getLength() != txtLocation.getText().length())
+				if (e.getLength() != txtLocation.getText().length())
 					showDropDown(e);
 			}
-			
+
 			public void changedUpdate(DocumentEvent e) {
 				showDropDown(e);
 			}
 		});
-		
+
 		// Catch special keys
 		txtLocation.addKeyListener(new KeyListener() {
 			@Override
@@ -101,28 +102,31 @@ public class WeatherLocationField extends JPanel {
 						break;
 					case KeyEvent.VK_ENTER:
 						WeatherLocationDropDown.PredictionMenuItem it = dropDown.getSelectedItem();
-						if(it != null) {
-							for(ActionListener listener: it.getActionListeners())
-								listener.actionPerformed(new ActionEvent(it, ActionEvent.ACTION_PERFORMED, "weatherLocation validation"));	
+						if (it != null) {
+							setWeatherLocation(weatherLocationFromPrediction(it.getPrediction()));
 						}
 						break;
 				}
 			}
-			public void keyTyped(KeyEvent e) {}
-			public void keyPressed(KeyEvent e) {}
+
+			public void keyTyped(KeyEvent e) {
+			}
+
+			public void keyPressed(KeyEvent e) {
+			}
 		});
-		
+
 		checkValidLocation();
 	}
 
 	private void checkValidLocation() {
-		if(weatherLocation == null) {
+		if (weatherLocation == null) {
 			//txtLocation.setBorder(errorBorder);
 			//Component component = layout.getLayoutComponent(BorderLayout.EAST);
 			//if(component != null)
 			//	remove(component);
-			add(errorIcon, BorderLayout.EAST);
-			txtLocation.revalidate();
+			//add(errorIcon, BorderLayout.EAST);
+			//txtLocation.revalidate();
 		} else {
 			//txtLocation.setBorder(defaultBorder);
 			add(deleteBtn, BorderLayout.EAST);
@@ -130,18 +134,18 @@ public class WeatherLocationField extends JPanel {
 		}
 		repaint();
 	}
-	
+
 	private void showDropDown(final DocumentEvent e) {
-		if(e.getDocument().getLength() > 0) {
-			
-			if(!dropDown.isVisible()) { 
+		if (e.getDocument().getLength() > 0) {
+
+			if (!dropDown.isVisible()) {
 				Rectangle r = txtLocation.getBounds();
-				dropDown.show(txtLocation, (r.x), (r.y+r.height));
+				dropDown.show(txtLocation, (r.x), (r.y + r.height));
 				dropDown.setVisible(true);
-				
+
 				weatherLocation = null;
 			}
-			
+
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
@@ -149,12 +153,12 @@ public class WeatherLocationField extends JPanel {
 					dropDown.add("Loading...");
 					dropDown.pack();
 					dropDown.revalidate();
-					
-					if(e.getDocument().getLength() == 2) {
+
+					if (e.getDocument().getLength() == 2) {
 						txtLocation.setSelectionStart(2);
 						txtLocation.setSelectionEnd(2);
 					}
-					
+
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
@@ -162,8 +166,8 @@ public class WeatherLocationField extends JPanel {
 							options.param("components", "country:fr");
 							options.param("language", "fr");
 							AutocompleteResult result = places.autocomplete(txtLocation.getText(), options, false);
-							
-							if(result.isOkay()) {
+
+							if (result.isOkay()) {
 								dropDown.removeAll();
 								for (Prediction p : result)
 									dropDown.add(p);
@@ -178,65 +182,62 @@ public class WeatherLocationField extends JPanel {
 								dropDown.pack();
 								dropDown.revalidate();
 							}
-							
+
 						}
 					});
 				}
 			});
-			
+
 			txtLocation.requestFocus();
-		}
-		else {
+		} else {
 			dropDown.setVisible(false);
 		}
 	}
-	
+
 	public WeatherLocation weatherLocationFromPrediction(Prediction p) {
 		WeatherLocation weatherLocation;
 		PlaceDetailResult res = places.detail(p.getReference(), false);
-		
-		if(res.isOkay()) {
+
+		if (res.isOkay()) {
 			PlaceDetail detail = res.getResult();
 			float longitute = detail.getGeometry().getLocation().getLongitude();
 			float latitude = detail.getGeometry().getLocation().getLatitude();
 			String country = null;
 			String region = null;
 			String city = null;
-			
+
 			String postal = null; //in case the region is not set
-			for(AddressComponent adr: detail.getAddressComponents()) {
+			for (AddressComponent adr : detail.getAddressComponents()) {
 				//System.out.println(adr.getLongName()+"-"+adr.getTypes());
 
-				if(adr.getTypes().contains("political")) {
-					if(adr.getTypes().contains("locality"))
+				if (adr.getTypes().contains("political")) {
+					if (adr.getTypes().contains("locality"))
 						city = adr.getLongName();
-					else if(adr.getTypes().contains("administrative_area_level_1"))
+					else if (adr.getTypes().contains("administrative_area_level_1"))
 						region = adr.getLongName();
-					else if(adr.getTypes().contains("country"))
+					else if (adr.getTypes().contains("country"))
 						country = adr.getLongName();
-				}
-				else if(adr.getTypes().contains("postal_code")) 
+				} else if (adr.getTypes().contains("postal_code"))
 					postal = adr.getLongName();
 			}
-			
+
 			//If region missing while city registered, redo a search
-			if(city != null && region == null) {
-				if(postal != null) {
+			if (city != null && region == null) {
+				if (postal != null) {
 					AutocompleteQueryOptions options = new AutocompleteQueryOptions();
 					options.param("components", "country:fr");
 					options.param("language", "fr");
 					AutocompleteResult result = places.autocomplete(postal, options, false);
-					
-					if(result.isOkay()) {
+
+					if (result.isOkay()) {
 						return weatherLocationFromPrediction(result.iterator().next());
 					}
 				}
 			}
-			
+
 			weatherLocation = new WeatherLocation(country, region, city, longitute, latitude);
-		}
-		else weatherLocation = null;
-		
+		} else weatherLocation = null;
+
 		return weatherLocation;
 	}
 
@@ -247,12 +248,14 @@ public class WeatherLocationField extends JPanel {
 	public WeatherLocation getWeatherLocation() {
 		return weatherLocation;
 	}
-	
+
 	public void setWeatherLocation(WeatherLocation weatherLocation) {
 		this.weatherLocation = weatherLocation;
 
-		for(ActionListener listener: customListeners)
-			listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "weatherLocation validation"));
+		for (ActionListener listener : customListeners) {
+			if (listener != null)
+				listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "weatherLocation validation"));
+		}
 
 		txtLocation.setText(weatherLocation == null ? "" : weatherLocation.toString());
 		checkValidLocation();

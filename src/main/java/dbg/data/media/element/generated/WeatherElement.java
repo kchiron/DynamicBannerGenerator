@@ -5,10 +5,15 @@ import dbg.data.property.PropertyManager;
 import dbg.data.property.WeatherProperties;
 import dbg.exception.ImageGenerationException;
 import dbg.image.ImagePanel;
-import dbg.ui.LocalizedText;
 import dbg.ui.util.MultiLineLabel;
 import dbg.ui.util.UiUtils;
 import dbg.util.TemporaryFileHandler;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -26,6 +31,7 @@ public class WeatherElement extends GeneratedMediaElement {
 
     private static final long serialVersionUID = 1L;
     private WeatherProperties.Type type;
+    private WeatherLocation location;
     private String key;
     private String lowDay1;
     private String highDay1;
@@ -39,6 +45,7 @@ public class WeatherElement extends GeneratedMediaElement {
     public WeatherElement(WeatherLocation location, int duration) {
 	super("", (location == null) ? "-" : location.toString(), duration);
 	this.key = "e1b5ddb86eff0cfd";
+	this.location = location;
 	this.nbDays = PropertyManager.getWeatherProperties().getNbDays();
     }
 
@@ -48,26 +55,16 @@ public class WeatherElement extends GeneratedMediaElement {
 
     public void setType(WeatherProperties.Type type) {
 	this.type = type;
-
-	switch (type) {
-	    case CITY:
-		setTitle(LocalizedText.get("city_weather"));
-		break;
-	    case REGIONAL:
-		setTitle(LocalizedText.get("regional_weather"));
-		break;
-	    case NATIONAL:
-		setTitle(LocalizedText.get("national_weather"));
-		break;
-	}
+	setTitle(type.toString());
     }
 
     public void setLocation(WeatherLocation location) {
 	setSubTitle((location == null) ? "-" : location.toString());
+	this.location = location;
     }
 
     public void getWeather() throws IOException {
-	WeatherLocation loc = PropertyManager.getWeatherProperties().getLocation();
+	WeatherLocation loc = location;
 	/* DATE */
 	Calendar cal = Calendar.getInstance();
 	String currentDay  = String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
@@ -114,11 +111,28 @@ public class WeatherElement extends GeneratedMediaElement {
 	    System.out.println(this.highDay1 + " " + this.lowDay1 + " " + this.iconDay1);
 	    System.out.println(this.highDay2 + " " + this.lowDay2 + " " + this.iconDay2);
 	}
+	/*
+	WeatherLocation loc = location;//PropertyManager.getWeatherProperties().getLocation();
+
+	String url = "http://api.wunderground.com/api/" + key + "/forecast/lang:FR/q/" + loc.getLatitude() + "," + loc.getLongitude() + ".xml";
+	System.out.println("URL: " + url);
+	this.city = loc.getCity();
+
+	Document doc = Jsoup.connect(url).get();
+	Elements forecast = doc.select("simpleforecast forecastdays forecastday high celsius");
+	this.high = forecast.get(0).text();
+	forecast = doc.select("simpleforecast forecastdays forecastday low celsius");
+	this.low = forecast.get(0).text();
+	forecast = doc.select("icon");
+	this.icon = forecast.get(0).text();
+
+	System.out.println(this.high + " " + this.low + " " + this.icon);
+	*/
     }
 
     @Override
     public File generateImage(TemporaryFileHandler temporaryFileHandler) throws ImageGenerationException, IOException {
-	
+
 	BufferedImage img = null;
 	try {
 		File file = PropertyManager.getWeatherProperties().getBackgroundImage();
@@ -154,12 +168,12 @@ public class WeatherElement extends GeneratedMediaElement {
 	town.setBounds(175, 475, textArea.getWidth(), 150);
 	town.setFont(ttfReal.deriveFont(Font.BOLD, 110));
 	town.setForeground(Color.WHITE);
-	
+
 	panel.setLayout(null);
 	panel.add(titre);
 	panel.add(leftLogo);
 	panel.add(town);
-	
+
 	if (this.nbDays == 1)    {
 	    /* ICON */
 	    ImagePanel globalWeather = new ImagePanel(ImageIO.read(getClass().getResource(this.iconDay1 + ".png")));
@@ -186,7 +200,7 @@ public class WeatherElement extends GeneratedMediaElement {
 	    afternoon.setBounds((textArea.getX() + textArea.getWidth() / 2 - 50), afternoonTemperature.getY() + afternoonTemperature.getHeight() + 20, textArea.getWidth() / 2, 50);
 	    afternoon.setFont(ttfReal.deriveFont(Font.BOLD, 50));
 	    afternoon.setForeground(Color.WHITE);
-	    
+
 	    /* ADD ELEMENT TO PANEL */
 	    panel.add(separate);
 	    panel.add(morningTemperature);
@@ -238,7 +252,7 @@ public class WeatherElement extends GeneratedMediaElement {
 	    panel.add(globalWeatherDay1);
 	    panel.add(globalWeatherDay2);
 	}
-	
+
 	panel.add(textArea);
 
 	double scaleX = d.width / 1920.0; //<taille du layout>;

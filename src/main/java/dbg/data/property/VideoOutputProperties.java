@@ -6,21 +6,22 @@ import java.net.URI;
 
 /**
  * Video output properties
+ *
  * @author gcornut
  */
 public class VideoOutputProperties implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private final static String[] standardVideoSize = {
-		"640x360",
-		"1024x576",
-		"1280x720 (720p)",
-		"1440x900",
-		"1600x900",
-		"1920x1080 (1080p)"
+			"640x360",
+			"1024x576",
+			"1280x720 (720p)",
+			"1440x900",
+			"1600x900",
+			"1920x1080 (1080p)"
 	};
-	
+
 	private int indexOfVideoSize;
 	private String outputFolderPath;
 
@@ -30,7 +31,9 @@ public class VideoOutputProperties implements Serializable {
 		setOutputFolder(outputFolder);
 	}
 
-	/** Constructs default video output properties */
+	/**
+	 * Constructs default video output properties
+	 */
 	public VideoOutputProperties() {
 		this(2, new File(""));
 	}
@@ -38,7 +41,7 @@ public class VideoOutputProperties implements Serializable {
 	public String getVideoSize() {
 		return standardVideoSize[indexOfVideoSize].replaceAll("\\s\\(\\d+p\\)", "");
 	}
-	
+
 	public int getIndexOfVideoSize() {
 		return indexOfVideoSize;
 	}
@@ -50,15 +53,17 @@ public class VideoOutputProperties implements Serializable {
 	public File getOutputFolder() {
 		return new File(outputFolderPath);
 	}
-	
+
 	public void setOutputFolder(File outputFolder) {
-		URI outputRelativeURI = new File("").toURI().relativize(outputFolder.toURI());
+		if (outputFolder == null)
+			outputFolder = new File(".");
+		URI outputRelativeURI =	new File(".").toURI().relativize(outputFolder.toURI());
 		this.outputFolderPath = outputRelativeURI.getPath();
 	}
-	
+
 	public static String[] getStandardVideoSize() {
 		return standardVideoSize;
 	}
-	
-	
+
+
 }
