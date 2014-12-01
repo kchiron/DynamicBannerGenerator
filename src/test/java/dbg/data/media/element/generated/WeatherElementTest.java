@@ -62,7 +62,7 @@ public class WeatherElementTest {
 	System.out.println("generateImage");
 	WeatherLocation loc = new WeatherLocation("France", "Dordogne", "Périgueux", 0.71, 45.18);
 	PropertyManager.loadFromFile();
-	PropertyManager.getWeatherProperties().setNbDays(1);
+	PropertyManager.getWeatherProperties().setNbDays(2);
 	PropertyManager.getWeatherProperties().setLocation(loc);
 	PropertyManager.getWeatherProperties().setBackgroundImage( new File(getClass().getResource("bckgndWeather.jpg").getPath()));
 	WeatherElement instance = new WeatherElement(loc, 10);
